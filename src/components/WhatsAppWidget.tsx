@@ -6,7 +6,7 @@ const WhatsAppWidget = () => {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
-  const phoneNumber = "234805826698";
+  const phoneNumber = "2348035826698";
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();

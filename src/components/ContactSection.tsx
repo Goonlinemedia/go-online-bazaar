@@ -22,8 +22,8 @@ const ContactSection = () => {
 
           <div className="mt-10 space-y-5">
             {[
-              { icon: Mail, label: "Email Us", value: "hello@goonline.com", href: "mailto:hello@goonline.com" },
-              { icon: Phone, label: "Call Us", value: "+234 902 021 9544", href: "tel:+2349020219544" },
+              { icon: Mail, label: "Email Us", value: "goonlinemedia0@gmail.com", href: "mailto:goonlinemedia0@gmail.com" },
+              { icon: Phone, label: "Call Us", value: "+234 803 582 6698", href: "tel:+2348035826698" },
               { icon: MapPin, label: "Visit Us", value: "B4-313, HFP Eastline Shopping Complex, Abraham Adesanya Estate." },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-4">

@@ -29,8 +29,8 @@ const Footer = () => (
       <div>
         <h4 className="font-semibold text-primary-foreground mb-4 text-sm">Support</h4>
         <ul className="space-y-2 text-sm">
-          <li>hello@goonline.com</li>
-          <li>+234 902 021 9544</li>
+          <li>goonlinemedia0@gmail.com</li>
+          <li>+234 803 582 6698</li>
         </ul>
       </div>
       <div>
