@@ -103,7 +103,7 @@ const PricingSection = () => {
   ];
 
   return (
-    <div className="w-full bg-background pb-20">
+    <div id="pricing" className="w-full bg-background pb-20">
       {/* 🚀 HERO SECTION */}
       <section className="relative pt-24 pb-16 px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 animate-fade-in border border-primary/20">
