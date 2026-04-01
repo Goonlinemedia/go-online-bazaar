@@ -32,7 +32,7 @@ const WhatsAppWidget = () => {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {/* Chat Popup */}
       {isOpen && (
-        <div className="mb-8 w-72 sm:w-80 bg-white rounded-xl shadow-2xl overflow-hidden animate-fade-in origin-bottom-right transition-all">
+        <div className="mb-16 w-72 sm:w-80 bg-white rounded-xl shadow-2xl overflow-hidden animate-fade-in origin-bottom-right transition-all">
           {/* Header */}
           <div className="bg-[#1e4c40] text-white p-4 font-semibold text-lg">
             Go Online
