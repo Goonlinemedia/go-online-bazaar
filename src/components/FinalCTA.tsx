@@ -30,7 +30,7 @@ const FinalCTA = () => {
           <span className="block mt-2 font-bold text-white uppercase tracking-widest text-sm">No stress. No tech. Just results.</span>
         </p>
 
-        <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center">
           <a 
             href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I'm%20ready%20to%20start%20getting%20orders%20today." 
             target="_blank" 
@@ -40,10 +40,6 @@ const FinalCTA = () => {
             Start Getting Orders Today
             <ArrowRight className="group-hover:translate-x-2 transition-transform" />
           </a>
-          <p className="text-white font-bold text-sm flex flex-col items-center gap-2">
-             <span className="bg-white/20 px-4 py-1 rounded-full border border-white/10 italic">⚡ Limited slots available — only 5 stores left this week.</span>
-             <span className="opacity-70">⏱️ Your store goes live in 24 hours</span>
-          </p>
         </div>
       </div>
     </section>
