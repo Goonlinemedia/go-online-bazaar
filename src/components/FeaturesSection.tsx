@@ -3,56 +3,62 @@ import { MessageCircle, Mail, Globe, Search, CreditCard, Palette } from "lucide-
 const features = [
   {
     icon: MessageCircle,
-    title: "Get orders on WhatsApp",
-    desc: "Effortlessly connect with customers through WhatsApp integration, enabling real-time communication.",
+    title: "WhatsApp Orders",
+    desc: "Receive orders and chat with customers directly on WhatsApp — no extra apps needed.",
+    color: "bg-primary/10 text-primary",
   },
   {
     icon: Mail,
-    title: "Email Support",
-    desc: "Rely on responsive email support to address inquiries, resolve issues, and provide guidance.",
+    title: "Dedicated Support",
+    desc: "Get responsive email & phone support to help your business thrive.",
+    color: "bg-accent/10 text-accent",
   },
   {
     icon: Globe,
-    title: "Beautiful Business Website",
-    desc: "Get a very beautiful business website, equipped with essential features.",
+    title: "Stunning Website",
+    desc: "Get a professionally designed, mobile-optimized business website in minutes.",
+    color: "bg-primary/10 text-primary",
   },
   {
     icon: Search,
-    title: "SEO",
-    desc: "Boost your website's online presence with powerful SEO system.",
+    title: "Built-in SEO",
+    desc: "Rank higher on Google with our built-in SEO tools — no expertise required.",
+    color: "bg-accent/10 text-accent",
   },
   {
     icon: CreditCard,
-    title: "Multiple Payment Options",
-    desc: "Collect payments via multiple payment options; both manually and automatically.",
+    title: "Flexible Payments",
+    desc: "Accept payments via bank transfer, cards, USSD — automatic or manual.",
+    color: "bg-primary/10 text-primary",
   },
   {
     icon: Palette,
-    title: "Customizable Website",
-    desc: "Tailor your website's appearance and functionality to match your brand identity.",
+    title: "Full Customization",
+    desc: "Match your brand — customize colors, fonts, layout, and every detail.",
+    color: "bg-accent/10 text-accent",
   },
 ];
 
 const FeaturesSection = () => (
-  <section id="features" className="section-padding bg-secondary/50">
+  <section id="features" className="section-padding">
     <div className="max-w-7xl mx-auto">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
-          Customize your website <span className="text-gradient-gold">without hassle.</span>
+      <div className="max-w-2xl mb-16">
+        <span className="text-sm font-semibold text-primary uppercase tracking-wider">Features</span>
+        <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground leading-tight">
+          Everything you need to
+          <br />
+          <span className="gradient-text">sell online successfully.</span>
         </h2>
-        <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-          Stand out and sell more, design your website your way that gets you noticed.
-        </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {features.map((f) => (
           <div
             key={f.title}
-            className="bg-card rounded-2xl p-8 border border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            className="group glass-card p-7 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
-            <div className="w-14 h-14 rounded-xl gold-gradient flex items-center justify-center mb-5">
-              <f.icon className="text-primary-foreground" size={24} />
+            <div className={`w-12 h-12 rounded-xl ${f.color} flex items-center justify-center mb-5`}>
+              <f.icon size={22} />
             </div>
             <h3 className="text-lg font-semibold font-heading text-foreground mb-2">{f.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
