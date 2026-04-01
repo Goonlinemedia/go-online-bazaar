@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react";
 
 const vendors = [
-  { name: "PrintHub", tag: "Printing & Branding", gradient: "from-pink-500 to-rose-400", link: "https://print-powerhouse-hub.vercel.app/" },
+  { name: "PrintHub", tag: "Printing & Branding", image: "/printhub-cover.png", link: "https://print-powerhouse-hub.vercel.app/" },
   { name: "Wicked Stylist", tag: "Fashion", gradient: "from-teal to-teal-light", link: "#" },
   { name: "Luscents", tag: "Fragrances", gradient: "from-accent to-purple", link: "#" },
   { name: "Zack Stylist", tag: "Men's Wear", gradient: "from-teal-dark to-teal", link: "#" },
@@ -31,10 +31,17 @@ const VendorSpotlights = () => (
             rel="noopener noreferrer"
             className="group glass-card overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer block"
           >
-            <div className={`h-40 bg-gradient-to-br ${v.gradient} relative overflow-hidden`}>
-              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
-              <div className="absolute bottom-3 left-3">
-                <span className="text-xs font-medium bg-background/80 backdrop-blur-sm text-foreground px-3 py-1 rounded-full">
+            <div className={`h-40 relative overflow-hidden ${v.image ? 'bg-[#151515]' : `bg-gradient-to-br ${v.gradient}`}`}>
+              {v.image && (
+                <img 
+                  src={v.image} 
+                  alt={v.name} 
+                  className="absolute inset-0 w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              )}
+              <div className="absolute inset-0 bg-foreground/10 group-hover:bg-foreground/20 transition-colors" />
+              <div className="absolute bottom-3 left-3 z-10">
+                <span className="text-xs font-medium bg-background/90 shadow-sm backdrop-blur-sm text-foreground px-3 py-1 rounded-full">
                   {v.tag}
                 </span>
               </div>
