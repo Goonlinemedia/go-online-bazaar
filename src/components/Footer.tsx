@@ -33,7 +33,7 @@ const Footer = () => (
       </div>
       <div>
         <h4 className="font-semibold text-primary-foreground mb-4 text-sm">Address</h4>
-        <p className="text-sm">B4-313, HFP Eastline Shopping Complex, Abraham Adesanya Estate.</p>
+        <p className="text-sm">Irepo Estate, Ikotun Lagos, Nigeria</p>
       </div>
     </div>
     <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-primary-foreground/10 text-center text-xs">

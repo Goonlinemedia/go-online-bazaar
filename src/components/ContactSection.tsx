@@ -24,7 +24,7 @@ const ContactSection = () => {
             {[
               { icon: Mail, label: "Email Us", value: "goonlinemedia0@gmail.com", href: "mailto:goonlinemedia0@gmail.com" },
               { icon: Phone, label: "Call Us", value: "+234 803 582 6698", href: "tel:+2348035826698" },
-              { icon: MapPin, label: "Visit Us", value: "B4-313, HFP Eastline Shopping Complex, Abraham Adesanya Estate." },
+              { icon: MapPin, label: "Visit Us", value: "Irepo Estate, Ikotun Lagos, Nigeria" },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
