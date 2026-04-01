@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Zap } from "lucide-react";
 
-const navLinks = ["Home", "Features", "Vendors", "Pricing", "Blogs", "Contact Us"];
+const navLinks = ["Features", "Vendors", "Pricing", "Blogs", "Contact"];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <a href="#" className="flex items-center gap-2">
-          <span className="text-2xl font-bold font-heading text-gradient-gold">Go</span>
-          <span className="text-2xl font-bold font-heading text-foreground">Online</span>
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <Zap className="text-primary-foreground" size={18} />
+          </div>
+          <span className="text-xl font-bold font-heading text-foreground tracking-tight">
+            Go<span className="text-primary">Online</span>
+          </span>
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -19,15 +23,15 @@ const Navbar = () => {
             <a
               key={link}
               href={`#${link.toLowerCase().replace(/\s/g, "")}`}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               {link}
             </a>
           ))}
         </div>
 
-        <a href="#" className="hidden md:inline-flex btn-gold text-sm">
-          Get Started
+        <a href="#pricing" className="hidden md:inline-flex btn-primary text-sm">
+          Start Free Trial
         </a>
 
         <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
@@ -36,18 +40,18 @@ const Navbar = () => {
       </div>
 
       {open && (
-        <div className="md:hidden bg-card border-b border-border px-4 pb-4 space-y-3">
+        <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-3">
           {navLinks.map((link) => (
             <a
               key={link}
               href={`#${link.toLowerCase().replace(/\s/g, "")}`}
-              className="block text-sm font-medium text-muted-foreground hover:text-primary"
+              className="block text-sm font-medium text-muted-foreground hover:text-foreground"
               onClick={() => setOpen(false)}
             >
               {link}
             </a>
           ))}
-          <a href="#" className="btn-gold text-sm inline-block">Get Started</a>
+          <a href="#pricing" className="btn-primary text-sm inline-block">Start Free Trial</a>
         </div>
       )}
     </nav>

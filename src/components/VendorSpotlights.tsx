@@ -1,37 +1,46 @@
+import { ExternalLink } from "lucide-react";
+
 const vendors = [
-  { name: "Wicked Stylist", color: "from-amber-400 to-orange-500" },
-  { name: "Luscents", color: "from-rose-400 to-pink-500" },
-  { name: "Zack Stylist", color: "from-emerald-400 to-teal-500" },
-  { name: "Labelle Outright", color: "from-violet-400 to-purple-500" },
+  { name: "Wicked Stylist", tag: "Fashion", gradient: "from-teal to-teal-light" },
+  { name: "Luscents", tag: "Fragrances", gradient: "from-accent to-purple" },
+  { name: "Zack Stylist", tag: "Men's Wear", gradient: "from-teal-dark to-teal" },
+  { name: "Labelle Outright", tag: "Beauty", gradient: "from-purple to-accent" },
 ];
 
 const VendorSpotlights = () => (
   <section id="vendors" className="section-padding">
     <div className="max-w-7xl mx-auto">
-      <div className="text-center mb-12">
-        <h5 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">
-          Go Online Vendor Spotlights
-        </h5>
-        <p className="text-muted-foreground max-w-xl mx-auto text-sm">
-          Get inspired by these vendor stories and discover how they're turning their passions into
-          profits.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-4">
+        <div>
+          <span className="text-sm font-semibold text-primary uppercase tracking-wider">Spotlights</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground">
+            Merchants thriving with <span className="gradient-text">Go Online</span>
+          </h2>
+        </div>
+        <a href="#" className="btn-outline text-sm shrink-0 inline-flex items-center gap-2 self-start sm:self-auto">
+          See All Stores <ExternalLink size={14} />
+        </a>
       </div>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {vendors.map((v) => (
           <div
             key={v.name}
-            className="rounded-2xl overflow-hidden bg-card border border-border hover:shadow-lg transition-all duration-300 group cursor-pointer"
+            className="group glass-card overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
-            <div className={`h-36 bg-gradient-to-br ${v.color} group-hover:scale-105 transition-transform duration-300`} />
+            <div className={`h-40 bg-gradient-to-br ${v.gradient} relative overflow-hidden`}>
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
+              <div className="absolute bottom-3 left-3">
+                <span className="text-xs font-medium bg-background/80 backdrop-blur-sm text-foreground px-3 py-1 rounded-full">
+                  {v.tag}
+                </span>
+              </div>
+            </div>
             <div className="p-4">
               <h4 className="font-heading font-bold text-foreground">{v.name}</h4>
             </div>
           </div>
         ))}
-      </div>
-      <div className="text-center mt-8">
-        <a href="#" className="btn-gold-outline text-sm">See More Stores</a>
       </div>
     </div>
   </section>
