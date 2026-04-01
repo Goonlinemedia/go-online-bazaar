@@ -7,9 +7,10 @@ import PricingSection from "@/components/PricingSection";
 import StatsSection from "@/components/StatsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 
 const Index = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen bg-background relative">
     <Navbar />
     <HeroSection />
     <FeaturesSection />
@@ -19,6 +20,7 @@ const Index = () => (
     <StatsSection />
     <ContactSection />
     <Footer />
+    <WhatsAppWidget />
   </div>
 );
 
