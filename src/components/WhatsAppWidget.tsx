@@ -28,7 +28,7 @@ const WhatsAppWidget = () => {
         <div className="mb-4 w-72 sm:w-80 bg-white rounded-xl shadow-2xl overflow-hidden animate-fade-in origin-bottom-right transition-all">
           {/* Header */}
           <div className="bg-[#1e4c40] text-white p-4 font-semibold text-lg">
-            Ushoppen
+            Go Online
           </div>
           
           {/* Body area */}
