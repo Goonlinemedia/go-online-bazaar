@@ -13,6 +13,7 @@ import ContactSection from "@/components/ContactSection";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Index = () => (
   <div className="min-h-screen bg-background relative selection:bg-primary/20">
@@ -31,6 +32,7 @@ const Index = () => (
     <FinalCTA />
     <Footer />
     <WhatsAppWidget />
+    <ScrollToTop />
   </div>
 );
 
