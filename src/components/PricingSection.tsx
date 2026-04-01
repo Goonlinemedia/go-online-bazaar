@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, X, Sparkles, Zap, Store, Smartphone, MessageCircle, ArrowRight } from "lucide-react";
+import { Check, X, Sparkles, Store, Smartphone, MessageCircle, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 
@@ -106,8 +106,8 @@ const PricingSection = () => {
     <div className="w-full bg-background pb-20">
       {/* 🚀 HERO SECTION */}
       <section className="relative pt-24 pb-16 px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 animate-fade-in">
-          <Zap size={16} className="fill-primary" />
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 animate-fade-in border border-primary/20">
+          <img src="/favicon.png" alt="Logo" className="w-4 h-4" />
           Start selling in minutes
         </div>
         <h1 className="text-4xl md:text-6xl font-bold font-heading text-foreground tracking-tight mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
@@ -250,7 +250,9 @@ const PricingSection = () => {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
-              <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center"><Zap className="text-primary w-6 h-6" /></div>
+              <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center p-2.5">
+                <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
+              </div>
               <div>
                 <h4 className="font-bold text-lg mb-2">We Build It For You</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">Skip the learning curve. We handle the design, setup, and launch so you can stay focused on your products.</p>

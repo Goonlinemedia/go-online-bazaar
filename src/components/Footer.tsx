@@ -4,11 +4,9 @@ const Footer = () => (
   <footer className="bg-navy text-primary-foreground/70 py-14 px-4">
     <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-            <Zap className="text-primary-foreground" size={14} />
-          </div>
-          <span className="text-lg font-bold font-heading text-primary-foreground">
+        <div className="flex items-center gap-3 mb-4">
+          <img src="/favicon.png" alt="Go Online Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+          <span className="text-lg font-bold font-heading text-primary-foreground tracking-tighter">
             Go<span className="text-primary">Online</span>
           </span>
         </div>

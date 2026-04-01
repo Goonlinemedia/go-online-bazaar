@@ -94,8 +94,8 @@ const HeroSection = () => (
 
           {/* Center circle */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center animate-pulse-glow">
-              <span className="text-3xl font-bold font-heading text-primary-foreground">GO</span>
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center animate-pulse-glow shadow-2xl p-6">
+              <img src="/favicon.png" alt="Go Online Logo" className="w-full h-full object-contain filter drop-shadow-lg" />
             </div>
           </div>
         </div>
