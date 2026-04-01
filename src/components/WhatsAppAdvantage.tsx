@@ -10,11 +10,11 @@ const WhatsAppAdvantage = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span className="text-primary font-bold tracking-widest uppercase text-sm mb-6 inline-block bg-primary/10 px-4 py-2 rounded-full">The WhatsApp Edge</span>
-            <h2 className="text-4xl md:text-6xl font-black font-heading mb-8 leading-[1.1] tracking-tight">
+            <h2 className="text-3xl md:text-6xl font-black font-heading mb-8 leading-[1.1] tracking-tight">
               Turn WhatsApp chats <br />
               <span className="text-green-500 underline decoration-green-500/30 underline-offset-8 italic">into daily sales</span>
             </h2>
-            <p className="text-xl text-gray-400 mb-10 leading-relaxed max-w-xl">
+            <p className="text-lg md:text-xl text-gray-400 mb-10 leading-relaxed max-w-xl">
               Your customers are already on WhatsApp. They browse → click → message you → buy. 
               No complicated checkout. No drop-offs. Just direct sales.
             </p>
@@ -30,7 +30,7 @@ const WhatsAppAdvantage = () => {
                     <CheckCircle2 size={20} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1 text-white">{item.title}</h4>
+                    <h4 className="font-bold text-lg md:text-xl mb-1 text-white">{item.title}</h4>
                     <p className="text-gray-400">{item.desc}</p>
                   </div>
                 </div>

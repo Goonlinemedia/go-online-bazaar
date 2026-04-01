@@ -10,7 +10,7 @@ const HeroSection = () => (
           Launching your online store made simple
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-heading font-extrabold text-foreground leading-[1.05] tracking-tighter">
+        <h1 className="text-3xl sm:text-5xl lg:text-7xl font-heading font-extrabold text-foreground leading-[1.05] tracking-tighter">
           We build your store. 
           <br />
           <span className="gradient-text">You focus on cash.</span>
@@ -20,13 +20,13 @@ const HeroSection = () => (
           Trusted by businesses to turn WhatsApp into a sales machine.
         </p>
 
-        <p className="mt-6 text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
+        <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
           No tech. No stress. No delays. We build your store, you focus on making money. 
           <span className="block mt-4 font-black text-foreground underline decoration-primary/30 underline-offset-4">No commissions. No hidden fees. You keep 100% of your sales.</span>
         </p>
 
         <div className="mt-8">
-          <a href="#pricing" className="btn-primary text-xl py-6 px-12 inline-flex items-center gap-3 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all border-2 border-white/20 hover:-translate-y-1">
+          <a href="#pricing" className="btn-primary text-lg md:text-xl py-4 px-8 md:py-6 md:px-12 inline-flex items-center gap-3 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all border-2 border-white/20 hover:-translate-y-1">
             Start Getting Orders <ArrowRight size={22} />
           </a>
         </div>

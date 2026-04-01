@@ -27,7 +27,7 @@ const HowItWorks = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20">
           <span className="text-sm font-bold text-primary uppercase tracking-widest bg-primary/5 px-4 py-2 rounded-full">Process</span>
-          <h2 className="mt-6 text-4xl md:text-5xl font-black text-foreground font-heading tracking-tight">
+          <h2 className="mt-6 text-3xl md:text-5xl font-black text-foreground font-heading tracking-tight">
             How We Get You <span className="text-primary">Online</span>
           </h2>
           <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -41,10 +41,10 @@ const HowItWorks = () => {
           
           {steps.map((step, idx) => (
             <div key={idx} className="flex flex-col items-center text-center group">
-              <div className={`w-24 h-24 rounded-[2rem] ${step.color} flex items-center justify-center mb-8 shadow-xl shadow-current/5 group-hover:scale-110 transition-transform duration-500 ring-8 ring-white`}>
-                <step.icon size={40} />
+              <div className={`w-20 h-20 md:w-24 md:h-24 rounded-2xl md:rounded-[2rem] ${step.color} flex items-center justify-center mb-6 md:mb-8 shadow-xl shadow-current/5 group-hover:scale-110 transition-transform duration-500 ring-4 md:ring-8 ring-white`}>
+                <step.icon className="w-10 h-10 md:w-12 md:h-12" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 font-heading">{step.title}</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4 font-heading">{step.title}</h3>
               <p className="text-muted-foreground leading-relaxed">
                 {step.desc}
               </p>

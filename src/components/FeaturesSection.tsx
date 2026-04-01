@@ -38,7 +38,7 @@ const FeaturesSection = () => (
     <div className="max-w-7xl mx-auto">
       <div className="max-w-2xl mb-16">
         <span className="text-sm font-semibold text-primary uppercase tracking-wider">Features</span>
-        <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground leading-tight">
+        <h2 className="mt-3 text-2xl md:text-4xl font-heading font-bold text-foreground leading-tight">
           Everything you need to
           <br />
           <span className="gradient-text">sell online successfully.</span>

@@ -110,7 +110,7 @@ const PricingSection = () => {
           <img src="/favicon.png" alt="Logo" className="w-4 h-4" />
           Start selling in minutes
         </div>
-        <h1 className="text-4xl md:text-6xl font-bold font-heading text-foreground tracking-tight mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
+        <h1 className="text-3xl md:text-6xl font-bold font-heading text-foreground tracking-tight mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
           Get paid on <span className="text-green-500">WhatsApp.</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
@@ -152,7 +152,7 @@ const PricingSection = () => {
         {plans.map((plan, i) => (
           <div
             key={plan.name}
-            className={`group relative flex flex-col h-full rounded-3xl p-8 transition-all duration-500 cursor-pointer ${
+            className={`group relative flex flex-col h-full rounded-3xl p-6 md:p-8 transition-all duration-500 cursor-pointer ${
               plan.popular 
                 ? "bg-foreground text-background shadow-2xl scale-[1.02] ring-4 ring-primary/20 hover:scale-[1.04] hover:bg-black dark:hover:bg-white hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] hover:ring-green-500/50" 
                 : "bg-card border border-border shadow-sm hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:border-green-500/50 hover:z-10"
@@ -177,7 +177,7 @@ const PricingSection = () => {
 
             <div className="mb-8">
               <div className="flex items-baseline gap-1">
-                <span className={`text-4xl font-black ${plan.popular ? "text-white" : "text-foreground"}`}>{getPrice(plan.prices)}</span>
+                <span className={`text-3xl md:text-4xl font-black ${plan.popular ? "text-white" : "text-foreground"}`}>{getPrice(plan.prices)}</span>
                 <span className={`text-sm font-medium ${plan.popular ? "text-gray-400" : "text-muted-foreground"}`}>/{getPeriodText()}</span>
               </div>
             </div>
