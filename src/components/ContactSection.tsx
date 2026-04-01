@@ -3,10 +3,12 @@ import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 const ContactSection = () => {
   const [form, setForm] = useState({ name: "", email: "", mobile: "", message: "" });
   const [loading, setLoading] = useState(false);
+  const { trackEvent } = useAnalytics();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,11 +28,19 @@ const ContactSection = () => {
         status: "New",
         createdAt: serverTimestamp(),
       });
+      
+      trackEvent("contact_form_success", { name: form.name });
       toast.success("Message sent successfully! We'll get back to you soon.");
       setForm({ name: "", email: "", mobile: "", message: "" });
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      toast.error("Failed to send message. Please try again later.");
+    } catch (error: any) {
+      console.error("[Contact Error] Full Error Object:", error);
+      trackEvent("contact_form_error", { error: error.message || "Unknown error" });
+      
+      if (error.code === "permission-denied") {
+        toast.error("Security access denied. Please contact site admin.");
+      } else {
+        toast.error("Failed to send message. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
