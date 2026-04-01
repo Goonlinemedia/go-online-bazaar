@@ -87,7 +87,8 @@ interface AnalyticsEvent {
   page: string;
   metadata: any;
   context: any;
-  created_at: Timestamp;
+  local_timestamp?: number; // Added for robust real-time tracking
+  created_at?: Timestamp;
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -113,7 +114,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(Date.now());
-    }, 15000); // Tick every 15 seconds to refresh "Live Now" counts
+    }, 10000); // Tick every 10 seconds to refresh "Live Now" counts
     return () => clearInterval(timer);
   }, []);
 
@@ -130,11 +131,13 @@ const AdminDashboard = () => {
     });
 
     // Listen to Events (Analytics)
+    // IMPORTANT: Get a lot more events to be sure we have the latest ones
     const eventsQuery = query(collection(db, "events"), orderBy("created_at", "desc"), limit(2000));
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       const eventsData: AnalyticsEvent[] = [];
       snapshot.forEach((doc) => {
-        eventsData.push({ id: doc.id, ...doc.data() } as AnalyticsEvent);
+        const data = doc.data() as any;
+        eventsData.push({ id: doc.id, ...data });
       });
       setEvents(eventsData);
       setLoading(false);
@@ -178,8 +181,10 @@ const AdminDashboard = () => {
 
   // --- Filtered Data ---
   const filteredEvents = events.filter(e => {
-    if (!e.created_at) return false;
-    const date = e.created_at.toDate();
+    // If it's a pending write from another device, created_at might be null momentarily.
+    // Use local_timestamp as fallback.
+    const date = e.created_at ? e.created_at.toDate() : (e.local_timestamp ? new Date(e.local_timestamp) : null);
+    if (!date) return true; // Pending event, always show
     return isAfter(date, startDate) && isBefore(date, endDate);
   });
 
@@ -196,9 +201,12 @@ const AdminDashboard = () => {
   const activeReaders = new Set(
     events
       .filter(e => {
-        if (!e.created_at) return false;
-        const time = e.created_at.toDate().getTime();
-        return time > fiveMinsAgo.getTime();
+        // More robust checking:
+        // 1. If we have a local_timestamp, use it (machine time is more consistent)
+        // 2. If it's so new that created_at is null, it's definitely alive.
+        if (e.local_timestamp) return e.local_timestamp > fiveMinsAgo.getTime();
+        if (!e.created_at) return true; // Most likely a pending write
+        return e.created_at.toDate().getTime() > fiveMinsAgo.getTime();
       })
       .map(e => e.visitor_id)
   ).size;
@@ -223,7 +231,8 @@ const AdminDashboard = () => {
 
   // 4. Trend Chart (Filtered) - Daily Views
   const timelineData = filteredEvents.slice().reverse().reduce((acc: any[], event) => {
-    const day = format(event.created_at.toDate(), "MMM dd");
+    const date = event.created_at ? event.created_at.toDate() : (event.local_timestamp ? new Date(event.local_timestamp) : new Date());
+    const day = format(date, "MMM dd");
     const existing = acc.find(a => a.name === day);
     if (existing) {
       if (event.event_type === "page_view") existing.views += 1;
@@ -541,7 +550,7 @@ const AdminDashboard = () => {
                       <div className="flex justify-between items-start">
                         <span className="font-semibold text-sm capitalize">{event.event_type.replace('_', ' ')}</span>
                         <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                          {event.created_at ? format(event.created_at.toDate(), "HH:mm:ss") : "Just now"}
+                          {event.created_at ? format(event.created_at.toDate(), "HH:mm:ss") : (event.local_timestamp ? format(new Date(event.local_timestamp), "HH:mm:ss") : "Just now")}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground truncate italic">

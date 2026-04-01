@@ -31,8 +31,8 @@ export const useAnalytics = () => {
           userAgent,
           device: isMobile ? "mobile" : "desktop",
           referrer: document.referrer || "direct",
-          timestamp: new Date().toISOString(),
         },
+        local_timestamp: Date.now(),
         created_at: serverTimestamp(),
       });
       console.log(`[Analytics] Tracked: ${eventType}`, metadata);
