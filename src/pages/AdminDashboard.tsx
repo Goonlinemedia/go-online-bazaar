@@ -38,8 +38,9 @@ import {
   MousePointer2,
   PhoneCall,
   Activity,
-  Filter,
-  LayoutDashboard
+  LayoutDashboard,
+  Calendar,
+  Eye
 } from "lucide-react";
 import { 
   Card, 
@@ -67,7 +68,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, subDays, isAfter, isBefore, startOfDay, endOfDay } from "date-fns";
 
 interface Lead {
   id: string;
@@ -96,6 +97,14 @@ const AdminDashboard = () => {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Date Filtering State
+  const [filterRange, setFilterRange] = useState<"7d" | "30d" | "all" | "custom">("7d");
+  const [customRange, setCustomRange] = useState({ 
+    start: format(subDays(new Date(), 7), "yyyy-MM-dd"),
+    end: format(new Date(), "yyyy-MM-dd")
+  });
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -111,7 +120,7 @@ const AdminDashboard = () => {
     });
 
     // Listen to Events (Analytics)
-    const eventsQuery = query(collection(db, "events"), orderBy("created_at", "desc"), limit(1000));
+    const eventsQuery = query(collection(db, "events"), orderBy("created_at", "desc"), limit(2000));
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       const eventsData: AnalyticsEvent[] = [];
       snapshot.forEach((doc) => {
@@ -141,16 +150,54 @@ const AdminDashboard = () => {
     }
   };
 
+  // --- Date Range Calculation ---
+  const getDateRange = () => {
+    const end = endOfDay(new Date());
+    let start = startOfDay(subDays(new Date(), 7));
+    
+    if (filterRange === "30d") start = startOfDay(subDays(new Date(), 30));
+    else if (filterRange === "all") start = new Date(0);
+    else if (filterRange === "custom") {
+      start = startOfDay(new Date(customRange.start));
+      return { start, end: endOfDay(new Date(customRange.end)) };
+    }
+    return { start, end };
+  };
+
+  const { start: startDate, end: endDate } = getDateRange();
+
+  // --- Filtered Data ---
+  const filteredEvents = events.filter(e => {
+    if (!e.created_at) return false;
+    const date = e.created_at.toDate();
+    return isAfter(date, startDate) && isBefore(date, endDate);
+  });
+
+  const filteredLeadsData = leads.filter(l => {
+    if (!l.createdAt) return false;
+    const date = l.createdAt.toDate();
+    return isAfter(date, startDate) && isBefore(date, endDate);
+  });
+
   // --- SaaS Analytics Calculations ---
   
-  // 1. Funnel
-  const uniqueVisitors = new Set(events.map(e => e.visitor_id)).size;
-  const whatsappClicks = events.filter(e => e.event_type === "whatsapp_click").length;
-  const planClicks = events.filter(e => e.event_type === "plan_selected").length;
+  // 1. Live Now (Always real-time)
+  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const activeReaders = new Set(
+    events
+      .filter(e => e.created_at && e.created_at.toDate() > fiveMinsAgo)
+      .map(e => e.visitor_id)
+  ).size;
+
+  // 2. Stats (Filtered)
+  const totalViews = filteredEvents.filter(e => e.event_type === "page_view").length;
+  const uniqueVisitors = new Set(filteredEvents.map(e => e.visitor_id)).size;
+  const whatsappClicks = filteredEvents.filter(e => e.event_type === "whatsapp_click").length;
+  const planClicks = filteredEvents.filter(e => e.event_type === "plan_selected").length;
   const conversionRate = uniqueVisitors > 0 ? ((whatsappClicks / uniqueVisitors) * 100).toFixed(1) : 0;
 
-  // 2. Plan Breakdown
-  const planDataMap = events
+  // 3. Plan Breakdown (Filtered)
+  const planDataMap = filteredEvents
     .filter(e => e.event_type === "plan_selected")
     .reduce((acc: any, e) => {
       const name = e.metadata?.plan_name || "Unknown";
@@ -160,21 +207,24 @@ const AdminDashboard = () => {
   
   const planChartData = Object.entries(planDataMap).map(([name, value]) => ({ name, value }));
 
-  // 3. Events Timeline (Page Views vs Clicks)
-  const timelineData = events.slice().reverse().reduce((acc: any[], event) => {
-    const day = event.created_at ? format(event.created_at.toDate(), "MMM dd") : "Unknown";
+  // 4. Trend Chart (Filtered) - Daily Views
+  const timelineData = filteredEvents.slice().reverse().reduce((acc: any[], event) => {
+    const day = format(event.created_at.toDate(), "MMM dd");
     const existing = acc.find(a => a.name === day);
     if (existing) {
       if (event.event_type === "page_view") existing.views += 1;
-      else existing.clicks += 1;
+      else existing.engagement += 1;
     } else {
-      acc.push({ name: day, views: event.event_type === "page_view" ? 1 : 0, clicks: event.event_type !== "page_view" ? 1 : 0 });
+      acc.push({ 
+        name: day, 
+        views: event.event_type === "page_view" ? 1 : 0, 
+        engagement: event.event_type !== "page_view" ? 1 : 0 
+      });
     }
     return acc;
   }, []);
 
-  // Filtered Leads for Table
-  const filteredLeads = leads.filter(lead => 
+  const filteredLeads = filteredLeadsData.filter(lead => 
     lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     lead.mobile?.includes(searchTerm)
@@ -183,103 +233,162 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-secondary/30 p-4 lg:p-8">
       {/* Header */}
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <header className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-8">
         <div>
           <h1 className="text-3xl font-bold font-heading text-foreground">SaaS Dashboard</h1>
           <p className="text-muted-foreground">Monitoring your store machine in real-time.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex gap-2" onClick={() => window.open('https://console.firebase.google.com/project/go-online-webiste/analytics', '_blank')}>
-            <Activity size={18} /> Firebase Console
-          </Button>
-          <Button variant="ghost" onClick={handleLogout} className="flex gap-2 text-destructive hover:text-destructive">
-            <LogOut size={18} /> Logout
-          </Button>
+        
+        {/* Advanced Filters */}
+        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+          <div className="flex p-1 bg-background border rounded-lg shadow-sm overflow-hidden">
+            {(["7d", "30d", "all", "custom"] as const).map((r) => (
+              <Button 
+                key={r}
+                variant={filterRange === r ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setFilterRange(r)}
+                className="text-xs h-8 px-4 font-semibold"
+              >
+                {r === "all" ? "All Time" : r.toUpperCase()}
+              </Button>
+            ))}
+          </div>
+          
+          {filterRange === "custom" && (
+            <div className="flex items-center gap-2 bg-background border p-1 rounded-lg animate-in slide-in-from-right-2 duration-200">
+              <Input 
+                type="date" 
+                className="h-8 text-xs border-none bg-transparent w-36"
+                value={customRange.start}
+                onChange={(e) => setCustomRange({...customRange, start: e.target.value})}
+              />
+              <span className="text-muted-foreground text-xs font-bold">TO</span>
+              <Input 
+                type="date" 
+                className="h-8 text-xs border-none bg-transparent w-36"
+                value={customRange.end}
+                onChange={(e) => setCustomRange({...customRange, end: e.target.value})}
+              />
+            </div>
+          )}
+
+          <div className="flex gap-2 ml-auto">
+            <Button variant="outline" size="sm" className="hidden sm:flex gap-2 text-xs h-10 border-primary/20 hover:bg-primary/5" onClick={() => window.open('https://console.firebase.google.com/project/go-online-webiste/analytics', '_blank')}>
+              <Activity size={16} /> Analytics
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="flex gap-2 text-destructive hover:text-destructive h-10 text-xs">
+              <LogOut size={16} /> Logout
+            </Button>
+          </div>
         </div>
       </header>
 
       <Tabs defaultValue="overview" className="space-y-8">
         <TabsList className="bg-background border shadow-sm p-1">
           <TabsTrigger value="overview" className="gap-2"><LayoutDashboard size={16} /> Overview</TabsTrigger>
-          <TabsTrigger value="leads" className="gap-2"><Users size={16} /> Leads ({leads.length})</TabsTrigger>
+          <TabsTrigger value="leads" className="gap-2"><Users size={16} /> Leads ({filteredLeadsData.length})</TabsTrigger>
           <TabsTrigger value="events" className="gap-2"><Activity size={16} /> Live Feed</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-8">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="border-none shadow-sm bg-background">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <Card className="border-none shadow-sm bg-background border-l-4 border-l-green-500">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Unique Visitors</CardTitle>
-                <Users className="text-primary" size={20} />
+                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Live Now</CardTitle>
+                <div className="flex h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{uniqueVisitors}</div>
-                <p className="text-xs text-muted-foreground mt-1">Direct + Organic</p>
+                <div className="text-3xl font-black text-foreground">{activeReaders}</div>
+                <p className="text-[11px] text-muted-foreground mt-1 font-medium">Active Readers</p>
               </CardContent>
             </Card>
-            <Card className="border-none shadow-sm bg-background">
+
+            <Card className="border-none shadow-sm bg-background border-l-4 border-l-blue-500">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Plan Interest</CardTitle>
-                <MousePointer2 className="text-blue-500" size={20} />
+                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Views</CardTitle>
+                <Eye className="text-blue-500" size={18} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{planClicks}</div>
-                <p className="text-xs text-muted-foreground mt-1">Button clicks on plans</p>
+                <div className="text-3xl font-black text-foreground">{totalViews}</div>
+                <p className="text-[11px] text-muted-foreground mt-1 font-medium">Page loads in period</p>
               </CardContent>
             </Card>
+
             <Card className="border-none shadow-sm bg-background">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">WhatsApp Leads</CardTitle>
-                <PhoneCall className="text-[#25D366]" size={20} />
+                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Visitors</CardTitle>
+                <Users className="text-primary" size={18} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{whatsappClicks}</div>
-                <p className="text-xs text-muted-foreground mt-1">Clicked WhatsApp button</p>
+                <div className="text-3xl font-black text-foreground">{uniqueVisitors}</div>
+                <p className="text-[11px] text-muted-foreground mt-1 font-medium">Unique browsers</p>
               </CardContent>
             </Card>
+
             <Card className="border-none shadow-sm bg-background">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Conversion rate</CardTitle>
-                <TrendingUp className="text-amber-500" size={20} />
+                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Engagement</CardTitle>
+                <MousePointer2 className="text-blue-500" size={18} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-amber-600">{conversionRate}%</div>
-                <p className="text-xs text-muted-foreground mt-1">Visitors → WhatsApp</p>
+                <div className="text-3xl font-black text-foreground">{whatsappClicks + planClicks}</div>
+                <p className="text-[11px] text-muted-foreground mt-1 font-medium">CTA clicks total</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-sm bg-background">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Conv. Rate</CardTitle>
+                <TrendingUp className="text-amber-500" size={18} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-black text-amber-600">{conversionRate}%</div>
+                <p className="text-[11px] text-muted-foreground mt-1 font-medium">Visitors → Leads</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Trend Chart */}
             <Card className="lg:col-span-2 border-none shadow-md bg-background overflow-hidden">
               <CardHeader className="bg-primary/5 border-b">
                 <CardTitle className="flex items-center gap-2">
-                  <TrendingUp size={20} className="text-primary" /> Traffic & Engagement Trends
+                  <TrendingUp size={20} className="text-primary" /> Daily Traffic Breakdown
                 </CardTitle>
-                <CardDescription>Daily breakdown of activities</CardDescription>
+                <CardDescription>Views vs Engagement over the selected period</CardDescription>
               </CardHeader>
-              <CardContent className="h-[350px] pt-10">
+              <CardContent className="h-[350px] pt-10 px-2 lg:px-6">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={timelineData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                    <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis fontSize={12} tickLine={false} axisLine={false} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: "#fff", border: "none", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} 
+                    <XAxis 
+                      dataKey="name" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      padding={{ left: 10, right: 10 }}
                     />
-                    <Line type="monotone" dataKey="views" stroke="#004a8b" strokeWidth={3} dot={false} />
-                    <Line type="monotone" dataKey="clicks" stroke="#25D366" strokeWidth={3} dot={false} />
+                    <YAxis 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false}
+                      tickFormatter={(val) => val >= 1000 ? `${(val/1000).toFixed(1)}k` : val}
+                    />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "#fff", border: "none", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }} 
+                    />
+                    <Line name="Page Views" type="monotone" dataKey="views" stroke="#004a8b" strokeWidth={4} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6 }} />
+                    <Line name="Engagement" type="monotone" dataKey="engagement" stroke="#25D366" strokeWidth={3} strokeDasharray="5 5" dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            {/* Plan breakdown chart */}
             <Card className="border-none shadow-md bg-background overflow-hidden">
               <CardHeader className="bg-primary/5 border-b">
                 <CardTitle>Popular Plans</CardTitle>
-                <CardDescription>Which plans users are clicking</CardDescription>
+                <CardDescription>Clicks within current selection</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px] flex flex-col items-center justify-center">
                 {planChartData.length > 0 ? (
@@ -288,9 +397,9 @@ const AdminDashboard = () => {
                       <PieChart>
                         <Pie
                           data={planChartData}
-                          innerRadius={60}
-                          outerRadius={80}
-                          paddingAngle={5}
+                          innerRadius={65}
+                          outerRadius={85}
+                          paddingAngle={8}
                           dataKey="value"
                         >
                           {planChartData.map((entry, index) => (
@@ -300,17 +409,19 @@ const AdminDashboard = () => {
                         <Tooltip />
                       </PieChart>
                     </ResponsiveContainer>
-                    <div className="mt-4 grid grid-cols-2 gap-4 text-xs font-medium">
+                    <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-xs font-bold">
                       {planChartData.map((p, i) => (
-                        <div key={p.name} className="flex items-center gap-1.5">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                          {p.name}: {String(p.value)}
+                        <div key={p.name} className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                          <span className="text-muted-foreground">{p.name}:</span> {String(p.value)}
                         </div>
                       ))}
                     </div>
                   </>
                 ) : (
-                  <div className="text-muted-foreground text-sm italic">No plan clicks recorded yet.</div>
+                  <div className="text-muted-foreground text-sm italic py-20 text-center">
+                    No plan engagement recorded<br/>in this period.
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -322,13 +433,13 @@ const AdminDashboard = () => {
             <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <CardTitle>Business Leads</CardTitle>
-                <CardDescription>People who actually filled the form</CardDescription>
+                <CardDescription>Filtered by date and search queries</CardDescription>
               </div>
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                 <Input 
                   placeholder="Search leads..." 
-                  className="pl-9 bg-secondary/50 border-none h-9 text-sm"
+                  className="pl-9 bg-secondary/50 border-none h-10 text-sm focus-visible:ring-1"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -336,7 +447,7 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="h-48 flex items-center justify-center italic text-muted-foreground">Loading leads...</div>
+                <div className="h-48 flex items-center justify-center italic text-muted-foreground animate-pulse">Loading filtered leads...</div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
@@ -397,11 +508,11 @@ const AdminDashboard = () => {
           <Card className="border-none shadow-md bg-background">
             <CardHeader>
               <CardTitle>Live Activity Feed</CardTitle>
-              <CardDescription>Real-time stream of what's happening on your site</CardDescription>
+              <CardDescription>Filtered by selected timeframe</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                {events.map((event) => (
+                {filteredEvents.length > 0 ? filteredEvents.map((event) => (
                   <div key={event.id} className="flex items-start gap-4 p-3 rounded-lg bg-secondary/20 border border-border/50">
                     <div className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
                       event.event_type === "whatsapp_click" ? "bg-green-100 text-green-600" :
@@ -433,7 +544,9 @@ const AdminDashboard = () => {
                       )}
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center py-20 text-muted-foreground italic">No activities found in this period.</div>
+                )}
               </div>
             </CardContent>
           </Card>
