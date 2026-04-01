@@ -41,9 +41,18 @@ export const useAnalytics = () => {
     }
   };
 
-  // Auto-track page views
+  // Auto-track page views and heartbeat
   useEffect(() => {
     trackEvent("page_view");
+
+    // Heartbeat every 3 minutes to keep 'Live Now' accurate for idle users
+    const heartbeat = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        trackEvent("heartbeat");
+      }
+    }, 180000); 
+
+    return () => clearInterval(heartbeat);
   }, [location.pathname]);
 
   return { trackEvent };

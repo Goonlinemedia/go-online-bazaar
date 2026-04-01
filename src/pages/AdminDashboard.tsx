@@ -106,6 +106,16 @@ const AdminDashboard = () => {
   });
   
   const navigate = useNavigate();
+  
+  // REAL-TIME CLOCK for "Live Now" re-renders
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(Date.now());
+    }, 15000); // Tick every 15 seconds to refresh "Live Now" counts
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     // Listen to Leads
@@ -181,11 +191,15 @@ const AdminDashboard = () => {
 
   // --- SaaS Analytics Calculations ---
   
-  // 1. Live Now (Always real-time)
-  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
+  // 1. Live Now (Truly real-time using current 'now' state)
+  const fiveMinsAgo = new Date(now - 5 * 60 * 1000);
   const activeReaders = new Set(
     events
-      .filter(e => e.created_at && e.created_at.toDate() > fiveMinsAgo)
+      .filter(e => {
+        if (!e.created_at) return false;
+        const time = e.created_at.toDate().getTime();
+        return time > fiveMinsAgo.getTime();
+      })
       .map(e => e.visitor_id)
   ).size;
 
@@ -477,7 +491,7 @@ const AdminDashboard = () => {
                                 ${lead.status === "New" ? "bg-blue-100 text-blue-700 hover:bg-blue-100" : ""}
                                 ${lead.status === "Contacted" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : ""}
                                 ${lead.status === "Converted" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" : ""}
-                              `}
+                                `}
                             >
                               {lead.status}
                             </Badge>
