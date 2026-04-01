@@ -1,4 +1,4 @@
-import { MessageCircle, Mail, Globe, Search, CreditCard, Palette } from "lucide-react";
+import { MessageCircle, Mail, Globe, Package, CreditCard, LayoutDashboard } from "lucide-react";
 
 const features = [
   {
@@ -20,9 +20,9 @@ const features = [
     color: "bg-primary/10 text-primary",
   },
   {
-    icon: Search,
-    title: "Built-in SEO",
-    desc: "Rank higher on Google with our built-in SEO tools — no expertise required.",
+    icon: Package,
+    title: "Inventory Tracking",
+    desc: "Easily monitor your stock levels and manage your products — no expertise required.",
     color: "bg-accent/10 text-accent",
   },
   {
@@ -32,9 +32,9 @@ const features = [
     color: "bg-primary/10 text-primary",
   },
   {
-    icon: Palette,
-    title: "Full Customization",
-    desc: "Match your brand — customize colors, fonts, layout, and every detail.",
+    icon: LayoutDashboard,
+    title: "Order Dashboard",
+    desc: "Track pending and completed orders from a simple, elegant merchant dashboard.",
     color: "bg-accent/10 text-accent",
   },
 ];

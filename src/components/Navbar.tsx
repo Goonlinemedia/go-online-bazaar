@@ -30,8 +30,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <a href="#pricing" className="hidden md:inline-flex btn-primary text-sm">
-          Start Free Trial
+        <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I%20would%20like%20to%20get%20started." target="_blank" rel="noopener noreferrer" className="hidden md:inline-flex btn-primary text-sm">
+          Get Started
         </a>
 
         <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
@@ -51,7 +51,7 @@ const Navbar = () => {
               {link}
             </a>
           ))}
-          <a href="#pricing" className="btn-primary text-sm inline-block">Start Free Trial</a>
+          <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I%20would%20like%20to%20get%20started." target="_blank" rel="noopener noreferrer" className="btn-primary text-sm inline-block">Get Started</a>
         </div>
       )}
     </nav>
