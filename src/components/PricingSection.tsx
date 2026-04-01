@@ -58,7 +58,7 @@ const PricingSection = () => {
         biannual: 55000,
         annual: 110000
       },
-      desc: "🔥 For small businesses ready to level up.",
+      desc: "🔥 Perfect for businesses ready to grow fast. The sweet spot for established sellers.",
       popular: true,
       badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
@@ -318,27 +318,6 @@ const PricingSection = () => {
         </Accordion>
       </section>
 
-      {/* 🎯 FINAL CTA */}
-      <section className="max-w-5xl mx-auto px-6 mb-10">
-        <div className="bg-gradient-to-br from-foreground to-gray-800 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/20 rounded-full blur-3xl -ml-20 -mb-20"></div>
-          
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">
-              Ready to start <span className="text-primary">selling?</span> 🚀
-            </h2>
-            <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Create your store in minutes and start receiving orders today. <br className="hidden md:block"/>
-              <span className="font-semibold text-white">No coding. No stress. Just sales.</span>
-            </p>
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-full group">
-              Get Started Now 
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

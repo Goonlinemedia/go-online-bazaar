@@ -1,0 +1,52 @@
+import { Rocket, ArrowRight } from "lucide-react";
+
+const FinalCTA = () => {
+  return (
+    <section className="py-24 bg-primary relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid-white" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid-white)" />
+        </svg>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+        <div className="bg-white/10 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-10 shadow-2xl backdrop-blur-sm border border-white/20 transform rotate-12">
+          <Rocket className="text-white w-10 h-10" />
+        </div>
+        
+        <h2 className="text-4xl md:text-6xl font-black text-white mb-8 font-heading tracking-tight">
+          Ready to start <br className="md:hidden" />
+          <span className="text-yellow-300">selling online?</span>
+        </h2>
+        
+        <p className="text-xl md:text-2xl text-white/90 mb-12 font-medium leading-relaxed max-w-2xl mx-auto">
+          Let us build your store while you focus on making money. 
+          <span className="block mt-2 font-bold text-white uppercase tracking-widest text-sm">No stress. No tech. Just results.</span>
+        </p>
+
+        <div className="flex flex-col items-center gap-6">
+          <a 
+            href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I'm%20ready%20to%20get%20my%20store%20built%20today." 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group bg-white text-primary hover:bg-yellow-300 hover:text-primary-foreground text-xl font-black py-6 px-12 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.3)] transition-all duration-300 flex items-center gap-3 hover:-translate-y-2"
+          >
+            Start My Business Today
+            <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+          </a>
+          <p className="text-white/70 text-sm font-bold flex items-center gap-2">
+             ⏱️ Ready in 2-5 days | 💰 100% Commissions Yours
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FinalCTA;

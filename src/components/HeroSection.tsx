@@ -16,6 +16,10 @@ const HeroSection = () => (
           <span className="gradient-text">You focus on cash.</span>
         </h1>
 
+        <p className="mt-4 text-sm font-bold text-muted-foreground uppercase tracking-wider">
+          Trusted by growing businesses to launch and scale their online stores.
+        </p>
+
         <p className="mt-6 text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
           No tech. No stress. No delays. Start receiving orders on WhatsApp 
           with a fully set up store — built for you in days, not weeks.

@@ -2,19 +2,19 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Got my first sale in 48 hours! 🔥 Super easy, everything was handled for me. Now I focus on my products, not tech.",
+    quote: "Got my first order in 48 hours 🔥 I didn't touch anything, they handled every single tech detail. Now I just ship products.",
     author: "Binta K.",
     role: "Jewelry Merchant",
     stars: 5,
   },
   {
-    quote: "I finally moved my business online without stress. My customers love ordering directly on WhatsApp—it's so smooth!",
+    quote: "My WhatsApp started blowing up with orders the day we went live. The checkout process is so smooth for my customers.",
     author: "Ade O.",
     role: "Fashion Retailer",
     stars: 5,
   },
   {
-    quote: "The professional look and direct WhatsApp path are exactly what I needed. My conversion rate has jumped 30%.",
+    quote: "Professional, clean, and direct. I finally have a store that looks like a high-end brand without the Shopify stress.",
     author: "Tobi S.",
     role: "Electronics Vendor",
     stars: 5,

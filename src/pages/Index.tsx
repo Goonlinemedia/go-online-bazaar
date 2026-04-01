@@ -10,6 +10,7 @@ import Testimonials from "@/components/Testimonials";
 import PricingSection from "@/components/PricingSection";
 import StatsSection from "@/components/StatsSection";
 import ContactSection from "@/components/ContactSection";
+import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 
@@ -27,6 +28,7 @@ const Index = () => (
     <PricingSection />
     <StatsSection />
     <ContactSection />
+    <FinalCTA />
     <Footer />
     <WhatsAppWidget />
   </div>

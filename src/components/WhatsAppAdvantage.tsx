@@ -11,12 +11,12 @@ const WhatsAppAdvantage = () => {
           <div>
             <span className="text-primary font-bold tracking-widest uppercase text-sm mb-6 inline-block bg-primary/10 px-4 py-2 rounded-full">The WhatsApp Edge</span>
             <h2 className="text-4xl md:text-6xl font-black font-heading mb-8 leading-[1.1] tracking-tight">
-              Your customers are <br />
-              <span className="text-green-500 underline decoration-green-500/30 underline-offset-8 italic">already on WhatsApp</span>
+              Turn WhatsApp chats <br />
+              <span className="text-green-500 underline decoration-green-500/30 underline-offset-8 italic">into daily sales</span>
             </h2>
             <p className="text-xl text-gray-400 mb-10 leading-relaxed max-w-xl">
-              Why force your customers to navigate complex checkouts and fill out endless forms? 
-              Meet them where they already spend their time.
+              Your customers are already on WhatsApp. They browse → click → message you → buy. 
+              No complicated checkout. No drop-offs. Just direct sales.
             </p>
             
             <div className="space-y-6">
