@@ -33,17 +33,17 @@ const HeroSection = () => (
 
         <div className="mt-10 flex gap-8">
           <div>
-            <div className="text-2xl font-bold font-heading text-foreground">4K+</div>
+            <div className="text-2xl font-bold font-heading text-foreground">10+</div>
             <div className="text-xs text-muted-foreground">Active Stores</div>
           </div>
           <div className="w-px bg-border" />
           <div>
-            <div className="text-2xl font-bold font-heading text-foreground">500K+</div>
+            <div className="text-2xl font-bold font-heading text-foreground">100+</div>
             <div className="text-xs text-muted-foreground">Orders Processed</div>
           </div>
           <div className="w-px bg-border" />
           <div>
-            <div className="text-2xl font-bold font-heading text-foreground">102K+</div>
+            <div className="text-2xl font-bold font-heading text-foreground">900+</div>
             <div className="text-xs text-muted-foreground">Happy Customers</div>
           </div>
         </div>
