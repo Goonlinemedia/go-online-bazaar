@@ -58,7 +58,7 @@ const PricingSection = () => {
         biannual: 55000,
         annual: 110000
       },
-      desc: "🔥 Perfect for businesses ready to grow fast. The sweet spot for established sellers.",
+      desc: "🔥 Most Popular — best for growing businesses. The sweet spot for established sellers.",
       popular: true,
       badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
@@ -113,11 +113,14 @@ const PricingSection = () => {
         <h1 className="text-4xl md:text-6xl font-bold font-heading text-foreground tracking-tight mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
           Get paid on <span className="text-green-500">WhatsApp.</span>
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "200ms" }}>
-          We build everything for you. Pick a plan, and start receiving orders instantly — no coding, no stress.
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
+          We build everything for you. No commissions. No hidden fees. You keep 100% of your sales. 
         </p>
-        <p className="text-foreground font-medium text-lg animate-fade-in" style={{ animationDelay: "300ms" }}>
-          👉 Your store can be live in 24 hours.
+        <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-orange-500/10 text-orange-600 text-sm font-bold mb-10 animate-pulse border border-orange-200">
+           ⚡ Limited slots available — we only take 5 new stores weekly.
+        </div>
+        <p className="text-foreground font-bold text-xl animate-fade-in" style={{ animationDelay: "300ms" }}>
+          👉 Your store goes live in 24 hours.
         </p>
       </section>
 
