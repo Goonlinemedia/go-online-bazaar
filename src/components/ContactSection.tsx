@@ -1,11 +1,39 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { toast } from "sonner";
 
 const ContactSection = () => {
   const [form, setForm] = useState({ name: "", email: "", mobile: "", message: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await addDoc(collection(db, "leads"), {
+        ...form,
+        status: "New",
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      setForm({ name: "", email: "", mobile: "", message: "" });
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      toast.error("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,9 +75,10 @@ const ContactSection = () => {
 
         <div className="glass-card p-8">
           <h3 className="text-lg font-heading font-bold text-foreground mb-6">Send a Message</h3>
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <input
               name="name"
+              required
               value={form.name}
               onChange={handleChange}
               placeholder="Your name"
@@ -59,6 +88,7 @@ const ContactSection = () => {
               <input
                 name="email"
                 type="email"
+                required
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Email"
@@ -74,14 +104,23 @@ const ContactSection = () => {
             </div>
             <textarea
               name="message"
+              required
               value={form.message}
               onChange={handleChange}
               placeholder="Your message..."
               rows={4}
               className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
             />
-            <button type="submit" className="btn-primary w-full inline-flex items-center justify-center gap-2">
-              Send Message <Send size={16} />
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="btn-primary w-full inline-flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>Sending... <Loader2 className="animate-spin" size={16} /></>
+              ) : (
+                <>Send Message <Send size={16} /></>
+              )}
             </button>
           </form>
         </div>
