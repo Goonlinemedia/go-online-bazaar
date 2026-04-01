@@ -30,8 +30,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I%20would%20like%20to%20get%20started." target="_blank" rel="noopener noreferrer" className="hidden md:inline-flex btn-primary text-sm">
-          Get Started
+        <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I%20would%20like%20to%20get%20started%20building%20my%20store." target="_blank" rel="noopener noreferrer" className="hidden md:inline-flex btn-primary text-sm shadow-lg shadow-primary/20">
+          Get My Store Built
         </a>
 
         <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
@@ -51,7 +51,7 @@ const Navbar = () => {
               {link}
             </a>
           ))}
-          <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I%20would%20like%20to%20get%20started." target="_blank" rel="noopener noreferrer" className="btn-primary text-sm inline-block">Get Started</a>
+          <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I%20would%20like%20to%20get%20started%20building%20my%20store." target="_blank" rel="noopener noreferrer" className="btn-primary text-sm inline-block w-full text-center">Get My Store Built</a>
         </div>
       )}
     </nav>

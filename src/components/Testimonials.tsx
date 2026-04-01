@@ -2,21 +2,21 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Got my first sale in 2 days 🔥 Super easy, everything was handled for me. Now I focus on my products.",
+    quote: "Got my first sale in 48 hours! 🔥 Super easy, everything was handled for me. Now I focus on my products, not tech.",
     author: "Binta K.",
-    role: "Merchant",
+    role: "Jewelry Merchant",
     stars: 5,
   },
   {
-    quote: "I used to spend hours on WhatsApp manually taking orders. Now customers browse and order themselves. A game-changer!",
+    quote: "I finally moved my business online without stress. My customers love ordering directly on WhatsApp—it's so smooth!",
     author: "Ade O.",
-    role: "Retailer",
+    role: "Fashion Retailer",
     stars: 5,
   },
   {
-    quote: "Professional, clean, and fast. The best part is I didn't have to touch a single line of code.",
+    quote: "The professional look and direct WhatsApp path are exactly what I needed. My conversion rate has jumped 30%.",
     author: "Tobi S.",
-    role: "Small Business Owner",
+    role: "Electronics Vendor",
     stars: 5,
   },
 ];
@@ -25,12 +25,13 @@ const Testimonials = () => {
   return (
     <section id="testimonials" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-black text-foreground font-heading">
-            Trusted by growing <span className="text-primary">businesses</span>
+        <div className="text-center mb-16 px-4">
+          <span className="text-sm font-bold text-primary uppercase tracking-widest bg-primary/5 px-4 py-2 rounded-full mb-6 inline-block">Real Proof</span>
+          <h2 className="text-4xl md:text-5xl font-black text-foreground font-heading">
+            <span className="text-primary underline decoration-primary/20">Real Results</span> from Our Clients ⚡
           </h2>
-          <p className="mt-4 text-muted-foreground text-lg">
-            Hear from entrepreneurs who took their business digital with us.
+          <p className="mt-6 text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed italic">
+            "Your success is our goal. We don't just build sites; we build high-converting sales machines."
           </p>
         </div>
 
@@ -38,14 +39,14 @@ const Testimonials = () => {
           {testimonials.map((t, idx) => (
             <div
               key={idx}
-              className="bg-[#fafafa] p-10 rounded-2xl border border-transparent hover:border-primary/20 transition-all duration-300 relative group"
+              className="bg-[#fafafa] p-10 rounded-3xl border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-2xl transition-all duration-500 relative group"
             >
-              <div className="flex gap-1 mb-6">
-                {[...Array(t.stars)].map((_, i) => (
-                  <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
-                ))}
+              <div className="flex gap-1 mb-b">
+                 <p className="text-primary font-bold text-xs uppercase tracking-tighter mb-4 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                   Verified Store ✅
+                 </p>
               </div>
-              <p className="text-gray-700 italic leading-relaxed mb-8 text-lg">
+              <p className="text-gray-900 leading-relaxed mb-10 text-xl font-medium">
                 "{t.quote}"
               </p>
               <div>

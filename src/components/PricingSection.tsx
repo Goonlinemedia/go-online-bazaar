@@ -46,8 +46,8 @@ const PricingSection = () => {
       unavailable: [
         "No custom domain (yourstore.yoursite.com)"
       ],
-      tagline: "👉 Keep it simple. Start selling fast.",
-      ctaText: "Build My Store"
+      tagline: "👉 Keep it simple. Get built fast.",
+      ctaText: "Get My Store Built"
     },
     {
       name: "Grow",
@@ -74,7 +74,7 @@ const PricingSection = () => {
       ],
       unavailable: [],
       tagline: "👉 Build a real brand, not just a store.",
-      ctaText: "Start My Business"
+      ctaText: "Start My Store Now"
     },
     {
       name: "Scale",
@@ -98,7 +98,7 @@ const PricingSection = () => {
       ],
       unavailable: [],
       tagline: "👉 Turn your store into a full business engine.",
-      ctaText: "Get My Store Live"
+      ctaText: "Build My Store Today"
     }
   ];
 
@@ -222,6 +222,25 @@ const PricingSection = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* 🛡️ RISK REMOVAL & URGENCY */}
+      <div className="max-w-3xl mx-auto px-6 mb-24 text-center">
+        <div className="bg-secondary/40 border border-border/50 rounded-3xl p-8 md:p-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16" />
+          <div className="relative z-10">
+            <h4 className="text-xl font-bold mb-4 font-heading">💡 Not sure which plan to choose?</h4>
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Launch</span> plan today and upgrade any time as your business grows. 
+              <br className="hidden md:block" />
+              <span className="text-foreground font-bold">No hidden fees. No commissions. You keep 100% of your sales.</span>
+            </p>
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white dark:bg-background rounded-full border border-border shadow-sm">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-sm font-bold text-foreground">⏱️ Your store will be ready in 2-5 days</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ⚡ TRUST / VALUE SECTION */}

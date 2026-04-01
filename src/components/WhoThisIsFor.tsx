@@ -2,27 +2,27 @@ import { Store, Instagram, Smartphone, Users } from "lucide-react";
 
 const targetAudience = [
   {
-    icon: Store,
-    title: "Small Business Owners",
-    desc: "Take your physical shop online without the headache of building it yourself.",
-    color: "bg-primary/10 text-primary",
-  },
-  {
     icon: Instagram,
-    title: "Instagram Sellers",
-    desc: "Turn your followers into customers with a professional link-in-bio storefront.",
+    title: "Instagram Vendors",
+    desc: "Turn your followers into customers with a professional link-in-bio storefront. No more 'DM for Price'.",
     color: "bg-pink-500/10 text-pink-600",
   },
   {
     icon: Smartphone,
-    title: "WhatsApp Vendors",
-    desc: "Stop manually sending catalogs. Let customers browse and order directly from you.",
+    title: "WhatsApp Sellers",
+    desc: "Stop manually sending catalogs. Let customers browse and order directly from you while you sleep.",
     color: "bg-green-500/10 text-green-600",
   },
   {
+    icon: Store,
+    title: "Small Business Owners",
+    desc: "Take your physical shop online. We build the digital bridge between your shop and your customers.",
+    color: "bg-primary/10 text-primary",
+  },
+  {
     icon: Users,
-    title: "Social Entrepreneurs",
-    desc: "Build credibility and trust with a storefront that looks like a high-end brand.",
+    title: "Side Hustlers",
+    desc: "If you sell anything online, we give you the professional edge to start making real money immediately.",
     color: "bg-blue-500/10 text-blue-600",
   },
 ];

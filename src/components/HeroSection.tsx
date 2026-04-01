@@ -10,24 +10,28 @@ const HeroSection = () => (
           Launching your online store made simple
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-[1.1] tracking-tight">
-          Get your online store
+        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-heading font-extrabold text-foreground leading-[1.05] tracking-tighter">
+          We build your store. 
           <br />
-          <span className="gradient-text">built for you.</span>
+          <span className="gradient-text">You focus on cash.</span>
         </h1>
 
-        <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
-          Start receiving orders on WhatsApp — without stress. We handle the 
-          setup and technology; you handle the sales.
+        <p className="mt-6 text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
+          No tech. No stress. No delays. Start receiving orders on WhatsApp 
+          with a fully set up store — built for you in days, not weeks.
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-4">
-          <a href="#pricing" className="btn-primary text-[17px] py-4 px-8 inline-flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
-            Get My Store Live <ArrowRight size={18} />
+        <div className="mt-8 flex flex-wrap gap-4 items-center">
+          <a href="#pricing" className="btn-primary text-lg py-5 px-10 inline-flex items-center gap-2 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all border-2 border-white/20">
+            Get My Store Built <ArrowRight size={20} />
           </a>
-          <a href="#features" className="btn-outline text-base">
-            See How it Works
-          </a>
+          <div className="flex items-center gap-2 text-sm font-bold text-foreground bg-secondary/50 px-4 py-2 rounded-full border border-border/50">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+            Ready in 2-5 days
+          </div>
         </div>
 
         <div className="mt-10 flex gap-8">
