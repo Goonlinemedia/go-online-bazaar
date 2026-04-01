@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { X, Send } from "lucide-react";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 const WhatsAppWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const { trackEvent } = useAnalytics();
 
   const phoneNumber = "2348035826698";
 
@@ -12,13 +14,15 @@ const WhatsAppWidget = () => {
     e.preventDefault();
     if (!message.trim()) return;
     
+    trackEvent("whatsapp_click", { 
+      name: name || "anonymous",
+      message: message.substring(0, 100), // Log preview
+      phone: phoneNumber
+    });
+
     const text = `Hello! My name is ${name || "a website visitor"}.\n\n${message}`;
     const escapedText = encodeURIComponent(text);
     window.open(`https://wa.me/${phoneNumber}?text=${escapedText}`, "_blank");
-    
-    // Optionally close and clear after sending
-    // setIsOpen(false);
-    // setMessage("");
   };
 
   return (

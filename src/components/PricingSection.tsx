@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Check, X, Sparkles, Store, Smartphone, MessageCircle, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 type BillingCycle = "monthly" | "quarterly" | "biannual" | "annual";
 
 const PricingSection = () => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
+  const { trackEvent } = useAnalytics();
 
   const getPrice = (prices: Record<BillingCycle, number>) => {
     return `₦${prices[billingCycle].toLocaleString()}`;
@@ -102,6 +104,20 @@ const PricingSection = () => {
     }
   ];
 
+  const handlePlanClick = (planName: string, planType: string) => {
+    trackEvent("plan_selected", { 
+      plan_name: planName, 
+      plan_type: planType, 
+      billing_cycle: billingCycle,
+      price: plans.find(p => p.name === planName)?.prices[billingCycle]
+    });
+    // Scroll to contact form
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div id="pricing" className="w-full bg-background pb-20">
       {/* 🚀 HERO SECTION */}
@@ -129,7 +145,10 @@ const PricingSection = () => {
           {(["monthly", "quarterly", "biannual", "annual"] as BillingCycle[]).map((cycle) => (
             <button
               key={cycle}
-              onClick={() => setBillingCycle(cycle)}
+              onClick={() => {
+                setBillingCycle(cycle);
+                trackEvent("billing_cycle_changed", { cycle });
+              }}
               className={`relative px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${
                 billingCycle === cycle 
                   ? "bg-foreground text-background shadow-lg scale-105" 
@@ -208,6 +227,7 @@ const PricingSection = () => {
                 {plan.tagline}
               </p>
               <Button 
+                onClick={() => handlePlanClick(plan.name, plan.type)}
                 className={`w-full py-6 text-sm font-bold rounded-xl transition-all duration-300 ${
                   plan.popular 
                     ? "bg-white text-foreground hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]" 
