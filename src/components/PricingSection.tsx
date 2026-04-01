@@ -105,17 +105,35 @@ const PricingSection = () => {
   ];
 
   const handlePlanClick = (planName: string, planType: string) => {
+    const plan = plans.find(p => p.name === planName);
+    const price = plan ? getPrice(plan.prices) : "";
+    const period = getPeriodText();
+    
+    // 1. Track the event in our dashboard
     trackEvent("plan_selected", { 
       plan_name: planName, 
       plan_type: planType, 
       billing_cycle: billingCycle,
-      price: plans.find(p => p.name === planName)?.prices[billingCycle]
+      price: plan?.prices[billingCycle]
     });
-    // Scroll to contact form
-    const contactSection = document.getElementById("contact");
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
+
+    // 2. Generate WhatsApp Message
+    const whatsappNumber = "2348035826698"; 
+    let message = "";
+
+    if (planType === "Starter") {
+      message = `Hi Go Online! 👋 I'm interested in the Launch (Starter) plan for ${price}/${period}. I want to get my store built fast! 🚀`;
+    } else if (planType === "Deluxe") {
+      message = `Hello Go Online! 🔥 I want to start my store now with the Grow (Deluxe) plan for ${price}/${period}. Let's build a real brand! ⚡`;
+    } else {
+      message = `Hi there! 🚀 I'm ready to build my store today with the Scale (Ultimate) plan for ${price}/${period}. I want to go big! 💎`;
     }
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    // 3. Open WhatsApp and keep them on our page in case they want to browse more
+    window.open(whatsappUrl, "_blank");
   };
 
   return (
