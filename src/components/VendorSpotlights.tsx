@@ -1,10 +1,10 @@
 import { ExternalLink } from "lucide-react";
 
 const vendors = [
-  { name: "Wicked Stylist", tag: "Fashion", gradient: "from-teal to-teal-light" },
-  { name: "Luscents", tag: "Fragrances", gradient: "from-accent to-purple" },
-  { name: "Zack Stylist", tag: "Men's Wear", gradient: "from-teal-dark to-teal" },
-  { name: "Labelle Outright", tag: "Beauty", gradient: "from-purple to-accent" },
+  { name: "PrintHub", tag: "Printing & Branding", gradient: "from-pink-500 to-rose-400", link: "https://print-powerhouse-hub.vercel.app/" },
+  { name: "Wicked Stylist", tag: "Fashion", gradient: "from-teal to-teal-light", link: "#" },
+  { name: "Luscents", tag: "Fragrances", gradient: "from-accent to-purple", link: "#" },
+  { name: "Zack Stylist", tag: "Men's Wear", gradient: "from-teal-dark to-teal", link: "#" },
 ];
 
 const VendorSpotlights = () => (
@@ -24,9 +24,12 @@ const VendorSpotlights = () => (
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {vendors.map((v) => (
-          <div
+          <a
             key={v.name}
-            className="group glass-card overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+            href={v.link}
+            target={v.link !== "#" ? "_blank" : "_self"}
+            rel="noopener noreferrer"
+            className="group glass-card overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer block"
           >
             <div className={`h-40 bg-gradient-to-br ${v.gradient} relative overflow-hidden`}>
               <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
@@ -36,10 +39,11 @@ const VendorSpotlights = () => (
                 </span>
               </div>
             </div>
-            <div className="p-4">
+            <div className="p-4 flex items-center justify-between">
               <h4 className="font-heading font-bold text-foreground">{v.name}</h4>
+              <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
