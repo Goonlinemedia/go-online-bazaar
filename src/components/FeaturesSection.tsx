@@ -1,41 +1,35 @@
-import { MessageCircle, Mail, Globe, Package, CreditCard, LayoutDashboard } from "lucide-react";
+import { Wrench, MessageCircle, Smartphone, BadgeDollarSign, Rocket } from "lucide-react";
 
 const features = [
   {
+    icon: Wrench,
+    title: "We Build Everything for You",
+    desc: "From domain setup to store configuration, we handle the heavy lifting while you focus on your business.",
+    color: "bg-primary/10 text-primary",
+  },
+  {
     icon: MessageCircle,
-    title: "WhatsApp Orders",
-    desc: "Receive orders and chat with customers directly on WhatsApp — no extra apps needed.",
-    color: "bg-primary/10 text-primary",
+    title: "WhatsApp Orders Instantly",
+    desc: "Your customers order directly on WhatsApp. No complicated cart or checkout — just a simple chat to close the deal.",
+    color: "bg-emerald-500/10 text-emerald-600",
   },
   {
-    icon: Mail,
-    title: "Dedicated Support",
-    desc: "Get responsive email & phone support to help your business thrive.",
-    color: "bg-accent/10 text-accent",
+    icon: Smartphone,
+    title: "Mobile-Optimized for Real Buyers",
+    desc: "A stunning, responsive storefront built for mobile-first shopping experiences where your customers are.",
+    color: "bg-blue-500/10 text-blue-600",
   },
   {
-    icon: Globe,
-    title: "Stunning Website",
-    desc: "Get a professionally designed, mobile-optimized business website in minutes.",
-    color: "bg-primary/10 text-primary",
+    icon: BadgeDollarSign,
+    title: "Built to Convert Visitors into Sales",
+    desc: "Not just a pretty site — our layouts are optimized based on top-performing WhatsApp stores.",
+    color: "bg-orange-500/10 text-orange-600",
   },
   {
-    icon: Package,
-    title: "Inventory Tracking",
-    desc: "Easily monitor your stock levels and manage your products — no expertise required.",
-    color: "bg-accent/10 text-accent",
-  },
-  {
-    icon: CreditCard,
-    title: "Flexible Payments",
-    desc: "Accept payments via bank transfer, cards, USSD — automatic or manual.",
-    color: "bg-primary/10 text-primary",
-  },
-  {
-    icon: LayoutDashboard,
-    title: "Order Dashboard",
-    desc: "Track pending and completed orders from a simple, elegant merchant dashboard.",
-    color: "bg-accent/10 text-accent",
+    icon: Rocket,
+    title: "Scale Your Business with Ease",
+    desc: "Need more products? Special tools? Upgrade anytime as your sales grow without any technical stress.",
+    color: "bg-purple-500/10 text-purple-600",
   },
 ];
 

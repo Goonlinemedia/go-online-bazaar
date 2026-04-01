@@ -11,22 +11,22 @@ const HeroSection = () => (
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-[1.1] tracking-tight">
-          Build. Sell.
+          Get your online store
           <br />
-          <span className="gradient-text">Grow Online.</span>
+          <span className="gradient-text">built for you.</span>
         </h1>
 
         <p className="mt-6 text-lg text-muted-foreground max-w-lg leading-relaxed">
-          Go Online gives you everything to launch a stunning digital store — payments, delivery, SEO,
-          and more — so you can focus on what you do best.
+          Start receiving orders on WhatsApp — without stress. We handle the 
+          setup and technology; you handle the sales.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-4">
-          <a href="#pricing" className="btn-primary text-base inline-flex items-center gap-2">
-            Get Started <ArrowRight size={18} />
+          <a href="#pricing" className="btn-primary text-[17px] py-4 px-8 inline-flex items-center gap-2 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+            Get My Store Live <ArrowRight size={18} />
           </a>
           <a href="#features" className="btn-outline text-base">
-            See Features
+            See How it Works
           </a>
         </div>
 

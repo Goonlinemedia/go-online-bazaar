@@ -47,7 +47,7 @@ const PricingSection = () => {
         "No custom domain (yourstore.yoursite.com)"
       ],
       tagline: "👉 Keep it simple. Start selling fast.",
-      ctaText: "Start Free / Get Started"
+      ctaText: "Build My Store"
     },
     {
       name: "Grow",
@@ -60,6 +60,7 @@ const PricingSection = () => {
       },
       desc: "🔥 For small businesses ready to level up.",
       popular: true,
+      badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
         "Everything in Launch, plus:",
         "Up to 200 products",
@@ -73,7 +74,7 @@ const PricingSection = () => {
       ],
       unavailable: [],
       tagline: "👉 Build a real brand, not just a store.",
-      ctaText: "Upgrade & Grow"
+      ctaText: "Start My Business"
     },
     {
       name: "Scale",
@@ -85,6 +86,7 @@ const PricingSection = () => {
         annual: 220000
       },
       desc: "🚀 For serious sellers ready to go big.",
+      badge: "BEST VALUE",
       getFeatures: (cycle: BillingCycle) => [
         "Everything in Grow, plus:",
         "Up to 1000 products",
@@ -96,28 +98,7 @@ const PricingSection = () => {
       ],
       unavailable: [],
       tagline: "👉 Turn your store into a full business engine.",
-      ctaText: "Scale My Business"
-    },
-    {
-      name: "Boss Mode",
-      type: "POS Plan",
-      prices: {
-        monthly: 40000,
-        quarterly: 116000,
-        biannual: 220000,
-        annual: 440000
-      },
-      desc: "🏪 For businesses selling both online & offline.",
-      getFeatures: (cycle: BillingCycle) => [
-        "Everything in Scale, plus:",
-        "Built-in POS (Point of Sale)",
-        "Sell in-store + online seamlessly",
-        "Manage inventory across channels",
-        "Perfect for shops, stores & large operations"
-      ],
-      unavailable: [],
-      tagline: "👉 Run your entire business from one place.",
-      ctaText: "Go Boss Mode"
+      ctaText: "Get My Store Live"
     }
   ];
 
@@ -133,18 +114,18 @@ const PricingSection = () => {
           Get paid on <span className="text-green-500">WhatsApp.</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "200ms" }}>
-          Build your online store, add your products, and start receiving orders instantly — no coding, no stress.
+          We build everything for you. Pick a plan, and start receiving orders instantly — no coding, no stress.
         </p>
         <p className="text-foreground font-medium text-lg animate-fade-in" style={{ animationDelay: "300ms" }}>
-          👉 Pick a plan and launch today.
+          👉 Your store can be live in 24 hours.
         </p>
       </section>
 
       {/* 💎 BILLING OPTIONS SECTION */}
       <section className="max-w-4xl mx-auto px-6 mb-16 animate-fade-in" style={{ animationDelay: "400ms" }}>
         <div className="text-center mb-6">
-          <h3 className="text-xl font-bold">💰 Save more when you go long-term</h3>
-          <p className="text-muted-foreground mt-2">👉 The longer you commit, the more you save.</p>
+          <h3 className="text-xl font-bold font-heading">💰 Save more with long-term plans</h3>
+          <p className="text-muted-foreground mt-2">👉 The longer we partner, the more your business saves.</p>
         </div>
         
         <div className="flex flex-wrap justify-center gap-2 md:gap-4 p-2 bg-secondary/50 rounded-2xl md:rounded-full">
@@ -169,124 +150,108 @@ const PricingSection = () => {
         </div>
       </section>
 
-      {/* 🚀 PRICING PLANS */}
-      <section className="max-w-[1400px] mx-auto px-6 mb-24">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-start">
-          {plans.map((plan, i) => (
-            <div
-              key={plan.name}
-              className={`group relative flex flex-col h-full rounded-3xl p-8 transition-all duration-500 cursor-pointer ${
-                plan.popular 
-                  ? "bg-foreground text-background shadow-2xl scale-[1.02] ring-4 ring-primary/20 hover:scale-[1.04] hover:bg-black dark:hover:bg-white hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] hover:ring-green-500/50" 
-                  : "bg-card border border-border shadow-sm hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:border-green-500/50 hover:z-10"
-              }`}
-              style={{ animationDelay: `${500 + i * 100}ms` }}
-            >
-              {plan.popular && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-orange-400 to-primary text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
-                  <Sparkles size={14} className="fill-white" /> ⭐ MOST POPULAR
-                </div>
-              )}
+      {/* 💳 PRICING CARDS SECTION */}
+      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-6 lg:px-8 mb-24">
+        {plans.map((plan, i) => (
+          <div
+            key={plan.name}
+            className={`group relative flex flex-col h-full rounded-3xl p-8 transition-all duration-500 cursor-pointer ${
+              plan.popular 
+                ? "bg-foreground text-background shadow-2xl scale-[1.02] ring-4 ring-primary/20 hover:scale-[1.04] hover:bg-black dark:hover:bg-white hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] hover:ring-green-500/50" 
+                : "bg-card border border-border shadow-sm hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:border-green-500/50 hover:z-10"
+            }`}
+            style={{ animationDelay: `${500 + i * 100}ms` }}
+          >
+            {plan.badge && (
+              <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 ${plan.popular ? 'bg-gradient-to-r from-orange-400 to-primary' : 'bg-primary'} text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg z-20`}>
+                <Sparkles size={14} className="fill-white" /> ⭐ {plan.badge}
+              </div>
+            )}
               
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className={`text-2xl font-bold ${plan.popular ? "text-background" : "text-foreground"}`}>{plan.name}</h3>
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${plan.popular ? "bg-white/20" : "bg-secondary text-secondary-foreground"}`}>
-                    {plan.type}
-                  </span>
-                </div>
-                <p className={`text-sm mt-4 min-h-[40px] leading-relaxed ${plan.popular ? "text-gray-300" : "text-muted-foreground"}`}>{plan.desc}</p>
+            <div className="mb-6 mt-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className={`text-2xl font-bold ${plan.popular ? "text-background" : "text-foreground"}`}>{plan.name}</h3>
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${plan.popular ? "bg-white/20" : "bg-secondary text-secondary-foreground"}`}>
+                  {plan.type}
+                </span>
               </div>
+              <p className={`text-sm mt-4 min-h-[40px] leading-relaxed ${plan.popular ? "text-gray-300" : "text-muted-foreground"}`}>{plan.desc}</p>
+            </div>
 
-              <div className="mb-8">
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-4xl font-black ${plan.popular ? "text-white" : "text-foreground"}`}>{getPrice(plan.prices)}</span>
-                  <span className={`text-sm font-medium ${plan.popular ? "text-gray-400" : "text-muted-foreground"}`}>/{getPeriodText()}</span>
-                </div>
-              </div>
-
-              <div className="flex-grow space-y-6">
-                <ul className="space-y-3.5">
-                  {plan.getFeatures(billingCycle).map((f, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <div className={`mt-0.5 rounded-full p-0.5 ${plan.popular ? "bg-white/20" : "bg-primary/10"}`}>
-                        <Check size={14} className={plan.popular ? "text-white" : "text-primary"} />
-                      </div>
-                      <span className={`text-sm font-medium ${plan.popular ? "text-gray-100" : "text-foreground"}`}>{f}</span>
-                    </li>
-                  ))}
-                  {plan.unavailable.map((f, idx) => (
-                    <li key={idx} className="flex items-start gap-3 opacity-50">
-                      <div className="mt-0.5 rounded-full p-0.5 bg-muted">
-                        <X size={14} className="text-muted-foreground" />
-                      </div>
-                      <span className={`text-sm font-medium ${plan.popular ? "text-gray-300" : "text-muted-foreground"}`}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-border/10">
-                <p className={`text-sm font-bold text-center mb-4 ${plan.popular ? "text-white" : "text-foreground"}`}>
-                  {plan.tagline}
-                </p>
-                <Button 
-                  className={`w-full py-6 text-sm font-bold rounded-xl transition-all duration-300 ${
-                    plan.popular 
-                      ? "bg-white text-foreground hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]" 
-                      : "bg-foreground text-background hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]"
-                  }`}
-                >
-                  {plan.ctaText}
-                </Button>
+            <div className="mb-8">
+              <div className="flex items-baseline gap-1">
+                <span className={`text-4xl font-black ${plan.popular ? "text-white" : "text-foreground"}`}>{getPrice(plan.prices)}</span>
+                <span className={`text-sm font-medium ${plan.popular ? "text-gray-400" : "text-muted-foreground"}`}>/{getPeriodText()}</span>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+
+            <div className="flex-grow space-y-6">
+              <ul className="space-y-3.5">
+                {plan.getFeatures(billingCycle).map((f, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <div className={`mt-0.5 rounded-full p-0.5 ${plan.popular ? "bg-white/20" : "bg-primary/10"}`}>
+                      <Check size={14} className={plan.popular ? "text-white" : "text-primary"} />
+                    </div>
+                    <span className={`text-sm font-medium ${plan.popular ? "text-gray-100" : "text-foreground"}`}>{f}</span>
+                  </li>
+                ))}
+                {plan.unavailable.map((f, idx) => (
+                  <li key={idx} className="flex items-start gap-3 opacity-50">
+                    <div className="mt-0.5 rounded-full p-0.5 bg-muted">
+                      <X size={14} className="text-muted-foreground" />
+                    </div>
+                    <span className={`text-sm font-medium ${plan.popular ? "text-gray-300" : "text-muted-foreground"}`}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-border/10">
+              <p className={`text-sm font-bold text-center mb-4 ${plan.popular ? "text-white" : "text-foreground"}`}>
+                {plan.tagline}
+              </p>
+              <Button 
+                className={`w-full py-6 text-sm font-bold rounded-xl transition-all duration-300 ${
+                  plan.popular 
+                    ? "bg-white text-foreground hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]" 
+                    : "bg-foreground text-background hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]"
+                }`}
+              >
+                {plan.ctaText}
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* ⚡ TRUST / VALUE SECTION */}
-      <section className="bg-secondary/40 py-20 px-6">
+      <section className="bg-secondary/40 py-24 px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why people love this ⚡</h2>
-            <p className="text-muted-foreground">Join hundreds of entrepreneurs already selling online 🚀</p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-heading">Outcome-Driven Results ⚡</h2>
+            <p className="text-muted-foreground text-lg">We don't just build sites; we build high-converting sales machines. 🚀</p>
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-background p-6 rounded-2xl shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="bg-primary/10 p-3 rounded-xl"><Zap className="text-primary w-6 h-6" /></div>
+            <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
+              <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center"><Zap className="text-primary w-6 h-6" /></div>
               <div>
-                <h4 className="font-bold text-lg mb-1">Launch in minutes</h4>
-                <p className="text-sm text-muted-foreground">Skip the complex setup. Pick a plan and your store is live instantly.</p>
+                <h4 className="font-bold text-lg mb-2">We Build It For You</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">Skip the learning curve. We handle the design, setup, and launch so you can stay focused on your products.</p>
               </div>
             </div>
-            <div className="bg-background p-6 rounded-2xl shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="bg-primary/10 p-3 rounded-xl"><Store className="text-primary w-6 h-6" /></div>
+            <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
+              <div className="bg-green-500/10 w-12 h-12 rounded-xl flex items-center justify-center"><MessageCircle className="text-green-500 w-6 h-6" /></div>
               <div>
-                <h4 className="font-bold text-lg mb-1">No coding needed</h4>
-                <p className="text-sm text-muted-foreground">If you can use WhatsApp, you can manage your store and inventory here.</p>
+                <h4 className="font-bold text-lg mb-2">Direct WhatsApp Sales</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">Convert visitors into buyers instantly. Orders land directly in your WhatsApp, closing sales in real-time.</p>
               </div>
             </div>
-            <div className="bg-background p-6 rounded-2xl shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="bg-green-500/10 p-3 rounded-xl"><MessageCircle className="text-green-500 w-6 h-6" /></div>
+            <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
+              <div className="bg-blue-500/10 w-12 h-12 rounded-xl flex items-center justify-center"><Smartphone className="text-blue-500 w-6 h-6" /></div>
               <div>
-                <h4 className="font-bold text-lg mb-1">Orders on WhatsApp</h4>
-                <p className="text-sm text-muted-foreground">Get notified directly where you already talk to your customers.</p>
-              </div>
-            </div>
-            <div className="bg-background p-6 rounded-2xl shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow">
-              <div className="bg-primary/10 p-3 rounded-xl"><Smartphone className="text-primary w-6 h-6" /></div>
-              <div>
-                <h4 className="font-bold text-lg mb-1">Mobile Perfect</h4>
-                <p className="text-sm text-muted-foreground">Designed for the modern buyer, works flawlessly on any device.</p>
-              </div>
-            </div>
-            <div className="bg-background p-6 rounded-2xl shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-2">
-              <div className="bg-primary/10 p-3 rounded-xl"><Sparkles className="text-primary w-6 h-6" /></div>
-              <div>
-                <h4 className="font-bold text-lg mb-1">Built for modern businesses</h4>
-                <p className="text-sm text-muted-foreground">Coupons, manual & auto payments, pixels, domains—everything you need to scale, baked right in without extra costly plugins.</p>
+                <h4 className="font-bold text-lg mb-2">Mobile-First Experience</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">Your customers shop on their phones. We ensure your store looks stunning and works flawlessly on every screen size.</p>
               </div>
             </div>
           </div>

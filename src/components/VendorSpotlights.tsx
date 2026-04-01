@@ -8,18 +8,25 @@ const vendors = [
 ];
 
 const VendorSpotlights = () => (
-  <section id="vendors" className="section-padding">
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-4">
+  <section id="portfolio" className="section-padding bg-secondary/10">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-16 gap-6">
         <div>
-          <span className="text-sm font-semibold text-primary uppercase tracking-wider">Spotlights</span>
-          <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground">
-            Merchants thriving with <span className="gradient-text">Go Online</span>
+          <span className="text-sm font-bold text-primary uppercase tracking-widest bg-primary/5 px-4 py-2 rounded-full">Portfolio</span>
+          <h2 className="mt-6 text-3xl md:text-5xl font-black font-heading text-foreground tracking-tight leading-tight">
+            Trusted by <br/>
+            <span className="gradient-text">Growing Businesses.</span>
           </h2>
+          <p className="mt-4 text-muted-foreground text-lg max-w-xl italic">
+            "Your store doesn't just look pretty—it's built to sell directly on WhatsApp."
+          </p>
         </div>
-        <a href="#" className="btn-outline text-sm shrink-0 inline-flex items-center gap-2 self-start sm:self-auto">
-          See All Stores <ExternalLink size={14} />
-        </a>
+        <div className="flex flex-col items-start sm:items-end gap-4">
+          <a href="#pricing" className="btn-primary text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
+            Get My Store Live
+          </a>
+          <p className="text-xs text-muted-foreground">👉 No tech skills required</p>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
