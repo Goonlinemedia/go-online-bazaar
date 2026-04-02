@@ -32,12 +32,22 @@ const Footer = () => (
         </ul>
       </div>
       <div>
-        <h4 className="font-semibold text-primary-foreground mb-4 text-sm">Address</h4>
-        <p className="text-sm">Irepo Estate, Ikotun Lagos, Nigeria</p>
+        <h4 className="font-semibold text-primary-foreground mb-4 text-sm">Payments We Support</h4>
+        <div className="flex flex-wrap gap-4 items-center opacity-70 grayscale hover:grayscale-0 transition-all duration-300">
+           <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Paystack_Logo.png" alt="Paystack" className="h-6 object-contain" />
+           <img src="https://brandlogic.com/wp-content/uploads/2021/04/Flutterwave_Logo.png" alt="Flutterwave" className="h-6 object-contain" />
+        </div>
+        <p className="mt-4 text-[10px] leading-relaxed">
+           Secure payments powered by Nigeria's leading gateways.
+        </p>
       </div>
     </div>
-    <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-primary-foreground/10 text-center text-xs">
-      © {new Date().getFullYear()} Go Online. All rights reserved.
+    <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px]">
+      <p>© {new Date().getFullYear()} Go Online. All rights reserved.</p>
+      <div className="flex gap-6">
+         <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+         <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+      </div>
     </div>
   </footer>
 );

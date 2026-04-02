@@ -28,9 +28,8 @@ const Index = () => (
     {/* 3. How It Works */}
     <HowItWorks />
 
-    {/* 4. Benefits */}
+    {/* 4. Benefits Section */}
     <div id="benefits">
-      <ServicesSection />
       <FeaturesSection />
       <WhatsAppAdvantage />
     </div>

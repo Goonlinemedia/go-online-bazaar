@@ -1,34 +1,34 @@
-import { Wrench, MessageCircle, Smartphone, BadgeDollarSign, Rocket } from "lucide-react";
+import { BadgeDollarSign, Zap, Smartphone, LineChart, ShieldCheck } from "lucide-react";
 
 const features = [
   {
-    icon: Wrench,
-    title: "We Build Everything for You",
-    desc: "From domain setup to store configuration, we handle the heavy lifting while you focus on your business.",
-    color: "bg-primary/10 text-primary",
-  },
-  {
-    icon: MessageCircle,
-    title: "WhatsApp Orders Instantly",
-    desc: "Your customers order directly on WhatsApp. No complicated cart or checkout — just a simple chat to close the deal.",
+    icon: BadgeDollarSign,
+    title: "Close More Sales",
+    desc: "Get orders instantly on WhatsApp. No complicated checkout — just a simple chat to close the deal.",
     color: "bg-emerald-500/10 text-emerald-600",
   },
   {
+    icon: Zap,
+    title: "Set Up in Minutes",
+    desc: "No tech skills? No problem. We build your store fast so you can start selling immediately.",
+    color: "bg-primary/10 text-primary",
+  },
+  {
     icon: Smartphone,
-    title: "Mobile-Optimized for Real Buyers",
-    desc: "A stunning, responsive storefront built for mobile-first shopping experiences where your customers are.",
+    title: "Run from Your Phone",
+    desc: "Manage your products, track orders, and talk to customers — all from the palm of your hand.",
     color: "bg-blue-500/10 text-blue-600",
   },
   {
-    icon: BadgeDollarSign,
-    title: "Built to Convert Visitors into Sales",
-    desc: "Not just a pretty site — our layouts are optimized based on top-performing WhatsApp stores.",
+    icon: LineChart,
+    title: "Track Sales Easily",
+    desc: "Simple, easy-to-read dashboards so you know exactly how your business is growing.",
     color: "bg-orange-500/10 text-orange-600",
   },
   {
-    icon: Rocket,
-    title: "Scale Your Business with Ease",
-    desc: "Need more products? Special tools? Upgrade anytime as your sales grow without any technical stress.",
+    icon: ShieldCheck,
+    title: "Look Professional & Trusted",
+    desc: "A stunning, mobile-first storefront that builds immediate trust with your Nigerian audience.",
     color: "bg-purple-500/10 text-purple-600",
   },
 ];
