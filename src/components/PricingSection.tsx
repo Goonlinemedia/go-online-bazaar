@@ -25,8 +25,8 @@ const PricingSection = () => {
 
   const plans = [
     {
-      name: "Launch",
-      type: "Starter",
+      name: "Starter",
+      type: "Kickstart",
       prices: {
         monthly: 5000,
         quarterly: 14500,
@@ -52,8 +52,8 @@ const PricingSection = () => {
       ctaText: "Get My Store Built"
     },
     {
-      name: "Grow",
-      type: "Deluxe",
+      name: "Deluxe",
+      type: "Accelerate",
       prices: {
         monthly: 10000,
         quarterly: 28500,
@@ -64,7 +64,7 @@ const PricingSection = () => {
       popular: true,
       badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
-        "Everything in Launch, plus:",
+        "Everything in Starter, plus:",
         "Up to 200 products",
         "3 premium store designs",
         "Connect your custom domain",
@@ -79,8 +79,8 @@ const PricingSection = () => {
       ctaText: "Start My Store Now"
     },
     {
-      name: "Scale",
-      type: "Ultimate",
+      name: "Ultimate",
+      type: "Dominate",
       prices: {
         monthly: 20000,
         quarterly: 57000,
@@ -90,7 +90,7 @@ const PricingSection = () => {
       desc: "🚀 For serious sellers ready to go big.",
       badge: "BEST VALUE",
       getFeatures: (cycle: BillingCycle) => [
-        "Everything in Grow, plus:",
+        "Everything in Deluxe, plus:",
         "Up to 1000 products",
         "Blog (for SEO & content marketing)",
         "Priority support (email + WhatsApp + calls)",
@@ -121,12 +121,12 @@ const PricingSection = () => {
     const whatsappNumber = "2348035826698"; 
     let message = "";
 
-    if (planType === "Starter") {
-      message = `Hi Go Online! 👋 I'm interested in the Launch (Starter) plan for ${price}/${period}. I want to get my store built fast! 🚀`;
-    } else if (planType === "Deluxe") {
-      message = `Hello Go Online! 🔥 I want to start my store now with the Grow (Deluxe) plan for ${price}/${period}. Let's build a real brand! ⚡`;
+    if (planName === "Starter") {
+      message = `Hi Go Online! 👋 I'm interested in the Starter (Kickstart) plan for ${price}/${period}. I want to get my store built fast! 🚀`;
+    } else if (planName === "Deluxe") {
+      message = `Hello Go Online! 🔥 I want to start my store now with the Deluxe (Accelerate) plan for ${price}/${period}. Let's build a real brand! ⚡`;
     } else {
-      message = `Hi there! 🚀 I'm ready to build my store today with the Scale (Ultimate) plan for ${price}/${period}. I want to go big! 💎`;
+      message = `Hi there! 🚀 I'm ready to build my store today with the Ultimate (Dominate) plan for ${price}/${period}. I want to go big! 💎`;
     }
 
     const encodedMessage = encodeURIComponent(message);
@@ -266,7 +266,7 @@ const PricingSection = () => {
           <div className="relative z-10">
             <h4 className="text-xl font-bold mb-4 font-heading">💡 Not sure which plan to choose?</h4>
             <p className="text-muted-foreground leading-relaxed mb-6">
-              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Launch</span> plan today and upgrade any time as your business grows. 
+              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Starter</span> plan today and upgrade any time as your business grows. 
               <br className="hidden md:block" />
               <span className="text-foreground font-bold">No hidden fees. No commissions. You keep 100% of your sales.</span>
             </p>
@@ -349,7 +349,7 @@ const PricingSection = () => {
           <AccordionItem value="item-5" className="bg-card border px-6 rounded-2xl">
             <AccordionTrigger className="hover:no-underline font-semibold text-left">Can I use my own domain?</AccordionTrigger>
             <AccordionContent className="text-muted-foreground">
-              Yes — custom domains are available on the Grow plan and above. You can easily connect your own perfectly branded domain name.
+              Yes — custom domains are available on the Deluxe plan and above. You can easily connect your own perfectly branded domain name.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
