@@ -10,6 +10,7 @@ import Testimonials from "@/components/Testimonials";
 import PricingSection from "@/components/PricingSection";
 import StatsSection from "@/components/StatsSection";
 import ContactSection from "@/components/ContactSection";
+import FAQSection from "@/components/FAQSection";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
@@ -29,6 +30,7 @@ const Index = () => (
     <Testimonials />
     <StatsSection />
     <ContactSection />
+    <FAQSection />
     <FinalCTA />
     <Footer />
     <WhatsAppWidget />

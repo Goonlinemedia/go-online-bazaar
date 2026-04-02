@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Check, X, Sparkles, Store, Smartphone, MessageCircle, ArrowRight } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useAnalytics } from "@/hooks/use-analytics";
 
@@ -313,48 +312,6 @@ const PricingSection = () => {
           </div>
         </div>
       </section>
-
-      {/* ❓ FAQ SECTION */}
-      <section className="max-w-3xl mx-auto py-24 px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Got questions? ❓</h2>
-          <p className="text-muted-foreground">We've got answers.</p>
-        </div>
-        
-        <Accordion type="single" collapsible className="w-full space-y-4">
-          <AccordionItem value="item-1" className="bg-card border px-6 rounded-2xl">
-            <AccordionTrigger className="hover:no-underline font-semibold text-left">Do I need technical skills?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Nope. If you can use WhatsApp, you can use this. We've simplified everything so you can focus on selling.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2" className="bg-card border px-6 rounded-2xl">
-            <AccordionTrigger className="hover:no-underline font-semibold text-left">How do I receive orders?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Customers browse your website, add items to their cart, and their order is sent directly to your WhatsApp instantly. You can chat with them and finalize the sale immediately.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3" className="bg-card border px-6 rounded-2xl">
-            <AccordionTrigger className="hover:no-underline font-semibold text-left">Can I upgrade later?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Yes! You can upgrade anytime as your business grows. We make it easy to scale up seamlessly without any downtime.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-4" className="bg-card border px-6 rounded-2xl">
-            <AccordionTrigger className="hover:no-underline font-semibold text-left">Do you take commissions?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              No. We charge a flat subscription fee. What you earn from your sales is 100% yours to keep.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-5" className="bg-card border px-6 rounded-2xl">
-            <AccordionTrigger className="hover:no-underline font-semibold text-left">Can I use my own domain?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Yes — custom domains are available on the Deluxe plan and above. You can easily connect your own perfectly branded domain name.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </section>
-
     </div>
   );
 };
