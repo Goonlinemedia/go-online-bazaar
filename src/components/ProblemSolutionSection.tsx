@@ -2,15 +2,17 @@ import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 
 const ProblemSolutionSection = () => {
   const problems = [
-    "Posting on WhatsApp but losing orders in chat?",
-    "Customers asking 'price?' but never buying?",
-    "No proper online store to showcase your products?",
+    "Selling through WhatsApp can be unstructured and difficult to manage",
+    "Customers often show interest but don’t complete purchases",
+    "Repeating product details manually takes time",
+    "Without a proper store, your business may not appear credible",
   ];
 
   const solutions = [
-    "Goonline gives you a simple, professional store link.",
-    "Instant WhatsApp checkout – orders land in your DM with all details.",
-    "Showcase 100s of products easily without repeating yourself.",
+    "We build a clean, professional online store for your business",
+    "Your customers can place orders easily, with full details sent to your WhatsApp",
+    "All your products are organized and presented in one place",
+    "You save time and focus on growing your business",
   ];
 
   return (
@@ -39,7 +41,7 @@ const ProblemSolutionSection = () => {
               {problems.map((p, i) => (
                 <li key={i} className="flex items-start gap-4 text-muted-foreground">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2.5 flex-shrink-0" />
-                  <span className="text-lg">{p}</span>
+                  <span className="text-lg leading-relaxed">{p}</span>
                 </li>
               ))}
             </ul>
@@ -57,12 +59,14 @@ const ProblemSolutionSection = () => {
               {solutions.map((s, i) => (
                 <li key={i} className="flex items-start gap-4">
                   <div className="w-1.5 h-1.5 rounded-full bg-white mt-2.5 flex-shrink-0" />
-                  <span className="text-lg font-medium">{s}</span>
+                  <span className="text-lg font-medium leading-relaxed">{s}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-10">
-                <a href="#pricing" className="inline-flex items-center gap-2 bg-white text-primary font-bold py-3 px-6 rounded-xl hover:scale-105 transition-transform">
+            <div className="mt-10 border-t border-white/20 pt-8">
+                <p className="text-xl font-bold mb-2">Let Us Set Up Your Store for You</p>
+                <p className="text-sm opacity-90 mb-6">Simple process • No technical skills required</p>
+                <a href="#pricing" className="inline-flex items-center gap-2 bg-white text-primary font-bold py-3 px-8 rounded-xl hover:scale-105 transition-transform shadow-lg">
                     Start Receiving Orders Now
                 </a>
             </div>
