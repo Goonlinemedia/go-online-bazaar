@@ -24,21 +24,13 @@ const HeroSection = () => {
             Build your store, upload products, and start selling in minutes — all from your phone. No tech skills needed.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8">
             <a 
               href="#pricing" 
               onClick={() => trackEvent("cta_click", { section: "hero", button: "start_selling_now" })}
               className="btn-primary text-lg md:text-xl py-4 px-8 md:py-6 md:px-12 inline-flex items-center gap-3 shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all border-2 border-white/20 hover:-translate-y-1"
             >
               Start Selling Now <ArrowRight size={22} />
-            </a>
-            <a 
-              href="https://demo.goonline.com.ng" 
-              target="_blank"
-              onClick={() => trackEvent("cta_click", { section: "hero", button: "view_demo_store" })}
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/80 text-lg md:text-xl py-4 px-8 md:py-6 md:px-12 rounded-xl inline-flex items-center gap-3 transition-all border border-border/50 hover:-translate-y-1"
-            >
-              View Demo Store <ShoppingBag size={22} />
             </a>
           </div>
 
