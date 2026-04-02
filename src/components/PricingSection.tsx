@@ -26,7 +26,7 @@ const PricingSection = () => {
   const plans = [
     {
       name: "Starter",
-      type: "Kickstart",
+      type: "Launch",
       prices: {
         monthly: 5000,
         quarterly: 14500,
@@ -53,7 +53,7 @@ const PricingSection = () => {
     },
     {
       name: "Deluxe",
-      type: "Accelerate",
+      type: "Grow",
       prices: {
         monthly: 10000,
         quarterly: 28500,
@@ -80,7 +80,7 @@ const PricingSection = () => {
     },
     {
       name: "Ultimate",
-      type: "Dominate",
+      type: "Scale",
       prices: {
         monthly: 20000,
         quarterly: 57000,
@@ -122,11 +122,11 @@ const PricingSection = () => {
     let message = "";
 
     if (planName === "Starter") {
-      message = `Hi Go Online! 👋 I'm interested in the Starter (Kickstart) plan for ${price}/${period}. I want to get my store built fast! 🚀`;
+      message = `Hi Go Online! 👋 I'm interested in the Starter (Launch) plan for ${price}/${period}. I want to get my store built fast! 🚀`;
     } else if (planName === "Deluxe") {
-      message = `Hello Go Online! 🔥 I want to start my store now with the Deluxe (Accelerate) plan for ${price}/${period}. Let's build a real brand! ⚡`;
+      message = `Hello Go Online! 🔥 I want to start my store now with the Deluxe (Grow) plan for ${price}/${period}. Let's build a real brand! ⚡`;
     } else {
-      message = `Hi there! 🚀 I'm ready to build my store today with the Ultimate (Dominate) plan for ${price}/${period}. I want to go big! 💎`;
+      message = `Hi there! 🚀 I'm ready to build my store today with the Ultimate (Scale) plan for ${price}/${period}. I want to go big! 💎`;
     }
 
     const encodedMessage = encodeURIComponent(message);
