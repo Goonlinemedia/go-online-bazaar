@@ -12,31 +12,31 @@ const FAQSection = () => {
         <AccordionItem value="item-1" className="bg-card border px-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
           <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Do I need technical skills?</AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed">
-            Nope. If you can use WhatsApp, you can use this. We've simplified everything so you can focus on selling while we handle the tech.
+            No. If you can use WhatsApp, you can use Goonline. We build everything for you so you can focus on your business.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2" className="bg-card border px-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">How do I receive orders?</AccordionTrigger>
+          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Can I use WhatsApp?</AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed">
-            Customers browse your website, add items to their cart, and their order is sent directly to your WhatsApp instantly. You can chat with them and finalize the sale immediately.
+            Yes! That's the best part. Your store is connected directly to your WhatsApp. When a customer orders, it lands straight in your DM.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3" className="bg-card border px-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Can I upgrade later?</AccordionTrigger>
+          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">How do I receive payments?</AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed">
-            Yes! You can upgrade anytime as your business grows. We make it easy to scale up seamlessly without any downtime or data loss.
+            You can receive payments via Bank Transfer, Paystack, or Flutterwave. We set everything up for you during the onboarding process.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-4" className="bg-card border px-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Do you take commissions?</AccordionTrigger>
+          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Can I upgrade later?</AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed">
-            No. We charge a flat subscription fee. What you earn from your sales is 100% yours to keep. No hidden fees, ever.
+            Yes, you can upgrade your plan at any time as your business grows. Just send us a message and we'll handle it.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-5" className="bg-card border px-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Can I use my own domain?</AccordionTrigger>
+          <AccordionTrigger className="hover:no-underline font-semibold text-left font-heading">Is there support?</AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed">
-            Yes — custom domains are available on the Deluxe plan and above. You can easily connect your own perfectly branded domain name to build even more trust.
+            Yes! We provide priority support via WhatsApp and Email to ensure your store is always running smoothly.
           </AccordionContent>
         </AccordionItem>
       </Accordion>

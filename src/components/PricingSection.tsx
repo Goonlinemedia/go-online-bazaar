@@ -24,7 +24,7 @@ const PricingSection = () => {
 
   const plans = [
     {
-      name: "Starter",
+      name: "Hustle",
       type: "Launch",
       prices: {
         monthly: 5000,
@@ -32,26 +32,25 @@ const PricingSection = () => {
         biannual: 27500,
         annual: 55000
       },
-      desc: "💡 Perfect for testing your idea or starting your first online business.",
+      desc: "Perfect to start selling today",
       getFeatures: (cycle: BillingCycle) => [
         `Up to ${cycle === "annual" ? "50" : "20"} products`,
         "Unlimited orders",
-        "1 clean store design",
-        "WhatsApp checkout (get orders instantly)",
+        "WhatsApp checkout (instant orders)",
         "Coupons & discounts",
-        "Manual + automatic payments",
+        "Payment setup",
         "Sales tracking",
         "Delivery & shipping setup",
         "Email + WhatsApp support"
       ],
       unavailable: [
-        "No custom domain (yourstore.yoursite.com)"
+        "No custom domain"
       ],
-      tagline: "👉 Keep it simple. Get built fast.",
-      ctaText: "Get My Store Built"
+      tagline: "Start small, sell fast",
+      ctaText: "Start Selling"
     },
     {
-      name: "Deluxe",
+      name: "Pro Seller",
       type: "Grow",
       prices: {
         monthly: 10000,
@@ -59,26 +58,26 @@ const PricingSection = () => {
         biannual: 55000,
         annual: 110000
       },
-      desc: "🔥 Most Popular — best for growing businesses. The sweet spot for established sellers.",
+      desc: "For serious sellers ready to grow fast",
       popular: true,
       badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
-        "Everything in Starter, plus:",
+        "Everything in Hustle, plus:",
         "Up to 200 products",
+        "Custom domain connection",
         "3 premium store designs",
-        "Connect your custom domain",
-        "Role management (team access)",
-        "Tracking pixel (run ads like a pro)",
-        "Advanced store customization",
-        "Email notifications (SMTP)",
+        "Facebook/Instagram tracking pixel",
+        "Advanced customization",
+        "Email notifications",
         "No Free Custom Domain"
       ],
       unavailable: [],
-      tagline: "👉 Build a real brand, not just a store.",
-      ctaText: "Start My Store Now"
+      tagline: "Grow your sales daily",
+      ctaText: "Start Growing Now",
+      recommended: "💡 Recommended: Most sellers choose this plan to grow faster"
     },
     {
-      name: "Ultimate",
+      name: "Empire",
       type: "Scale",
       prices: {
         monthly: 20000,
@@ -86,20 +85,19 @@ const PricingSection = () => {
         biannual: 110000,
         annual: 220000
       },
-      desc: "🚀 For serious sellers ready to go big.",
+      desc: "Build a full business, not just a store",
       badge: "BEST VALUE",
       getFeatures: (cycle: BillingCycle) => [
-        "Everything in Deluxe, plus:",
+        "Everything in Pro Seller, plus:",
         "Up to 1000 products",
-        "Blog (for SEO & content marketing)",
-        "Priority support (email + WhatsApp + calls)",
-        "More control, more customization",
-        "Built for high-volume businesses",
+        "Blog (SEO + content marketing)",
+        "Priority support (calls + WhatsApp)",
+        "Advanced control & scaling tools",
         cycle === "annual" ? "Free .com.ng Custom Domain" : "No Free Custom Domain"
       ],
       unavailable: [],
-      tagline: "👉 Turn your store into a full business engine.",
-      ctaText: "Build My Store Today"
+      tagline: "Run a serious business",
+      ctaText: "Build My Business"
     }
   ];
 
@@ -120,12 +118,12 @@ const PricingSection = () => {
     const whatsappNumber = "2348035826698"; 
     let message = "";
 
-    if (planName === "Starter") {
-      message = `Hi Go Online! 👋 I'm interested in the Starter (Launch) plan for ${price}/${period}. I want to get my store built fast! 🚀`;
-    } else if (planName === "Deluxe") {
-      message = `Hello Go Online! 🔥 I want to start my store now with the Deluxe (Grow) plan for ${price}/${period}. Let's build a real brand! ⚡`;
+    if (planName === "Hustle") {
+      message = `Hi Go Online! 👋 I'm interested in the Hustle plan for ${price}/${period}. I want to get my store built fast! 🚀`;
+    } else if (planName === "Pro Seller") {
+      message = `Hello Go Online! 🔥 I want to start my store now with the Pro Seller plan for ${price}/${period}. Let's build a real brand! ⚡`;
     } else {
-      message = `Hi there! 🚀 I'm ready to build my store today with the Ultimate (Scale) plan for ${price}/${period}. I want to go big! 💎`;
+      message = `Hi there! 🚀 I'm ready to build my store today with the Empire plan for ${price}/${period}. I want to go big! 💎`;
     }
 
     const encodedMessage = encodeURIComponent(message);
@@ -139,15 +137,11 @@ const PricingSection = () => {
     <div id="pricing" className="w-full bg-background pb-20">
       {/* 🚀 HERO SECTION */}
       <section className="relative pt-24 pb-16 px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 animate-fade-in border border-primary/20">
-          <img src="/favicon.png" alt="Logo" className="w-4 h-4" />
-          Start selling in minutes
-        </div>
-        <h1 className="text-3xl md:text-6xl font-bold font-heading text-foreground tracking-tight mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
-          Get paid on <span className="text-green-500">WhatsApp.</span>
+        <h1 className="text-3xl md:text-5xl font-bold font-heading text-foreground tracking-tight mb-6 mt-16 animate-fade-in" style={{ animationDelay: "100ms" }}>
+          Choose the Plan That Fits Your Hustle
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
-          We build everything for you. No commissions. No hidden fees. You keep 100% of your sales. 
+          Start small, grow fast, and scale into a full business — no hidden fees.
         </p>
       </section>
 
@@ -240,7 +234,12 @@ const PricingSection = () => {
             </div>
 
             <div className="mt-8 pt-8 border-t border-border/10">
-              <p className={`text-sm font-bold text-center mb-4 ${plan.popular ? "text-white" : "text-foreground"}`}>
+              {plan.name === "Pro Seller" && (
+                <p className="text-xs font-bold text-center mb-4 text-green-500 bg-green-500/10 py-2 rounded-lg">
+                  {plan.recommended}
+                </p>
+              )}
+              <p className={`text-sm font-black text-center mb-4 ${plan.popular ? "text-white" : "text-foreground"}`}>
                 {plan.tagline}
               </p>
               <Button 
@@ -260,12 +259,24 @@ const PricingSection = () => {
 
       {/* 🛡️ RISK REMOVAL & URGENCY */}
       <div className="max-w-3xl mx-auto px-6 mb-24 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="flex items-center justify-center gap-2 font-bold text-foreground">
+                <Check className="text-green-500" size={20} /> No hidden fees
+            </div>
+            <div className="flex items-center justify-center gap-2 font-bold text-foreground">
+                <Check className="text-green-500" size={20} /> Cancel anytime
+            </div>
+            <div className="flex items-center justify-center gap-2 font-bold text-foreground">
+                <Check className="text-green-500" size={20} /> Instant setup
+            </div>
+        </div>
+
         <div className="bg-secondary/40 border border-border/50 rounded-3xl p-8 md:p-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16" />
           <div className="relative z-10">
             <h4 className="text-xl font-bold mb-4 font-heading">💡 Not sure which plan to choose?</h4>
             <p className="text-muted-foreground leading-relaxed mb-6">
-              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Starter</span> plan today and upgrade any time as your business grows. 
+              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Hustle</span> plan today and upgrade any time as your business grows. 
               <br className="hidden md:block" />
               <span className="text-foreground font-bold">No hidden fees. No commissions. You keep 100% of your sales.</span>
             </p>

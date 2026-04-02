@@ -3,20 +3,20 @@ import { MousePointer2, Settings2, Rocket } from "lucide-react";
 const steps = [
   {
     icon: MousePointer2,
-    title: "1. Choose Your Plan",
-    desc: "Pick the plan that fits your business goals. From simple starters to high-volume engines.",
+    title: "1. Create Your Store",
+    desc: "Sign up and get your store ready instantly. No tech skills needed.",
     color: "bg-blue-500/10 text-blue-600",
   },
   {
     icon: Settings2,
-    title: "2. We Build Your Store",
-    desc: "Our experts take over. We set up your inventory, design your store, and link your WhatsApp.",
+    title: "2. Add Products",
+    desc: "Upload pictures, prices, and descriptions. Manage everything from your phone.",
     color: "bg-orange-500/10 text-orange-600",
   },
   {
     icon: Rocket,
-    title: "3. Start Selling",
-    desc: "Launch your store and start receiving orders directly on WhatsApp. No tech stress, just sales.",
+    title: "3. Start Receiving Orders",
+    desc: "Customers order directly to your WhatsApp. Close sales instantly in your DM.",
     color: "bg-primary/10 text-primary",
   },
 ];
