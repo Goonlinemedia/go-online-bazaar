@@ -1,10 +1,9 @@
 import { ExternalLink } from "lucide-react";
 
 const vendors = [
+  { name: "Bitswitch", tag: "Crypto Trading Platform", image: "/bitswitch-cover.png", link: "https://bitswitch.vercel.app/" },
+  { name: "Go Online Estates", tag: "Real Estate Marketplace", image: "/estate-cover.png", link: "https://goonline-estate.vercel.app/" },
   { name: "PrintHub", tag: "Printing & Branding", image: "/printhub-cover.png", link: "https://print-powerhouse-hub.vercel.app/" },
-  { name: "Wicked Stylist", tag: "Fashion", gradient: "from-teal to-teal-light", link: "#" },
-  { name: "Luscents", tag: "Fragrances", gradient: "from-accent to-purple", link: "#" },
-  { name: "Zack Stylist", tag: "Men's Wear", gradient: "from-teal-dark to-teal", link: "#" },
 ];
 
 const VendorSpotlights = () => (
@@ -29,7 +28,7 @@ const VendorSpotlights = () => (
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {vendors.map((v) => (
           <a
             key={v.name}
@@ -38,12 +37,12 @@ const VendorSpotlights = () => (
             rel="noopener noreferrer"
             className="group glass-card overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer block"
           >
-            <div className={`h-40 relative overflow-hidden ${v.image ? 'bg-[#151515]' : `bg-gradient-to-br ${v.gradient}`}`}>
+            <div className="h-48 relative overflow-hidden bg-[#0e0e0e]">
               {v.image && (
                 <img 
                   src={v.image} 
                   alt={v.name} 
-                  className="absolute inset-0 w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                  className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
                 />
               )}
               <div className="absolute inset-0 bg-foreground/10 group-hover:bg-foreground/20 transition-colors" />
