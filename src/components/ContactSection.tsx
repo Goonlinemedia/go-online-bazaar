@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { useAnalytics } from "@/hooks/use-analytics";
+import emailjs from "@emailjs/browser";
 
 const ContactSection = () => {
   const [form, setForm] = useState({ name: "", email: "", mobile: "", message: "" });
@@ -23,19 +24,36 @@ const ContactSection = () => {
 
     setLoading(true);
     try {
+      // 1. Save lead to Firestore
       await addDoc(collection(db, "leads"), {
         ...form,
         status: "New",
         createdAt: serverTimestamp(),
       });
-      
+
+      // 2. Send email notification via EmailJS (non-blocking)
+      emailjs
+        .send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            from_name: form.name,
+            from_email: form.email,
+            mobile: form.mobile || "Not provided",
+            message: form.message,
+            to_email: "goonlinemedia0@gmail.com",
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        )
+        .catch((err) => console.error("[EmailJS Error]", err));
+
       trackEvent("contact_form_success", { name: form.name });
       toast.success("Message sent successfully! We'll get back to you soon.");
       setForm({ name: "", email: "", mobile: "", message: "" });
     } catch (error: any) {
       console.error("[Contact Error] Full Error Object:", error);
       trackEvent("contact_form_error", { error: error.message || "Unknown error" });
-      
+
       if (error.code === "permission-denied") {
         toast.error("Security access denied. Please contact site admin.");
       } else {
