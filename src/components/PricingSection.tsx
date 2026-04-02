@@ -259,17 +259,6 @@ const PricingSection = () => {
 
       {/* 🛡️ RISK REMOVAL & URGENCY */}
       <div className="max-w-3xl mx-auto px-6 mb-24 text-center">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="flex items-center justify-center gap-2 font-bold text-foreground">
-                <Check className="text-green-500" size={20} /> No hidden fees
-            </div>
-            <div className="flex items-center justify-center gap-2 font-bold text-foreground">
-                <Check className="text-green-500" size={20} /> Cancel anytime
-            </div>
-            <div className="flex items-center justify-center gap-2 font-bold text-foreground">
-                <Check className="text-green-500" size={20} /> Instant setup
-            </div>
-        </div>
 
         <div className="bg-secondary/40 border border-border/50 rounded-3xl p-8 md:p-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16" />
