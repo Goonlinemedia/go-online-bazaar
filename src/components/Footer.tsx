@@ -46,7 +46,8 @@ const Footer = () => (
     <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px]">
       <p>© {new Date().getFullYear()} Go Online. All rights reserved.</p>
       <div className="flex gap-6">
-         <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+         <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+         <Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link>
          <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
       </div>
     </div>
