@@ -1,4 +1,5 @@
 import { Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => (
   <footer className="bg-navy text-primary-foreground/70 py-14 px-4">
@@ -46,7 +47,7 @@ const Footer = () => (
       <p>© {new Date().getFullYear()} Go Online. All rights reserved.</p>
       <div className="flex gap-6">
          <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-         <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+         <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
       </div>
     </div>
   </footer>
