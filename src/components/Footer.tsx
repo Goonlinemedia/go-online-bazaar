@@ -6,7 +6,7 @@ const Footer = () => (
     <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
       <div>
         <div className="flex items-center mb-4 overflow-visible">
-          <img src="/logo.png" alt="GoOnline Logo" className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left" />
+          <img src="/logo.png" alt="GoOnline Logo" className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]" />
         </div>
         <p className="text-sm leading-relaxed">
           Your all-inclusive digital store builder. Sell products to anyone, anywhere.
