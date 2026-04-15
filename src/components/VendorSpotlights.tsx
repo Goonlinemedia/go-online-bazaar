@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react";
 
 const vendors = [
   { name: "Bitswitch", tag: "Crypto Trading Platform", image: "/bitswitch-cover.png", link: "https://bitswitch.vercel.app/" },
-  { name: "Go Online Estates", tag: "Real Estate Marketplace", image: "/estate-cover.png", link: "https://goonline-estate.vercel.app/" },
+  { name: "GoOnline Estates", tag: "Real Estate Marketplace", image: "/estate-cover.png", link: "https://goonline-estate.vercel.app/" },
   { name: "PrintHub", tag: "Printing & Branding", image: "/printhub-cover.png", link: "https://print-powerhouse-hub.vercel.app/" },
 ];
 

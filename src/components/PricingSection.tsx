@@ -119,9 +119,9 @@ const PricingSection = () => {
     let message = "";
 
     if (planName === "Hustle") {
-      message = `Hi Go Online! 👋 I'm interested in the Hustle plan for ${price}/${period}. I want to get my store built fast! 🚀`;
+      message = `Hi GoOnline! 👋 I'm interested in the Hustle plan for ${price}/${period}. I want to get my store built fast! 🚀`;
     } else if (planName === "Pro Seller") {
-      message = `Hello Go Online! 🔥 I want to start my store now with the Pro Seller plan for ${price}/${period}. Let's build a real brand! ⚡`;
+      message = `Hello GoOnline! 🔥 I want to start my store now with the Pro Seller plan for ${price}/${period}. Let's build a real brand! ⚡`;
     } else {
       message = `Hi there! 🚀 I'm ready to build my store today with the Empire plan for ${price}/${period}. I want to go big! 💎`;
     }
@@ -288,7 +288,7 @@ const PricingSection = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
               <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center p-2.5">
-                <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
+                <img src="/favicon.png" alt="GoOnline Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h4 className="font-bold text-lg mb-2">We Build It For You</h4>

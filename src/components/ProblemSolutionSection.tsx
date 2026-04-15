@@ -24,7 +24,7 @@ const ProblemSolutionSection = () => {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             You work too hard to let messy WhatsApp chats kill your business. 
-            Goonline turns your phone into a professional sales machine.
+            GoOnline turns your phone into a professional sales machine.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ const ProblemSolutionSection = () => {
               <CheckCircle2 size={80} className="text-white" />
             </div>
             <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
-              <CheckCircle2 size={24} /> The Goonline Solution
+              <CheckCircle2 size={24} /> The GoOnline Solution
             </h3>
             <ul className="space-y-6">
               {solutions.map((s, i) => (

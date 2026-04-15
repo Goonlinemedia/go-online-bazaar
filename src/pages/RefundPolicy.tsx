@@ -24,7 +24,7 @@ const RefundPolicy = () => {
 
         <div className="prose prose-slate max-w-none prose-headings:font-heading prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground">
           <p className="text-lg mb-8">
-            At Goonline, we aim to provide high-quality website services. This Refund Policy outlines how refunds are handled.
+            At GoOnline, we aim to provide high-quality website services. This Refund Policy outlines how refunds are handled.
           </p>
 
           <hr className="my-12 border-border" />
@@ -102,7 +102,7 @@ const RefundPolicy = () => {
           <hr className="my-12 border-border" />
 
           <p className="text-sm italic">
-            By subscribing to Goonline, you agree to this Refund Policy.
+            By subscribing to GoOnline, you agree to this Refund Policy.
           </p>
         </div>
       </main>

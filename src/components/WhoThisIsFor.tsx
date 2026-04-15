@@ -33,7 +33,7 @@ const WhoThisIsFor = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-black text-foreground font-heading">
-            Who is <span className="text-primary">Go Online</span> for?
+            Who is <span className="text-primary">GoOnline</span> for?
           </h2>
           <p className="mt-4 text-muted-foreground text-lg">
             We build for growth-minded entrepreneurs who want to sell more, faster.

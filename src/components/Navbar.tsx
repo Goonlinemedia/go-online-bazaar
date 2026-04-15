@@ -9,11 +9,8 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-3">
-          <img src="/favicon.png" alt="Go Online Logo" className="w-9 h-9 rounded-xl shadow-sm" />
-          <span className="text-xl font-black font-heading text-foreground tracking-tighter">
-            Go<span className="text-primary">Online</span>
-          </span>
+        <a href="#" className="flex items-center overflow-visible">
+          <img src="/logo.png" alt="GoOnline Logo" className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left" />
         </a>
 
         <div className="hidden md:flex items-center gap-8">

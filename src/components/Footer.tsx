@@ -5,11 +5,8 @@ const Footer = () => (
   <footer className="bg-navy text-primary-foreground/70 py-14 px-4">
     <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
       <div>
-        <div className="flex items-center gap-3 mb-4">
-          <img src="/favicon.png" alt="Go Online Logo" className="w-8 h-8 rounded-lg shadow-sm" />
-          <span className="text-lg font-bold font-heading text-primary-foreground tracking-tighter">
-            Go<span className="text-primary">Online</span>
-          </span>
+        <div className="flex items-center mb-4 overflow-visible">
+          <img src="/logo.png" alt="GoOnline Logo" className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left" />
         </div>
         <p className="text-sm leading-relaxed">
           Your all-inclusive digital store builder. Sell products to anyone, anywhere.
@@ -44,7 +41,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px]">
-      <p>© {new Date().getFullYear()} Go Online. All rights reserved.</p>
+      <p>© {new Date().getFullYear()} GoOnline. All rights reserved.</p>
       <div className="flex gap-6">
          <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
          <Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link>

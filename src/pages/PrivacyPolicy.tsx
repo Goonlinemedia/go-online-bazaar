@@ -24,7 +24,7 @@ const PrivacyPolicy = () => {
 
         <div className="prose prose-slate max-w-none prose-headings:font-heading prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground">
           <p className="text-lg mb-8">
-            Goonline ("we", "our", "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data.
+            GoOnline ("we", "our", "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data.
           </p>
 
           <hr className="my-12 border-border" />
@@ -126,7 +126,7 @@ const PrivacyPolicy = () => {
           <hr className="my-12 border-border" />
 
           <p className="text-sm italic">
-            By using Goonline, you agree to this Privacy Policy.
+            By using GoOnline, you agree to this Privacy Policy.
           </p>
         </div>
       </main>

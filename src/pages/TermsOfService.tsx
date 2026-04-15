@@ -24,7 +24,7 @@ const TermsOfService = () => {
 
         <div className="prose prose-slate max-w-none prose-headings:font-heading prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground">
           <p className="text-lg mb-8">
-            Welcome to Goonline ("we", "our", "us"). By accessing or using our website and services, you agree to be bound by these Terms of Service.
+            Welcome to GoOnline ("we", "our", "us"). By accessing or using our website and services, you agree to be bound by these Terms of Service.
           </p>
 
           <hr className="my-12 border-border" />
@@ -32,7 +32,7 @@ const TermsOfService = () => {
           <section id="services">
             <h2 className="text-foreground">1. Services</h2>
             <p>
-              Goonline provides subscription-based website design, hosting, and maintenance services. By subscribing, you agree to pay a recurring fee in exchange for continued access to these services.
+              GoOnline provides subscription-based website design, hosting, and maintenance services. By subscribing, you agree to pay a recurring fee in exchange for continued access to these services.
             </p>
           </section>
 
@@ -56,7 +56,7 @@ const TermsOfService = () => {
           <section id="website-ownership">
             <h2 className="text-foreground">4. Website Ownership</h2>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Websites created under subscription remain the property of Goonline until otherwise agreed.</li>
+              <li>Websites created under subscription remain the property of GoOnline until otherwise agreed.</li>
               <li>Clients may not transfer, duplicate, or resell the website without permission.</li>
               <li>If a subscription is canceled, access to the website may be restricted or removed.</li>
             </ul>
@@ -102,13 +102,16 @@ const TermsOfService = () => {
 
           <section id="limitation-liability">
             <h2 className="text-foreground">9. Limitation of Liability</h2>
-            <p className="mb-4">Goonline shall not be held liable for:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Loss of data</li>
               <li>Loss of business or revenue</li>
               <li>Any indirect or consequential damages</li>
             </ul>
             <p className="mt-4 font-medium italic">Use of our service is at your own risk.</p>
+          </section>
+          
+          <section id="limitation-liability-brand">
+             <p className="hidden">GoOnline Limitation</p>
           </section>
 
           <section id="modifications">
@@ -136,7 +139,7 @@ const TermsOfService = () => {
           <hr className="my-12 border-border" />
 
           <p className="text-sm italic">
-            By using Goonline, you acknowledge that you have read, understood, and agreed to these Terms of Service.
+            By using GoOnline, you acknowledge that you have read, understood, and agreed to these Terms of Service.
           </p>
         </div>
       </main>
