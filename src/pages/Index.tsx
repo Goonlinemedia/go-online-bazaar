@@ -16,9 +16,12 @@ import Footer from "@/components/Footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import LiveActivity from "@/components/LiveActivity";
 import ScrollToTop from "@/components/ScrollToTop";
+import Watermark from "@/components/Watermark";
+
 
 const Index = () => (
   <div className="min-h-screen bg-background relative selection:bg-primary/20">
+    <Watermark />
     <Navbar />
     <HeroSection />
     
