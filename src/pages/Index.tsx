@@ -18,9 +18,13 @@ import LiveActivity from "@/components/LiveActivity";
 import ScrollToTop from "@/components/ScrollToTop";
 import Watermark from "@/components/Watermark";
 import MouseGlow from "@/components/MouseGlow";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
-const Index = () => (
-  <div className="min-h-screen bg-background relative selection:bg-primary/20">
+const Index = () => {
+  useScrollReveal();
+
+  return (
+    <div className="min-h-screen bg-background relative selection:bg-primary/20">
     <MouseGlow />
     <Watermark />
     <Navbar />
@@ -59,7 +63,8 @@ const Index = () => (
     <WhatsAppWidget />
     <LiveActivity />
     <ScrollToTop />
-  </div>
-);
+    </div>
+  );
+};
 
 export default Index;
