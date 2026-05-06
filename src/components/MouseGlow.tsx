@@ -29,16 +29,10 @@ const MouseGlow = () => {
 
     const onMouseLeave = () => setIsVisible(false);
     const onMouseEnter = () => setIsVisible(true);
-    const onMouseDown = () => {
-      if (ringRef.current) {
-        ringRef.current.style.transform = `${ringRef.current.style.transform} scale(0.85)`;
-      }
-    };
-    const onMouseUp = () => {
-      if (ringRef.current) {
-        ringRef.current.style.transform = ringRef.current.style.transform.replace(" scale(0.85)", "");
-      }
-    };
+    
+    let isClicking = false;
+    const onMouseDown = () => { isClicking = true; };
+    const onMouseUp = () => { isClicking = false; };
 
     window.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseleave", onMouseLeave);
@@ -54,7 +48,8 @@ const MouseGlow = () => {
       ringPos.current.y += (mousePos.current.y - ringPos.current.y) * lerp;
 
       if (ringRef.current) {
-        ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0)`;
+        const scale = isClicking ? 0.85 : 1;
+        ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) scale(${scale})`;
       }
 
       rafId = requestAnimationFrame(animateRing);
@@ -76,9 +71,11 @@ const MouseGlow = () => {
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mouseup", onMouseUp);
       cancelAnimationFrame(rafId);
-      document.head.removeChild(style);
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
     };
-  }, [isVisible]);
+  }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[99999] overflow-hidden">
