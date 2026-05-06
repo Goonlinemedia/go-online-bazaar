@@ -13,6 +13,45 @@ import ContactSection from "@/components/ContactSection";
 import FAQSection from "@/components/FAQSection";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
+import MouseGlow from "@/components/MouseGlow";
+import FloatingBlobs from "@/components/FloatingBlobs";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+import logo from "@/assets/logo.png";
+
+const Index = () => {
+  useScrollReveal();
+  return (
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
+      <FloatingBlobs />
+      <MouseGlow />
+
+      {/* Watermark */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
+        aria-hidden="true"
+      >
+        <img
+          src={logo}
+          alt=""
+          className="w-[500px] max-w-[80vw] opacity-[0.04] select-none"
+          draggable={false}
+        />
+      </div>
+
+      <div className="relative z-10">
+        <Navbar />
+        <div data-reveal><HeroSection /></div>
+        <div data-reveal><FeaturesSection /></div>
+        <div data-reveal><AllInclusiveSection /></div>
+        <div data-reveal><VendorSpotlights /></div>
+        <div data-reveal><PricingSection /></div>
+        <div data-reveal><StatsSection /></div>
+        <div data-reveal><ContactSection /></div>
+        <Footer />
+      </div>
+    </div>
+  );
+};
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import LiveActivity from "@/components/LiveActivity";
 import ScrollToTop from "@/components/ScrollToTop";
