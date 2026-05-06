@@ -1,41 +1,35 @@
-import { MessageCircle, Mail, Globe, Search, CreditCard, Palette } from "lucide-react";
+import { BadgeDollarSign, Zap, Smartphone, LineChart, ShieldCheck } from "lucide-react";
 
 const features = [
   {
-    icon: MessageCircle,
-    title: "WhatsApp Orders",
-    desc: "Receive orders and chat with customers directly on WhatsApp — no extra apps needed.",
+    icon: BadgeDollarSign,
+    title: "Close More Sales",
+    desc: "Get orders instantly on WhatsApp. No complicated checkout — just a simple chat to close the deal.",
+    color: "bg-emerald-500/10 text-emerald-600",
+  },
+  {
+    icon: Zap,
+    title: "Set Up in Minutes",
+    desc: "No tech skills? No problem. We build your store fast so you can start selling immediately.",
     color: "bg-primary/10 text-primary",
   },
   {
-    icon: Mail,
-    title: "Dedicated Support",
-    desc: "Get responsive email & phone support to help your business thrive.",
-    color: "bg-accent/10 text-accent",
+    icon: Smartphone,
+    title: "Run from Your Phone",
+    desc: "Manage your products, track orders, and talk to customers — all from the palm of your hand.",
+    color: "bg-blue-500/10 text-blue-600",
   },
   {
-    icon: Globe,
-    title: "Stunning Website",
-    desc: "Get a professionally designed, mobile-optimized business website in minutes.",
-    color: "bg-primary/10 text-primary",
+    icon: LineChart,
+    title: "Track Sales Easily",
+    desc: "Simple, easy-to-read dashboards so you know exactly how your business is growing.",
+    color: "bg-orange-500/10 text-orange-600",
   },
   {
-    icon: Search,
-    title: "Built-in SEO",
-    desc: "Rank higher on Google with our built-in SEO tools — no expertise required.",
-    color: "bg-accent/10 text-accent",
-  },
-  {
-    icon: CreditCard,
-    title: "Flexible Payments",
-    desc: "Accept payments via bank transfer, cards, USSD — automatic or manual.",
-    color: "bg-primary/10 text-primary",
-  },
-  {
-    icon: Palette,
-    title: "Full Customization",
-    desc: "Match your brand — customize colors, fonts, layout, and every detail.",
-    color: "bg-accent/10 text-accent",
+    icon: ShieldCheck,
+    title: "Look Professional & Trusted",
+    desc: "A stunning, mobile-first storefront that builds immediate trust with your Nigerian audience.",
+    color: "bg-purple-500/10 text-purple-600",
   },
 ];
 
@@ -44,7 +38,7 @@ const FeaturesSection = () => (
     <div className="max-w-7xl mx-auto">
       <div className="max-w-2xl mb-16">
         <span className="text-sm font-semibold text-primary uppercase tracking-wider">Features</span>
-        <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground leading-tight">
+        <h2 className="mt-3 text-2xl md:text-4xl font-heading font-bold text-foreground leading-tight">
           Everything you need to
           <br />
           <span className="gradient-text">sell online successfully.</span>

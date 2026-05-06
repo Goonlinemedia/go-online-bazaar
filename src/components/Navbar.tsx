@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
-const navLinks = ["Features", "Vendors", "Pricing", "Blogs", "Contact"];
+const navLinks = ["Benefits", "Results", "Process", "Pricing", "FAQ"];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -9,13 +9,8 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Zap className="text-primary-foreground" size={18} />
-          </div>
-          <span className="text-xl font-bold font-heading text-foreground tracking-tight">
-            Go<span className="text-primary">Online</span>
-          </span>
+        <a href="#" className="flex items-center overflow-visible">
+          <img src="/logo.png" alt="GoOnline Logo" className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]" />
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -30,8 +25,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <a href="#pricing" className="hidden md:inline-flex btn-primary text-sm">
-          Start Free Trial
+        <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I'm%20ready%20to%20start%20getting%20orders." target="_blank" rel="noopener noreferrer" className="hidden md:inline-flex btn-primary text-sm shadow-lg shadow-primary/20">
+          Start Getting Orders
         </a>
 
         <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
@@ -51,7 +46,7 @@ const Navbar = () => {
               {link}
             </a>
           ))}
-          <a href="#pricing" className="btn-primary text-sm inline-block">Start Free Trial</a>
+          <a href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I'm%20ready%20to%20start%20getting%20orders." target="_blank" rel="noopener noreferrer" className="btn-primary text-sm inline-block w-full text-center">Start Getting Orders</a>
         </div>
       )}
     </nav>

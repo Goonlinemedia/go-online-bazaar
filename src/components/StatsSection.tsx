@@ -1,7 +1,7 @@
 const stats = [
-  { value: "500,000+", label: "Successful Orders" },
-  { value: "102,000+", label: "Total Customers" },
-  { value: "4,000+", label: "Businesses Onboarded" },
+  { value: "100+", label: "Successful Orders" },
+  { value: "900+", label: "Total Customers" },
+  { value: "10+", label: "Businesses Onboarded" },
 ];
 
 const StatsSection = () => (
