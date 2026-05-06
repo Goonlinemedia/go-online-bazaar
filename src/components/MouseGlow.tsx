@@ -3,86 +3,109 @@ import { useEffect, useRef, useState } from "react";
 const MouseGlow = () => {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const target = useRef({ x: 0, y: 0 });
-  const ring = useRef({ x: 0, y: 0 });
-  const [hovering, setHovering] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const ringPos = useRef({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Hide on touch devices
+    // Check if touch device
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
-    target.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    ring.current = { ...target.current };
+    const onMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+      if (!isVisible) setIsVisible(true);
 
-    const onMove = (e: MouseEvent) => {
-      target.current = { x: e.clientX, y: e.clientY };
-      if (!visible) setVisible(true);
+      // Instant movement for the dot
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${e.clientX - 5}px, ${e.clientY - 5}px, 0)`;
+        dotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       }
-      const t = e.target as HTMLElement | null;
-      const isInteractive = !!t?.closest("a, button, [role='button'], input, textarea, select, label");
-      setHovering(isInteractive);
+
+      // Check if hovering interactive elements
+      const target = e.target as HTMLElement;
+      const isInteractive = !!target.closest("a, button, [role='button'], input, textarea, select, .interactive-hover");
+      setIsHovering(isInteractive);
     };
-    const onLeave = () => setVisible(false);
-    const onEnter = () => setVisible(true);
 
-    window.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("mouseenter", onEnter);
-
-    let raf = 0;
-    const tick = () => {
-      ring.current.x += (target.current.x - ring.current.x) * 0.18;
-      ring.current.y += (target.current.y - ring.current.y) * 0.18;
+    const onMouseLeave = () => setIsVisible(false);
+    const onMouseEnter = () => setIsVisible(true);
+    const onMouseDown = () => {
       if (ringRef.current) {
-        ringRef.current.style.transform = `translate3d(${ring.current.x - 18}px, ${ring.current.y - 18}px, 0)`;
+        ringRef.current.style.transform = `${ringRef.current.style.transform} scale(0.85)`;
       }
-      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
+    const onMouseUp = () => {
+      if (ringRef.current) {
+        ringRef.current.style.transform = ringRef.current.style.transform.replace(" scale(0.85)", "");
+      }
+    };
 
-    document.documentElement.style.cursor = "none";
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("mouseenter", onEnter);
-      cancelAnimationFrame(raf);
-      document.documentElement.style.cursor = "";
+    window.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseleave", onMouseLeave);
+    document.addEventListener("mouseenter", onMouseEnter);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+
+    // Smooth lerping for the ring
+    let rafId: number;
+    const animateRing = () => {
+      const lerp = 0.15; // Smoothness factor
+      ringPos.current.x += (mousePos.current.x - ringPos.current.x) * lerp;
+      ringPos.current.y += (mousePos.current.y - ringPos.current.y) * lerp;
+
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0)`;
+      }
+
+      rafId = requestAnimationFrame(animateRing);
     };
-  }, [visible]);
+    rafId = requestAnimationFrame(animateRing);
+
+    // Hide default cursor globally
+    const style = document.createElement("style");
+    style.innerHTML = `
+      * { cursor: none !important; }
+      a, button, [role='button'] { cursor: none !important; }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
+      document.removeEventListener("mouseenter", onMouseEnter);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      cancelAnimationFrame(rafId);
+      document.head.removeChild(style);
+    };
+  }, [isVisible]);
 
   return (
-    <>
+    <div className="fixed inset-0 pointer-events-none z-[99999] overflow-hidden">
+      {/* Trailing Ring */}
       <div
         ref={ringRef}
-        aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[9999] rounded-full border transition-[width,height,opacity,background-color,border-color] duration-200 ease-out"
+        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent/40 transition-all duration-300 ease-out"
         style={{
-          width: hovering ? 56 : 36,
-          height: hovering ? 56 : 36,
-          marginLeft: hovering ? -10 : 0,
-          marginTop: hovering ? -10 : 0,
-          borderColor: "hsl(var(--accent) / 0.7)",
-          backgroundColor: hovering ? "hsl(var(--accent) / 0.15)" : "transparent",
-          opacity: visible ? 1 : 0,
-          willChange: "transform",
-          mixBlendMode: "difference",
+          width: isHovering ? "60px" : "30px",
+          height: isHovering ? "60px" : "30px",
+          backgroundColor: isHovering ? "hsl(var(--accent) / 0.1)" : "transparent",
+          borderColor: isHovering ? "hsl(var(--accent) / 0.6)" : "hsl(var(--accent) / 0.3)",
+          opacity: isVisible ? 1 : 0,
+          boxShadow: isHovering ? "0 0 20px hsl(var(--accent) / 0.2)" : "none",
         }}
       />
+
+      {/* Center Dot */}
       <div
         ref={dotRef}
-        aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[9999] w-2.5 h-2.5 rounded-full"
+        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary"
         style={{
-          backgroundColor: "hsl(var(--primary))",
-          boxShadow: "0 0 12px hsl(var(--primary) / 0.7)",
-          opacity: visible ? 1 : 0,
-          willChange: "transform",
+          opacity: isVisible ? 1 : 0,
+          boxShadow: "0 0 10px hsl(var(--primary) / 0.5)",
         }}
       />
-    </>
+    </div>
   );
 };
 

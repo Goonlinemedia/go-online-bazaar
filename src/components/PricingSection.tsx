@@ -134,13 +134,19 @@ const PricingSection = () => {
   };
 
   return (
-    <div id="pricing" className="w-full bg-background pb-20">
+    <div id="pricing" className="w-full bg-background pb-32 relative overflow-hidden">
+      <div className="section-number">04</div>
+      <div className="aura-blob bg-primary w-[700px] h-[700px] -right-48 top-1/4 opacity-10" />
+
       {/* 🚀 HERO SECTION */}
-      <section className="relative pt-24 pb-16 px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <h1 className="text-3xl md:text-5xl font-bold font-heading text-foreground tracking-tight mb-6 mt-16 animate-fade-in" style={{ animationDelay: "100ms" }}>
-          Choose the Plan That Fits Your Hustle
+      <section className="relative pt-32 pb-20 px-6 lg:px-8 max-w-7xl mx-auto text-center" data-reveal>
+        <span className="text-sm font-black text-primary uppercase tracking-[0.2em] text-glow">Pricing Plans</span>
+        <h1 className="text-4xl md:text-7xl font-heading font-black text-foreground tracking-tighter leading-[0.95] mt-8 mb-8">
+          Choose the Plan That 
+          <br />
+          <span className="gradient-text italic font-black">Fits Your Hustle</span>
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
+        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium">
           Start small, grow fast, and scale into a full business — no hidden fees.
         </p>
       </section>
@@ -178,80 +184,92 @@ const PricingSection = () => {
       </section>
 
       {/* 💳 PRICING CARDS SECTION */}
-      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-6 lg:px-8 mb-24">
+      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto px-6 lg:px-8 mb-32">
         {plans.map((plan, i) => (
           <div
             key={plan.name}
-            className={`group relative flex flex-col h-full rounded-3xl p-6 md:p-8 transition-all duration-500 cursor-pointer ${
+            data-reveal
+            data-reveal-delay={i + 1}
+            onClick={() => handlePlanClick(plan.name, plan.type)}
+            className={`group relative flex flex-col h-full rounded-[2.5rem] p-10 md:p-12 transition-all duration-700 cursor-pointer overflow-hidden ${
               plan.popular 
-                ? "bg-foreground text-background shadow-2xl scale-[1.02] ring-4 ring-primary/20 hover:scale-[1.04] hover:bg-black dark:hover:bg-white hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] hover:ring-green-500/50" 
-                : "bg-card border border-border shadow-sm hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:border-green-500/50 hover:z-10"
+                ? "bg-foreground text-background shadow-2xl scale-[1.05] z-10" 
+                : "glass-panel shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-3"
             }`}
-            style={{ animationDelay: `${500 + i * 100}ms` }}
           >
+            {plan.popular && (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-50" />
+            )}
+
             {plan.badge && (
-              <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 ${plan.popular ? 'bg-gradient-to-r from-orange-400 to-primary' : 'bg-primary'} text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg z-20`}>
-                <Sparkles size={14} className="fill-white" /> ⭐ {plan.badge}
+              <div className={`absolute top-8 right-8 ${plan.popular ? 'bg-primary text-white' : 'bg-primary/10 text-primary'} text-[10px] font-black px-3 py-1 rounded-full tracking-[0.1em] z-20 uppercase shadow-lg`}>
+                {plan.badge}
               </div>
             )}
               
-            <div className="mb-6 mt-4">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className={`text-2xl font-bold ${plan.popular ? "text-background" : "text-foreground"}`}>{plan.name}</h3>
-                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${plan.popular ? "bg-white/20" : "bg-secondary text-secondary-foreground"}`}>
+            <div className="relative z-20 mb-10">
+              <div className="flex flex-col gap-2 mb-6">
+                <span className={`text-xs font-black tracking-[0.2em] uppercase ${plan.popular ? "text-primary" : "text-primary/60"}`}>
                   {plan.type}
                 </span>
+                <h3 className={`text-4xl font-black font-heading ${plan.popular ? "text-background" : "text-foreground"} tracking-tighter`}>
+                  {plan.name}
+                </h3>
               </div>
-              <p className={`text-sm mt-4 min-h-[40px] leading-relaxed ${plan.popular ? "text-gray-300" : "text-muted-foreground"}`}>{plan.desc}</p>
+              <p className={`text-lg font-medium leading-relaxed ${plan.popular ? "text-gray-400" : "text-muted-foreground"}`}>
+                {plan.desc}
+              </p>
             </div>
 
-            <div className="mb-8">
-              <div className="flex items-baseline gap-1">
-                <span className={`text-3xl md:text-4xl font-black ${plan.popular ? "text-white" : "text-foreground"}`}>{getPrice(plan.prices)}</span>
-                <span className={`text-sm font-medium ${plan.popular ? "text-gray-400" : "text-muted-foreground"}`}>/{getPeriodText()}</span>
+            <div className="relative z-20 mb-10 pb-10 border-b border-border/10">
+              <div className="flex items-baseline gap-2">
+                <span className={`text-5xl font-black ${plan.popular ? "text-white" : "text-foreground"} tracking-tight`}>
+                  {getPrice(plan.prices)}
+                </span>
+                <span className={`text-lg font-bold ${plan.popular ? "text-gray-500" : "text-muted-foreground"}`}>
+                  /{getPeriodText()}
+                </span>
               </div>
             </div>
 
-            <div className="flex-grow space-y-6">
-              <ul className="space-y-3.5">
+            <div className="relative z-20 flex-grow space-y-8 mb-12">
+              <ul className="space-y-5">
                 {plan.getFeatures(billingCycle).map((f, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <div className={`mt-0.5 rounded-full p-0.5 ${plan.popular ? "bg-white/20" : "bg-primary/10"}`}>
-                      <Check size={14} className={plan.popular ? "text-white" : "text-primary"} />
+                  <li key={idx} className="flex items-start gap-4">
+                    <div className={`mt-1.5 rounded-full p-1 ${plan.popular ? "bg-primary text-white" : "bg-primary/10 text-primary"}`}>
+                      <Check size={14} className="stroke-[3px]" />
                     </div>
-                    <span className={`text-sm font-medium ${plan.popular ? "text-gray-100" : "text-foreground"}`}>{f}</span>
+                    <span className={`text-lg font-semibold ${plan.popular ? "text-gray-200" : "text-foreground"} tracking-tight`}>
+                      {f}
+                    </span>
                   </li>
                 ))}
                 {plan.unavailable.map((f, idx) => (
-                  <li key={idx} className="flex items-start gap-3 opacity-50">
-                    <div className="mt-0.5 rounded-full p-0.5 bg-muted">
-                      <X size={14} className="text-muted-foreground" />
+                  <li key={idx} className="flex items-start gap-4 opacity-30">
+                    <div className="mt-1.5 rounded-full p-1 bg-muted">
+                      <X size={14} className="stroke-[3px]" />
                     </div>
-                    <span className={`text-sm font-medium ${plan.popular ? "text-gray-300" : "text-muted-foreground"}`}>{f}</span>
+                    <span className={`text-lg font-bold ${plan.popular ? "text-gray-500" : "text-muted-foreground"}`}>
+                      {f}
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-border/10">
-              {plan.name === "Pro Seller" && (
-                <p className="text-xs font-bold text-center mb-4 text-green-500 bg-green-500/10 py-2 rounded-lg">
-                  {plan.recommended}
-                </p>
-              )}
-              <p className={`text-sm font-black text-center mb-4 ${plan.popular ? "text-white" : "text-foreground"}`}>
-                {plan.tagline}
-              </p>
+            <div className="relative z-20 mt-auto">
               <Button 
-                onClick={() => handlePlanClick(plan.name, plan.type)}
-                className={`w-full py-6 text-sm font-bold rounded-xl transition-all duration-300 ${
+                className={`w-full py-8 text-lg font-black rounded-2xl transition-all duration-500 ${
                   plan.popular 
-                    ? "bg-white text-foreground hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]" 
-                    : "bg-foreground text-background hover:-translate-y-1 hover:bg-green-500 hover:text-white hover:shadow-[0_0_25px_rgba(34,197,94,0.5)]"
+                    ? "bg-white text-foreground hover:bg-primary hover:text-white hover:shadow-2xl hover:shadow-primary/40" 
+                    : "bg-primary text-white hover:shadow-2xl hover:shadow-primary/20"
                 }`}
               >
                 {plan.ctaText}
               </Button>
+              <p className={`text-sm font-bold text-center mt-6 ${plan.popular ? "text-gray-500" : "text-muted-foreground"} italic`}>
+                {plan.tagline}
+              </p>
             </div>
           </div>
         ))}

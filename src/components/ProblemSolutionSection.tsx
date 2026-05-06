@@ -16,58 +16,62 @@ const ProblemSolutionSection = () => {
   ];
 
   return (
-    <section id="solution" className="py-20 px-6 bg-secondary/30">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold font-heading mb-6">
-            Stop Losing Sales to <span className="text-red-500">"DM for Price"</span>
+    <section id="solution" className="section-padding relative overflow-hidden bg-secondary/10">
+      <div className="section-number">02</div>
+      <div className="aura-blob bg-accent w-[500px] h-[500px] -left-24 bottom-0 opacity-10" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-20" data-reveal>
+          <span className="text-sm font-black text-primary uppercase tracking-[0.2em] text-glow">The Transition</span>
+          <h2 className="mt-6 text-4xl md:text-6xl font-heading font-black text-foreground leading-[1.1] tracking-tighter max-w-4xl mx-auto">
+            Stop Losing Sales to <span className="text-red-500/80 italic">"DM for Price"</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-8 text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
             You work too hard to let messy WhatsApp chats kill your business. 
             GoOnline turns your phone into a professional sales machine.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-stretch">
+        <div className="grid md:grid-cols-2 gap-8 items-stretch">
           {/* Problem */}
-          <div className="bg-background/50 border border-red-500/10 rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <AlertCircle size={80} className="text-red-500" />
+          <div className="glass-panel p-10 md:p-14 border-red-500/10 shadow-inner relative overflow-hidden" data-reveal data-reveal-delay="1">
+            <div className="absolute -top-10 -right-10 opacity-[0.03] rotate-12">
+              <AlertCircle size={200} className="text-red-500" />
             </div>
-            <h3 className="text-xl font-bold mb-8 flex items-center gap-2 text-red-500">
-              <XCircle size={24} /> The Problem
+            <h3 className="text-2xl font-black mb-10 flex items-center gap-3 text-red-500/80 tracking-tight">
+              <XCircle size={28} /> The Friction
             </h3>
-            <ul className="space-y-6">
+            <ul className="space-y-8">
               {problems.map((p, i) => (
-                <li key={i} className="flex items-start gap-4 text-muted-foreground">
-                  <div className="w-1.5 h-1.5 rounded-full bg-red-400 mt-2.5 flex-shrink-0" />
-                  <span className="text-lg leading-relaxed">{p}</span>
+                <li key={i} className="flex items-start gap-5 text-muted-foreground group">
+                  <div className="w-2 h-2 rounded-full bg-red-400/30 mt-3 flex-shrink-0 group-hover:scale-150 transition-transform duration-300" />
+                  <span className="text-xl font-medium leading-relaxed">{p}</span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Solution */}
-          <div className="bg-primary text-primary-foreground rounded-3xl p-8 md:p-10 shadow-2xl shadow-primary/20 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-4 opacity-10">
-              <CheckCircle2 size={80} className="text-white" />
+          <div className="bg-primary text-primary-foreground rounded-[2rem] p-10 md:p-14 shadow-2xl shadow-primary/30 relative overflow-hidden" data-reveal data-reveal-delay="2">
+             <div className="absolute -top-10 -right-10 opacity-10 rotate-12">
+              <CheckCircle2 size={200} className="text-white" />
             </div>
-            <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
-              <CheckCircle2 size={24} /> The GoOnline Solution
+            <h3 className="text-2xl font-black mb-10 flex items-center gap-3 tracking-tight">
+              <CheckCircle2 size={28} /> The Growth
             </h3>
-            <ul className="space-y-6">
+            <ul className="space-y-8">
               {solutions.map((s, i) => (
-                <li key={i} className="flex items-start gap-4">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white mt-2.5 flex-shrink-0" />
-                  <span className="text-lg font-medium leading-relaxed">{s}</span>
+                <li key={i} className="flex items-start gap-5 group">
+                  <div className="w-2 h-2 rounded-full bg-white/30 mt-3 flex-shrink-0 group-hover:scale-150 transition-transform duration-300" />
+                  <span className="text-xl font-bold leading-relaxed">{s}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-10 border-t border-white/20 pt-8">
-                <p className="text-xl font-bold mb-2">Let Us Set Up Your Store for You</p>
-                <p className="text-sm opacity-90 mb-6">Simple process • No technical skills required</p>
-                <a href="#pricing" className="inline-flex items-center gap-2 bg-white text-primary font-bold py-3 px-8 rounded-xl hover:scale-105 transition-transform shadow-lg">
-                    Start Receiving Orders Now
+            <div className="mt-12 pt-10 border-t border-white/10">
+                <p className="text-2xl font-black mb-3 font-heading">Automate Your Success</p>
+                <p className="text-base opacity-80 mb-8 font-medium italic">We handle the tech, you handle the growth.</p>
+                <a href="#pricing" className="btn-primary bg-white text-primary hover:bg-white/90 shadow-2xl shadow-black/20 w-full sm:w-auto text-center justify-center">
+                    Start Receiving Orders
                 </a>
             </div>
           </div>

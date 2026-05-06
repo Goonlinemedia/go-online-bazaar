@@ -34,28 +34,33 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-  <section id="features" className="section-padding">
-    <div className="max-w-7xl mx-auto">
-      <div className="max-w-2xl mb-16">
-        <span className="text-sm font-semibold text-primary uppercase tracking-wider">Features</span>
-        <h2 className="mt-3 text-2xl md:text-4xl font-heading font-bold text-foreground leading-tight">
+  <section id="features" className="section-padding relative overflow-hidden">
+    <div className="section-number">01</div>
+    <div className="aura-blob bg-teal w-[400px] h-[400px] -right-20 top-0" />
+
+    <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-3xl mb-20" data-reveal>
+        <span className="text-sm font-black text-primary uppercase tracking-[0.2em] text-glow">Advantage</span>
+        <h2 className="mt-6 text-4xl md:text-6xl font-heading font-black text-foreground leading-[1.1] tracking-tighter">
           Everything you need to
           <br />
-          <span className="gradient-text">sell online successfully.</span>
+          <span className="gradient-text italic">sell online successfully.</span>
         </h2>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {features.map((f) => (
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {features.map((f, i) => (
           <div
             key={f.title}
-            className="group glass-card p-7 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            data-reveal
+            data-reveal-delay={(i % 3) + 1}
+            className="group glass-panel p-10 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-500 border-white/10"
           >
-            <div className={`w-12 h-12 rounded-xl ${f.color} flex items-center justify-center mb-5`}>
-              <f.icon size={22} />
+            <div className={`w-14 h-14 rounded-2xl ${f.color} flex items-center justify-center mb-8 shadow-inner group-hover:scale-110 transition-transform duration-500`}>
+              <f.icon size={26} />
             </div>
-            <h3 className="text-lg font-semibold font-heading text-foreground mb-2">{f.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+            <h3 className="text-2xl font-bold font-heading text-foreground mb-4 tracking-tight">{f.title}</h3>
+            <p className="text-muted-foreground leading-relaxed font-medium">{f.desc}</p>
           </div>
         ))}
       </div>

@@ -85,9 +85,12 @@ interface AnalyticsEvent {
   event_type: string;
   visitor_id: string;
   page: string;
-  metadata: any;
-  context: any;
-  local_timestamp?: number; // Added for robust real-time tracking
+  metadata?: Record<string, unknown>;
+  context?: {
+    device?: string;
+    [key: string]: unknown;
+  };
+  local_timestamp?: number;
   created_at?: Timestamp;
 }
 
@@ -136,7 +139,7 @@ const AdminDashboard = () => {
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       const eventsData: AnalyticsEvent[] = [];
       snapshot.forEach((doc) => {
-        const data = doc.data() as any;
+        const data = doc.data() as Omit<AnalyticsEvent, "id">;
         eventsData.push({ id: doc.id, ...data });
       });
       setEvents(eventsData);
@@ -221,8 +224,8 @@ const AdminDashboard = () => {
   // 3. Plan Breakdown (Filtered)
   const planDataMap = filteredEvents
     .filter(e => e.event_type === "plan_selected")
-    .reduce((acc: any, e) => {
-      const name = e.metadata?.plan_name || "Unknown";
+    .reduce((acc: Record<string, number>, e) => {
+      const name = (e.metadata?.plan_name as string) || "Unknown";
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {});
@@ -230,7 +233,7 @@ const AdminDashboard = () => {
   const planChartData = Object.entries(planDataMap).map(([name, value]) => ({ name, value }));
 
   // 4. Trend Chart (Filtered) - Daily Views
-  const timelineData = filteredEvents.slice().reverse().reduce((acc: any[], event) => {
+  const timelineData = filteredEvents.slice().reverse().reduce((acc: { name: string; views: number; engagement: number }[], event) => {
     const date = event.created_at ? event.created_at.toDate() : (event.local_timestamp ? new Date(event.local_timestamp) : new Date());
     const day = format(date, "MMM dd");
     const existing = acc.find(a => a.name === day);
@@ -558,7 +561,7 @@ const AdminDashboard = () => {
                       </p>
                       {event.metadata && Object.keys(event.metadata).length > 0 && (
                         <div className="mt-1 flex flex-wrap gap-1">
-                          {Object.entries(event.metadata).map(([k, v]: [string, any]) => (
+                          {Object.entries(event.metadata).map(([k, v]) => (
                             <Badge key={k} variant="outline" className="text-[10px] py-0 px-1.5 opacity-70">
                               {k}: {String(v)}
                             </Badge>
