@@ -40,7 +40,7 @@ const HeroSection = () => {
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed font-medium">
-            We build clean, mobile-first websites and ecommerce stores for brands, retailers, and service businesses. From product pages to online ordering, we help you present your business professionally and start selling with confidence.
+            We design and deploy clean, mobile-first websites and digital catalogs. Build credibility, simplify ordering, and manage operations in one unified system.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4">

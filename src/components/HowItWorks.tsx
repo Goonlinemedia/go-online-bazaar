@@ -4,19 +4,19 @@ const steps = [
   {
     icon: Users,
     title: "1. Discovery & Alignment",
-    desc: "We discuss your brand's requirements, custom design options, and plan the ideal user experience.",
+    desc: "We define your website's layout options, page requirements, and operational goals.",
     color: "bg-blue-500/10 text-blue-600",
   },
   {
     icon: Code,
     title: "2. Professional Build",
-    desc: "Our team designs and builds your clean website, structures your product catalog, and integrates payment options.",
+    desc: "We design premium interfaces, structure product catalogs, and map checkout flows.",
     color: "bg-orange-500/10 text-orange-600",
   },
   {
     icon: Rocket,
-    title: "3. Launch & Operations Support",
-    desc: "We configure your custom domain, set up professional email, test order flows, and support your official launch.",
+    title: "3. Launch & Support",
+    desc: "We configure custom domains, set up business emails, and test order pipelines.",
     color: "bg-primary/10 text-primary",
   },
 ];

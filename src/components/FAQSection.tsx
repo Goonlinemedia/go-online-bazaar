@@ -22,31 +22,31 @@ const FAQSection = () => {
             <AccordionItem value="item-1" className="glass-panel px-8 border-white/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
               <AccordionTrigger className="hover:no-underline py-6 text-xl font-bold text-left font-heading tracking-tight">Do I need technical skills?</AccordionTrigger>
               <AccordionContent className="text-lg text-muted-foreground leading-relaxed pb-6 font-medium">
-                No. If you can use WhatsApp, you can use Goonline. We build everything for you so you can focus on your business.
+                No. We handle design, setup, and launch completely. You only need to manage your business.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2" className="glass-panel px-8 border-white/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
               <AccordionTrigger className="hover:no-underline py-6 text-xl font-bold text-left font-heading tracking-tight">Can I use WhatsApp?</AccordionTrigger>
               <AccordionContent className="text-lg text-muted-foreground leading-relaxed pb-6 font-medium">
-                Yes! That's the best part. Your store is connected directly to your WhatsApp. When a customer orders, it lands straight in your DM.
+                Yes. Your website integrates directly with WhatsApp so orders are routed straight to your private chat.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3" className="glass-panel px-8 border-white/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
               <AccordionTrigger className="hover:no-underline py-6 text-xl font-bold text-left font-heading tracking-tight">How do I receive payments?</AccordionTrigger>
               <AccordionContent className="text-lg text-muted-foreground leading-relaxed pb-6 font-medium">
-                You can receive payments via Bank Transfer, Paystack, or Flutterwave. We set everything up for you during the onboarding process.
+                You can receive payments via Bank Transfer, Paystack, or Flutterwave. We configure everything for you.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4" className="glass-panel px-8 border-white/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
               <AccordionTrigger className="hover:no-underline py-6 text-xl font-bold text-left font-heading tracking-tight">Can I upgrade later?</AccordionTrigger>
               <AccordionContent className="text-lg text-muted-foreground leading-relaxed pb-6 font-medium">
-                Yes, you can upgrade your plan at any time as your business grows. Just send us a message and we'll handle it.
+                Yes. You can scale your pricing tier at any time as your product catalog or sales volumes grow.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-5" className="glass-panel px-8 border-white/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500">
               <AccordionTrigger className="hover:no-underline py-6 text-xl font-bold text-left font-heading tracking-tight">Is there support?</AccordionTrigger>
               <AccordionContent className="text-lg text-muted-foreground leading-relaxed pb-6 font-medium">
-                Yes! We provide priority support via WhatsApp and Email to ensure your store is always running smoothly.
+                Yes. We provide priority email and chat support to ensure your website runs seamlessly.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

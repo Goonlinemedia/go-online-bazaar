@@ -5,25 +5,25 @@ const services = [
     icon: Globe,
     title: "Brand Websites",
     description:
-      "Professional websites for companies, personal brands, churches, schools, consultants, and growing businesses.",
+      "High-performance websites tailored for corporate presence, personal portfolios, and organizations.",
   },
   {
     icon: ShoppingBag,
     title: "Ecommerce Stores",
     description:
-      "Product catalogs, online ordering, payment setup, delivery information, coupons, and sales tracking.",
+      "Custom storefronts with visual catalog display, digital checkouts, and payment integrations.",
   },
   {
     icon: MessageCircle,
     title: "WhatsApp Commerce",
     description:
-      "Direct order flow from product pages into WhatsApp for businesses that want fast customer conversations.",
+      "Direct checkout flows routing product queries and orders straight to messaging channels.",
   },
   {
     icon: TrendingUp,
     title: "Business Growth Setup",
     description:
-      "Domain setup, business email, analytics, SEO basics, social media links, and launch support.",
+      "Professional business email setup, domain registration, basic SEO, and analytics mapping.",
   },
 ];
 

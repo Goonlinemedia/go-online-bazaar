@@ -34,17 +34,14 @@ const PricingSection = () => {
       },
       desc: "Perfect to launch your online brand presence",
       getFeatures: (cycle: BillingCycle) => [
-        `Up to ${cycle === "annual" ? "50" : "20"} products / pages`,
-        "Unlimited client orders",
-        "WhatsApp commerce checkout integration",
-        "Coupons & discounts system",
-        "Standard payment gateway setup",
-        "Order & sales tracking dashboard",
-        "Delivery & shipping settings",
+        `Up to ${cycle === "annual" ? "50" : "20"} pages / products`,
+        "Online ordering & WhatsApp checkout",
+        "Coupons & discount codes setup",
+        "Payment integration & sales tracker",
         "Standard email & chat support"
       ],
       unavailable: [
-        "No custom domain connection"
+        "No custom domain mapping"
       ],
       tagline: "Start selling professionally",
       ctaText: "Launch Starter Site"
@@ -63,13 +60,11 @@ const PricingSection = () => {
       badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
         "Everything in Starter Website, plus:",
-        "Up to 200 products / pages",
-        "Custom domain name connection",
+        "Up to 200 pages / products",
+        "Custom domain mapping",
         "3 premium layout designs",
         "Facebook & Instagram pixel setup",
-        "Advanced layout customization",
-        "Instant email notifications",
-        "No free custom domain registry"
+        "Instant email notifications"
       ],
       unavailable: [],
       tagline: "Expand your online operations",
@@ -89,11 +84,11 @@ const PricingSection = () => {
       badge: "BEST VALUE",
       getFeatures: (cycle: BillingCycle) => [
         "Everything in Business Store, plus:",
-        "Up to 1,000 products / pages",
+        "Up to 1,000 pages / products",
         "Integrated business blog & SEO",
         "Priority phone & chat support",
         "Advanced order routing tools",
-        cycle === "annual" ? "Free .com.ng domain registration" : "No free domain registration"
+        cycle === "annual" ? "Free .com.ng domain registry" : "No free domain registry"
       ],
       unavailable: [],
       tagline: "Complete operations setup",

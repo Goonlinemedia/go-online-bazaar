@@ -4,25 +4,25 @@ const operations = [
   {
     icon: Database,
     title: "Product Display & Cataloging",
-    desc: "Dynamically organize product categories, options, and live specifications to avoid customer confusion.",
+    desc: "Organize digital catalogs with clear categories and live specifications.",
     color: "bg-blue-500/10 text-blue-600",
   },
   {
     icon: CheckSquare,
     title: "Order Capture & Routing",
-    desc: "Streamline the checkout flow by gathering complete customer details and routing orders directly to your pipeline.",
+    desc: "Seamless checkout capture routing client orders straight to your team.",
     color: "bg-indigo-500/10 text-indigo-600",
   },
   {
     icon: MessageSquare,
     title: "Inquiry Management",
-    desc: "Manage expectations and structure client communications to reduce manual support bottlenecks.",
+    desc: "Structured messaging pipelines to eliminate manual support lag.",
     color: "bg-emerald-500/10 text-emerald-600",
   },
   {
     icon: Truck,
     title: "Delivery & Fulfillment Sync",
-    desc: "Compile buyer addresses and shipping preferences automatically to make courier dispatch and delivery seamless.",
+    desc: "Automated customer address compilation for rapid courier dispatch.",
     color: "bg-purple-500/10 text-purple-600",
   },
 ];
@@ -44,9 +44,7 @@ const SupplyChainSection = () => {
             <span className="gradient-text italic">Move Products Faster</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
-            We support vendors and growing brands with the digital tools they need to display products, 
-            receive orders, manage customer enquiries, and coordinate delivery. Our work helps businesses 
-            improve visibility, order flow, and customer communication.
+            We equip growing brands with digital infrastructure to showcase inventory, route orders, structure inquiries, and simplify delivery logistics.
           </p>
         </div>
 
