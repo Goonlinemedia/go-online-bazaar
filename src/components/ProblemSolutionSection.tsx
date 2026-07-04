@@ -24,11 +24,11 @@ const ProblemSolutionSection = () => {
         <div className="text-center mb-20" data-reveal>
           <span className="text-sm font-black text-primary uppercase tracking-[0.2em] text-glow">The Transition</span>
           <h2 className="mt-6 text-4xl md:text-6xl font-heading font-black text-foreground leading-[1.1] tracking-tighter max-w-4xl mx-auto">
-            Stop Losing Sales to <span className="text-red-500/80 italic">"DM for Price"</span>
+            Stop Losing Customers to <span className="text-red-500/80 italic">Messy Social Media DMs</span>
           </h2>
           <p className="mt-8 text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
-            You work too hard to let messy WhatsApp chats kill your business. 
-            GoOnline turns your phone into a professional sales machine.
+            You work too hard to lose clients in unstructured messaging threads.
+            GoOnline designs premium web storefronts that make order management effortless.
           </p>
         </div>
 
@@ -71,7 +71,7 @@ const ProblemSolutionSection = () => {
                 <p className="text-2xl font-black mb-3 font-heading">Automate Your Success</p>
                 <p className="text-base opacity-80 mb-8 font-medium italic">We handle the tech, you handle the growth.</p>
                 <a href="#pricing" className="btn-primary bg-white text-primary hover:bg-white/90 shadow-2xl shadow-black/20 w-full sm:w-auto text-center justify-center">
-                    Start Receiving Orders
+                    Build My Website
                 </a>
             </div>
           </div>

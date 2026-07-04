@@ -1,22 +1,22 @@
-import { MousePointer2, Settings2, Rocket } from "lucide-react";
+import { Users, Code, Rocket } from "lucide-react";
 
 const steps = [
   {
-    icon: MousePointer2,
-    title: "1. Create Your Store",
-    desc: "Sign up and get your store ready instantly. No tech skills needed.",
+    icon: Users,
+    title: "1. Discovery & Alignment",
+    desc: "We discuss your brand's requirements, custom design options, and plan the ideal user experience.",
     color: "bg-blue-500/10 text-blue-600",
   },
   {
-    icon: Settings2,
-    title: "2. Add Products",
-    desc: "Upload pictures, prices, and descriptions. Manage everything from your phone.",
+    icon: Code,
+    title: "2. Professional Build",
+    desc: "Our team designs and builds your clean website, structures your product catalog, and integrates payment options.",
     color: "bg-orange-500/10 text-orange-600",
   },
   {
     icon: Rocket,
-    title: "3. Start Receiving Orders",
-    desc: "Customers order directly to your WhatsApp. Close sales instantly in your DM.",
+    title: "3. Launch & Operations Support",
+    desc: "We configure your custom domain, set up professional email, test order flows, and support your official launch.",
     color: "bg-primary/10 text-primary",
   },
 ];

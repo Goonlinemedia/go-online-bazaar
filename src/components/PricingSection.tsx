@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, X, Sparkles, Store, Smartphone, MessageCircle, ArrowRight } from "lucide-react";
+import { Check, X, Smartphone, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAnalytics } from "@/hooks/use-analytics";
 
@@ -24,7 +24,7 @@ const PricingSection = () => {
 
   const plans = [
     {
-      name: "Hustle",
+      name: "Starter Website",
       type: "Launch",
       prices: {
         monthly: 5000,
@@ -32,72 +32,72 @@ const PricingSection = () => {
         biannual: 27500,
         annual: 55000
       },
-      desc: "Perfect to start selling today",
+      desc: "Perfect to launch your online brand presence",
       getFeatures: (cycle: BillingCycle) => [
-        `Up to ${cycle === "annual" ? "50" : "20"} products`,
-        "Unlimited orders",
-        "WhatsApp checkout (instant orders)",
-        "Coupons & discounts",
-        "Payment setup",
-        "Sales tracking",
-        "Delivery & shipping setup",
-        "Email + WhatsApp support"
+        `Up to ${cycle === "annual" ? "50" : "20"} products / pages`,
+        "Unlimited client orders",
+        "WhatsApp commerce checkout integration",
+        "Coupons & discounts system",
+        "Standard payment gateway setup",
+        "Order & sales tracking dashboard",
+        "Delivery & shipping settings",
+        "Standard email & chat support"
       ],
       unavailable: [
-        "No custom domain"
+        "No custom domain connection"
       ],
-      tagline: "Start small, sell fast",
-      ctaText: "Start Selling"
+      tagline: "Start selling professionally",
+      ctaText: "Launch Starter Site"
     },
     {
-      name: "Pro Seller",
-      type: "Grow",
+      name: "Business Store",
+      type: "Professional",
       prices: {
         monthly: 10000,
         quarterly: 28500,
         biannual: 55000,
         annual: 110000
       },
-      desc: "For serious sellers ready to grow fast",
+      desc: "For growing businesses ready to scale commerce",
       popular: true,
       badge: "MOST POPULAR",
       getFeatures: (cycle: BillingCycle) => [
-        "Everything in Hustle, plus:",
-        "Up to 200 products",
-        "Custom domain connection",
-        "3 premium store designs",
-        "Facebook/Instagram tracking pixel",
-        "Advanced customization",
-        "Email notifications",
-        "No Free Custom Domain"
+        "Everything in Starter Website, plus:",
+        "Up to 200 products / pages",
+        "Custom domain name connection",
+        "3 premium layout designs",
+        "Facebook & Instagram pixel setup",
+        "Advanced layout customization",
+        "Instant email notifications",
+        "No free custom domain registry"
       ],
       unavailable: [],
-      tagline: "Grow your sales daily",
-      ctaText: "Start Growing Now",
-      recommended: "💡 Recommended: Most sellers choose this plan to grow faster"
+      tagline: "Expand your online operations",
+      ctaText: "Build My Business Store",
+      recommended: "Recommended: Selected by 80% of retail brands"
     },
     {
-      name: "Empire",
-      type: "Scale",
+      name: "Growth Commerce",
+      type: "Commerce Plus",
       prices: {
         monthly: 20000,
         quarterly: 57000,
         biannual: 110000,
         annual: 220000
       },
-      desc: "Build a full business, not just a store",
+      desc: "Complete digital commerce infrastructure",
       badge: "BEST VALUE",
       getFeatures: (cycle: BillingCycle) => [
-        "Everything in Pro Seller, plus:",
-        "Up to 1000 products",
-        "Blog (SEO + content marketing)",
-        "Priority support (calls + WhatsApp)",
-        "Advanced control & scaling tools",
-        cycle === "annual" ? "Free .com.ng Custom Domain" : "No Free Custom Domain"
+        "Everything in Business Store, plus:",
+        "Up to 1,000 products / pages",
+        "Integrated business blog & SEO",
+        "Priority phone & chat support",
+        "Advanced order routing tools",
+        cycle === "annual" ? "Free .com.ng domain registration" : "No free domain registration"
       ],
       unavailable: [],
-      tagline: "Run a serious business",
-      ctaText: "Build My Business"
+      tagline: "Complete operations setup",
+      ctaText: "Deploy Growth Commerce"
     }
   ];
 
@@ -106,7 +106,6 @@ const PricingSection = () => {
     const price = plan ? getPrice(plan.prices) : "";
     const period = getPeriodText();
     
-    // 1. Track the event in our dashboard
     trackEvent("plan_selected", { 
       plan_name: planName, 
       plan_type: planType, 
@@ -114,22 +113,19 @@ const PricingSection = () => {
       price: plan?.prices[billingCycle]
     });
 
-    // 2. Generate WhatsApp Message
     const whatsappNumber = "2348035826698"; 
     let message = "";
 
-    if (planName === "Hustle") {
-      message = `Hi GoOnline! 👋 I'm interested in the Hustle plan for ${price}/${period}. I want to get my store built fast! 🚀`;
-    } else if (planName === "Pro Seller") {
-      message = `Hello GoOnline! 🔥 I want to start my store now with the Pro Seller plan for ${price}/${period}. Let's build a real brand! ⚡`;
+    if (planName === "Starter Website") {
+      message = `Hi GoOnline! I am interested in the Starter Website plan for ${price}/${period}. Let's discuss getting my website built.`;
+    } else if (planName === "Business Store") {
+      message = `Hello GoOnline! I want to start our store with the Business Store plan for ${price}/${period}. Let's build a professional brand site.`;
     } else {
-      message = `Hi there! 🚀 I'm ready to build my store today with the Empire plan for ${price}/${period}. I want to go big! 💎`;
+      message = `Hi GoOnline! I am ready to build our store with the Growth Commerce plan for ${price}/${period}. Let's set up the complete commerce infrastructure.`;
     }
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-
-    // 3. Open WhatsApp and keep them on our page in case they want to browse more
     window.open(whatsappUrl, "_blank");
   };
 
@@ -138,24 +134,24 @@ const PricingSection = () => {
       <div className="section-number">04</div>
       <div className="aura-blob bg-primary w-[700px] h-[700px] -right-48 top-1/4 opacity-10" />
 
-      {/* 🚀 HERO SECTION */}
+      {/* HERO SECTION */}
       <section className="relative pt-32 pb-20 px-6 lg:px-8 max-w-7xl mx-auto text-center" data-reveal>
         <span className="text-sm font-black text-primary uppercase tracking-[0.2em] text-glow">Pricing Plans</span>
         <h1 className="text-4xl md:text-7xl font-heading font-black text-foreground tracking-tighter leading-[0.95] mt-8 mb-8">
           Choose the Plan That 
           <br />
-          <span className="gradient-text italic font-black">Fits Your Hustle</span>
+          <span className="gradient-text italic font-black">Fits Your Business</span>
         </h1>
         <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium">
-          Start small, grow fast, and scale into a full business — no hidden fees.
+          Start with professional design, expand your online presence, and scale into a robust commerce hub.
         </p>
       </section>
 
-      {/* 💎 BILLING OPTIONS SECTION */}
+      {/* BILLING OPTIONS SECTION */}
       <section className="max-w-4xl mx-auto px-6 mb-16 animate-fade-in" style={{ animationDelay: "400ms" }}>
         <div className="text-center mb-6">
-          <h3 className="text-xl font-bold font-heading">💰 Save more with long-term plans</h3>
-          <p className="text-muted-foreground mt-2">👉 The longer we partner, the more your business saves.</p>
+          <h3 className="text-xl font-bold font-heading">Save more with long-term plans</h3>
+          <p className="text-muted-foreground mt-2">Annual plans provide the maximum discount and launch support.</p>
         </div>
         
         <div className="flex flex-wrap justify-center gap-2 md:gap-4 p-2 bg-secondary/50 rounded-2xl md:rounded-full">
@@ -174,8 +170,8 @@ const PricingSection = () => {
             >
               {cycle.charAt(0).toUpperCase() + cycle.slice(1)}
               {cycle === "annual" && (
-                <span className="absolute -top-3 -right-2 bg-primary text-primary-foreground text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm whitespace-nowrap animate-bounce">
-                  Best Value 💎
+                <span className="absolute -top-3 -right-2 bg-primary text-primary-foreground text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm whitespace-nowrap">
+                  Annual Discount
                 </span>
               )}
             </button>
@@ -183,7 +179,7 @@ const PricingSection = () => {
         </div>
       </section>
 
-      {/* 💳 PRICING CARDS SECTION */}
+      {/* PRICING CARDS SECTION */}
       <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto px-6 lg:px-8 mb-32">
         {plans.map((plan, i) => (
           <div
@@ -195,7 +191,7 @@ const PricingSection = () => {
               plan.popular 
                 ? "bg-foreground text-background shadow-2xl scale-[1.05] z-10" 
                 : "glass-panel shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-3"
-            }`}
+              }`}
           >
             {plan.popular && (
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-50" />
@@ -275,32 +271,31 @@ const PricingSection = () => {
         ))}
       </div>
 
-      {/* 🛡️ RISK REMOVAL & URGENCY */}
+      {/* RISK REMOVAL & URGENCY */}
       <div className="max-w-3xl mx-auto px-6 mb-24 text-center">
-
         <div className="bg-secondary/40 border border-border/50 rounded-3xl p-8 md:p-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16" />
           <div className="relative z-10">
-            <h4 className="text-xl font-bold mb-4 font-heading">💡 Not sure which plan to choose?</h4>
+            <h4 className="text-xl font-bold mb-4 font-heading">Not sure which plan to choose?</h4>
             <p className="text-muted-foreground leading-relaxed mb-6">
-              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Hustle</span> plan today and upgrade any time as your business grows. 
+              Start with the <span className="text-foreground font-bold underline decoration-primary/30">Starter Website</span> plan today and upgrade any time as your business grows. 
               <br className="hidden md:block" />
-              <span className="text-foreground font-bold">No hidden fees. No commissions. You keep 100% of your sales.</span>
+              <span className="text-foreground font-bold">No hidden fees. You keep 100% of your sales.</span>
             </p>
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-white dark:bg-background rounded-full border border-border shadow-sm">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-bold text-foreground">⏱️ Your store will be ready in 2-5 days</span>
+                <span className="flex h-2.5 w-2.5 rounded-full bg-green-500" />
+                <span className="text-sm font-bold text-foreground">Your website will be ready in 2-5 business days</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ⚡ TRUST / VALUE SECTION */}
+      {/* TRUST / VALUE SECTION */}
       <section className="bg-secondary/40 py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-heading">Outcome-Driven Results ⚡</h2>
-            <p className="text-muted-foreground text-lg">We don't just build sites; we build high-converting sales machines. 🚀</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-heading">Outcome-Driven Results</h2>
+            <p className="text-muted-foreground text-lg">We design and build digital commerce platforms that drive real business growth.</p>
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -310,21 +305,21 @@ const PricingSection = () => {
               </div>
               <div>
                 <h4 className="font-bold text-lg mb-2">We Build It For You</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">Skip the learning curve. We handle the design, setup, and launch so you can stay focused on your products.</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">Skip the learning curve. We handle the design, setup, and launch so you can stay focused on your operations.</p>
               </div>
             </div>
             <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
               <div className="bg-green-500/10 w-12 h-12 rounded-xl flex items-center justify-center"><MessageCircle className="text-green-500 w-6 h-6" /></div>
               <div>
-                <h4 className="font-bold text-lg mb-2">Direct WhatsApp Sales</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">Convert visitors into buyers instantly. Orders land directly in your WhatsApp, closing sales in real-time.</p>
+                <h4 className="font-bold text-lg mb-2">Direct Order Flow</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">Convert visitors into buyers instantly. Orders land directly in your messaging channels, closing inquiries in real-time.</p>
               </div>
             </div>
             <div className="bg-background p-8 rounded-2xl shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow border border-border/50">
               <div className="bg-blue-500/10 w-12 h-12 rounded-xl flex items-center justify-center"><Smartphone className="text-blue-500 w-6 h-6" /></div>
               <div>
                 <h4 className="font-bold text-lg mb-2">Mobile-First Experience</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">Your customers shop on their phones. We ensure your store looks stunning and works flawlessly on every screen size.</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">Your customers shop on their phones. We ensure your storefront looks stunning and works flawlessly on every screen.</p>
               </div>
             </div>
           </div>
@@ -335,4 +330,3 @@ const PricingSection = () => {
 };
 
 export default PricingSection;
-

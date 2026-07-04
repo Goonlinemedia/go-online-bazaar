@@ -20,24 +20,22 @@ const FinalCTA = () => {
           <Rocket className="text-white w-10 h-10" />
         </div>
         
-        <h2 className="text-3xl md:text-6xl font-black text-white mb-8 font-heading tracking-tight">
-          Start Your <br className="md:hidden" />
-          <span className="text-yellow-300 underline decoration-white/20 underline-offset-8">Online Store Today</span>
+        <h2 className="text-3xl md:text-5xl font-black text-white mb-8 font-heading tracking-tight">
+          Launch Your <br className="md:hidden" />
+          <span className="text-yellow-300 underline decoration-white/20 underline-offset-8">Professional Website Today</span>
         </h2>
         
-        <p className="text-lg md:text-2xl text-white/90 mb-12 font-medium leading-relaxed max-w-2xl mx-auto">
-          Join hundreds of sellers already making sales online. 
-          <span className="block mt-2 font-bold text-white uppercase tracking-widest text-sm">No tech skills needed. Get started now.</span>
+        <p className="text-lg md:text-xl text-white/90 mb-12 font-medium leading-relaxed max-w-2xl mx-auto">
+          We design and deploy premium web solutions, product catalogs, and commerce integrations that elevate your business.
+          <span className="block mt-2 font-bold text-white uppercase tracking-widest text-xs">Full domain registry, business email, and launch support included.</span>
         </p>
 
         <div className="flex flex-col items-center">
           <a 
-            href="https://wa.me/2348035826698?text=Hello%20Go%20Online!%20I'm%20ready%20to%20start%20my%20online%20store%20today." 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="group bg-white text-primary hover:bg-yellow-300 hover:text-primary-foreground text-lg md:text-2xl font-black py-5 px-10 md:py-7 md:px-14 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.4)] transition-all duration-300 flex items-center gap-3 hover:-translate-y-2"
+            href="#pricing" 
+            className="group bg-white text-primary hover:bg-yellow-300 hover:text-primary-foreground text-lg md:text-xl font-black py-5 px-10 md:py-6 md:px-12 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.4)] transition-all duration-300 flex items-center gap-3 hover:-translate-y-2"
           >
-            Create My Store Now
+            Build My Website
             <ArrowRight className="group-hover:translate-x-2 transition-transform" />
           </a>
         </div>

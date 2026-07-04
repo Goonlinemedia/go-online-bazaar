@@ -1,24 +1,35 @@
+import { Globe, ShoppingBag, MessageCircle, TrendingUp } from "lucide-react";
+
 const services = [
   {
-    title: "Website Design",
+    icon: Globe,
+    title: "Brand Websites",
     description:
-      "We use the latest web development technologies and frameworks to ensure that your website is fast, secure, and user-friendly. From simple landing pages to complex web applications, we have the skills and experience to deliver high-quality web solutions that meet your needs and exceed your expectations.",
+      "Professional websites for companies, personal brands, churches, schools, consultants, and growing businesses.",
   },
   {
-    title: "Graphic Design",
+    icon: ShoppingBag,
+    title: "Ecommerce Stores",
     description:
-      "Keeps businesses updated on current trends and future market directions. Assists in adapting to changes in consumer behavior and preferences.",
+      "Product catalogs, online ordering, payment setup, delivery information, coupons, and sales tracking.",
   },
   {
-    title: "Content Management Services",
+    icon: MessageCircle,
+    title: "WhatsApp Commerce",
     description:
-      "Our Website Content Management team offers a range of services to help you manage the content on your website (Uploading content, campaigns). Whether it's WordPress, Drupal, or a custom CMS, we provide flexible and scalable experts that grow with your business.",
+      "Direct order flow from product pages into WhatsApp for businesses that want fast customer conversations.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Business Growth Setup",
+    description:
+      "Domain setup, business email, analytics, SEO basics, social media links, and launch support.",
   },
 ];
 
 const ServicesSection = () => {
   return (
-    <section id="services" className="py-24 bg-white relative overflow-hidden">
+    <section id="services" className="py-24 bg-white dark:bg-background relative overflow-hidden">
       {/* Decorative background element */}
       <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -33,34 +44,36 @@ const ServicesSection = () => {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20">
-          <span className="text-sm font-bold text-emerald-600 uppercase tracking-widest bg-emerald-50 px-4 py-2 rounded-full mb-6 inline-block">Our Expertise</span>
-          <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-8 font-heading tracking-tight">
-            What <span className="text-primary italic">We Do</span>
+          <span className="text-sm font-bold text-primary uppercase tracking-widest bg-primary/5 px-4 py-2 rounded-full mb-6 inline-block">Our Solutions</span>
+          <h2 className="text-4xl md:text-6xl font-black text-foreground mb-8 font-heading tracking-tight">
+            Services <span className="gradient-text italic">We Offer</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            The ultimate guide to building credibility and control with digital transformation. 
-            We turn your social media followers into loyal customers.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
+            We design, build, and configure complete digital solutions that elevate your brand and optimize your sales process.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, idx) => (
             <div
               key={idx}
-              className="bg-white p-10 rounded-3xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group flex flex-col h-full"
+              className="bg-[#fafafa] dark:bg-secondary/20 p-10 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group flex flex-col h-full"
             >
-              <div className="mb-8">
-                <span className="text-5xl font-black text-gray-100 group-hover:text-primary transition-colors duration-500">0{idx + 1}</span>
+              <div className="mb-8 flex items-center justify-between">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                  <service.icon size={22} />
+                </div>
+                <span className="text-4xl font-black text-foreground/5 group-hover:text-primary/10 transition-colors duration-500">0{idx + 1}</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 font-heading">
+              <h3 className="text-xl font-bold text-foreground mb-6 font-heading tracking-tight">
                 {service.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed text-base">
+              <p className="text-muted-foreground leading-relaxed text-sm font-medium">
                 {service.description}
               </p>
-              <div className="mt-auto pt-8 flex items-center gap-2 text-primary font-bold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                <span>Learn more</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <div className="mt-auto pt-8 flex items-center gap-2 text-primary font-bold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-sm">
+                <span>Enquire now</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>
             </div>
           ))}

@@ -2,19 +2,19 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Got my first order in 48 hours 🔥 I didn't touch anything, they handled every single tech detail. Now I just ship products.",
+    quote: "Got our first order in 48 hours. They handled every single technical detail from design to launching our catalogs. Now we just fulfill orders.",
     author: "Binta K.",
     role: "Jewelry Merchant",
     stars: 5,
   },
   {
-    quote: "My WhatsApp started blowing up with orders the day we went live. The checkout process is so smooth for my customers.",
+    quote: "Our customer order flow started running seamlessly the day we went live. The checkout process is clean and intuitive for our buyers.",
     author: "Ade O.",
     role: "Fashion Retailer",
     stars: 5,
   },
   {
-    quote: "Professional, clean, and direct. I finally have a store that looks like a high-end brand without the Shopify stress.",
+    quote: "Professional, clean, and direct. We finally have a brand website that looks high-end and displays our catalogs without complexity.",
     author: "Tobi S.",
     role: "Electronics Vendor",
     stars: 5,
@@ -28,10 +28,10 @@ const Testimonials = () => {
         <div className="text-center mb-16 px-4">
           <span className="text-sm font-bold text-primary uppercase tracking-widest bg-primary/5 px-4 py-2 rounded-full mb-6 inline-block">Real Proof</span>
           <h2 className="text-4xl md:text-5xl font-black text-foreground font-heading">
-            <span className="text-primary underline decoration-primary/20">Real Results</span> from Our Clients ⚡
+            <span className="text-primary underline decoration-primary/20">Real Results</span> from Our Clients
           </h2>
           <p className="mt-6 text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed italic">
-            "Your success is our goal. We don't just build sites; we build high-converting sales machines."
+            "Your success is our goal. We design and launch premium websites that convert visitors into loyal customers."
           </p>
         </div>
 
@@ -41,9 +41,9 @@ const Testimonials = () => {
               key={idx}
               className="bg-[#fafafa] p-10 rounded-3xl border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-2xl transition-all duration-500 relative group"
             >
-              <div className="flex gap-1 mb-b">
+              <div className="flex gap-1 mb-2">
                  <p className="text-primary font-bold text-xs uppercase tracking-tighter mb-4 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
-                   Verified Store ✅
+                   Verified Client
                  </p>
               </div>
               <p className="text-gray-900 leading-relaxed mb-10 text-xl font-medium">
