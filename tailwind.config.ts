@@ -16,8 +16,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['Manrope', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        heading: ['Mont', 'Manrope', 'sans-serif'],
+        body: ['DM Sans', 'Inter', 'sans-serif'],
+        display: ['Avakine', 'Rovale', 'ancola', 'Anton', 'serif'],
+        impact: ['Anton', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

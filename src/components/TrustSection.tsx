@@ -32,11 +32,11 @@ const TrustSection = () => {
           {/* Center Stats Grid */}
           <div className="lg:col-span-4 grid grid-cols-2 gap-4 border-l border-r border-border/50 px-8 py-2 md:py-0" data-reveal data-reveal-delay="1">
             <div>
-              <div className="text-xl font-bold text-primary font-heading">Up to 10+</div>
+              <div className="text-2xl font-bold text-primary font-impact tracking-wider">Up to 10+</div>
               <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Websites Launched</div>
             </div>
             <div>
-              <div className="text-xl font-bold text-primary font-heading">100%</div>
+              <div className="text-2xl font-bold text-primary font-impact tracking-wider">100%</div>
               <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Mobile & SEO Ready</div>
             </div>
           </div>

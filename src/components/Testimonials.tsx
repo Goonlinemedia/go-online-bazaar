@@ -64,7 +64,7 @@ const Testimonials = () => {
                 </h3>
                 
                 {/* Quote Text */}
-                <p className="text-xs text-muted-foreground leading-relaxed mb-6 font-medium">
+                <p className="text-[13px] text-muted-foreground/90 leading-relaxed mb-6 font-medium font-display italic">
                   "{t.quote}"
                 </p>
               </div>

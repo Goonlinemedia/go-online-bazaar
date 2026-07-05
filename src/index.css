@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -43,8 +43,10 @@
     --navy-soft: 215 19% 34%;
     --purple: 24 95% 53%;
 
-    --font-heading: 'Manrope', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Mont', 'Manrope', sans-serif;
+    --font-body: 'DM Sans', 'Inter', sans-serif;
+    --font-display: 'Avakine', 'Rovale', 'ancola', 'Anton', serif;
+    --font-impact: 'Anton', sans-serif;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -128,7 +130,7 @@
   }
   .section-number {
     @apply text-8xl md:text-[12rem] font-black text-primary/5 absolute -top-12 -left-8 pointer-events-none select-none;
-    font-family: var(--font-heading);
+    font-family: var(--font-impact);
     -webkit-text-stroke: 1px hsl(var(--primary) / 0.03);
   }
   .aura-blob {
