@@ -1,8 +1,11 @@
 import Navbar from "@/components/Navbar";
 import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const Pricing = () => {
+  useScrollReveal();
+
   return (
     <div className="min-h-screen bg-background relative selection:bg-primary/20 pb-16 md:pb-0">
       <Navbar />
