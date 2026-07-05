@@ -126,19 +126,24 @@ const Navbar = () => {
 
       {/* Mobile Drawer Menu */}
       {open && (
-        <div className="md:hidden fixed top-0 right-0 bottom-0 z-[120] w-[280px] sm:w-[320px] bg-slate-50 dark:bg-slate-900 border-l border-border shadow-2xl p-8 flex flex-col justify-between animate-slide-in-right">
+        <div className="md:hidden fixed top-0 right-0 bottom-0 z-[120] w-[280px] sm:w-[320px] bg-white dark:bg-slate-950 border-l border-border shadow-2xl p-8 flex flex-col justify-between animate-slide-in-right">
           <div>
-            {/* Header row in drawer */}
-            <div className="flex justify-between items-center mb-12">
-              <span className="text-sm font-bold text-primary tracking-widest uppercase font-heading">
-                GoOnline
-              </span>
+            {/* Close Button Row */}
+            <div className="flex justify-end mb-4">
               <button 
                 onClick={() => setOpen(false)} 
-                className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+                className="text-slate-400 hover:text-primary transition-colors p-1"
+                aria-label="Close menu"
               >
-                <X size={14} />
+                <X size={20} className="stroke-[1.5]" />
               </button>
+            </div>
+
+            {/* Brand Title */}
+            <div className="mb-10">
+              <span className="text-base font-bold text-primary tracking-widest uppercase font-heading">
+                GoOnline
+              </span>
             </div>
 
             {/* Links, left-aligned, stacked, bold, uppercase */}

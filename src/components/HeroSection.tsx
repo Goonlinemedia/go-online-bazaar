@@ -142,7 +142,7 @@ const HeroSection = () => {
     <section 
       id="home"
       ref={ref} 
-      className="h-[150vh] md:h-[300vh] py-16 md:py-32 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d] bg-[#FCFCFD] dark:bg-background"
+      className="h-[150vh] md:h-[300vh] py-16 md:py-32 overflow-hidden antialiased relative flex flex-col self-auto md:[perspective:1000px] md:[transform-style:preserve-3d] bg-[#FCFCFD] dark:bg-background"
     >
       <Header />
       <motion.div
