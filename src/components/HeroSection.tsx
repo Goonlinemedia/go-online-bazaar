@@ -19,11 +19,11 @@ const HeroSection = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground leading-[1.1] tracking-tight mb-6">
-            Premium Websites for Brands Ready to Look Established
+            Premium Websites for Brands Ready to Scale
           </h1>
 
           <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed font-medium mb-8">
-            GoOnline designs websites, ecommerce stores, and digital commerce systems for businesses that want to look credible, sell online, and operate with confidence.
+            We design refined websites, ecommerce stores, and digital commerce systems for businesses that want to look credible, sell online, and operate with confidence.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -38,7 +38,7 @@ const HeroSection = () => {
               href="#portfolio" 
               className="btn-outline text-sm py-3 px-8 inline-flex items-center justify-center"
             >
-              View Portfolio
+              View Our Work
             </a>
           </div>
         </div>

@@ -32,11 +32,11 @@ const ServicesSection = () => {
     <section id="services" className="py-20 bg-white dark:bg-background relative overflow-hidden border-b border-border/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest bg-secondary px-3 py-1.5 rounded-full mb-4 inline-block">
-            Our Solutions
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
+            Services
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4 font-heading tracking-tight">
-            Core Service Offerings
+            Website & Ecommerce Services
           </h2>
           <p className="text-base text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
             We design, build, and configure digital commerce frameworks that position your brand for growth.

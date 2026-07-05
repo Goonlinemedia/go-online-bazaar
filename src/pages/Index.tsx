@@ -6,8 +6,6 @@ import SupplyChainSection from "@/components/SupplyChainSection";
 import HowItWorks from "@/components/HowItWorks";
 import PricingSection from "@/components/PricingSection";
 import Testimonials from "@/components/Testimonials";
-import FAQSection from "@/components/FAQSection";
-import FinalCTA from "@/components/FinalCTA";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -41,11 +39,7 @@ const Index = () => {
       {/* 7. Testimonials */}
       <Testimonials />
 
-      {/* 8. FAQ */}
-      <FAQSection />
-
-      {/* 9. Contact */}
-      <FinalCTA />
+      {/* 8. Contact */}
       <ContactSection />
 
       {/* Footer & Scroll Utilities */}

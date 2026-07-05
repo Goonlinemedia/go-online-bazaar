@@ -76,9 +76,9 @@ const VendorSpotlights = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 gap-8" data-reveal>
           <div>
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Selected Work</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Portfolio</span>
             <h2 className="mt-4 text-3xl md:text-5xl font-heading font-bold text-foreground tracking-tight leading-tight">
-              Featured Case Studies
+              Selected Work
             </h2>
             <p className="mt-4 text-muted-foreground text-base max-w-xl font-medium">
               We design and deploy high-performance digital solutions that support brand operations, showcase portfolios, and capture engagements.

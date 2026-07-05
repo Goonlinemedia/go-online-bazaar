@@ -25,7 +25,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        <a href="#contact" className="hidden md:inline-flex btn-primary text-sm shadow-lg shadow-primary/20">
+        <a href="#contact" className="hidden md:inline-flex btn-primary text-sm shadow-sm">
           Start a Project
         </a>
 

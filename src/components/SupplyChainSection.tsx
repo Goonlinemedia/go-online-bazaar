@@ -32,11 +32,11 @@ const SupplyChainSection = () => {
     <section id="operations" className="py-20 relative overflow-hidden bg-background border-b border-border/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] bg-secondary px-3 py-1.5 rounded-full mb-4 inline-block">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
             Ecommerce & Operations
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4 font-heading tracking-tight leading-tight">
-            Helping Small Businesses Move Products Faster
+            Built for Commerce Operations
           </h2>
           <p className="text-base text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
             We equip growing brands with digital infrastructure to showcase inventory, route orders, structure inquiries, and simplify delivery logistics.

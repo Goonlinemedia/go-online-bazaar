@@ -26,11 +26,11 @@ const HowItWorks = () => {
     <section id="process" className="py-20 relative overflow-hidden bg-white dark:bg-background border-b border-border/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16" data-reveal>
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] bg-secondary px-3 py-1.5 rounded-full mb-4 inline-block">
-            Our Process
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
+            Process
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight leading-tight">
-            How We Get You Online
+            Our Process
           </h2>
           <p className="mt-4 text-base text-muted-foreground max-w-xl mx-auto font-medium">
             A structured, collaborative approach to delivering your digital flagship.

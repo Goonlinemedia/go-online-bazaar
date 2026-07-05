@@ -9,7 +9,7 @@ const Footer = () => (
           <img src="/logo.png" alt="GoOnline Logo" className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]" />
         </div>
         <p className="text-xs leading-relaxed mt-4">
-          Digital commerce solutions for brands and small businesses. We design and build professional websites, online stores, product catalogs, and WhatsApp-powered ordering systems.
+          GoOnline is a digital commerce studio helping brands build credible websites, ecommerce stores, and online systems that support sales, ordering, and business growth.
         </p>
       </div>
 
@@ -28,7 +28,7 @@ const Footer = () => (
       <div>
         <h4 className="font-bold text-primary-foreground mb-6 text-xs uppercase tracking-wider">Quick Links</h4>
         <ul className="space-y-3 text-xs font-semibold">
-          {["Features", "Process", "Portfolio", "Pricing", "Contact"].map((l) => (
+          {["Portfolio", "Services", "Process", "Pricing", "Contact"].map((l) => (
             <li key={l}>
               <a href={`#${l.toLowerCase()}`} className="hover:text-primary transition-all duration-300 transform hover:translate-x-1 inline-block">{l}</a>
             </li>

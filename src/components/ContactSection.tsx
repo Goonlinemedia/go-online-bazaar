@@ -68,12 +68,12 @@ const ContactSection = () => {
     <section id="contact" className="section-padding bg-secondary/50">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12">
         <div>
-          <span className="text-sm font-semibold text-primary uppercase tracking-wider">Contact</span>
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Contact</span>
           <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground">
-            Got questions? <span className="gradient-text">Let's talk.</span>
+            Start a Project
           </h2>
-          <p className="mt-4 text-muted-foreground max-w-md">
-            Our team is here to help you get started and grow your online business.
+          <p className="mt-4 text-sm text-muted-foreground max-w-md leading-relaxed font-medium">
+            GoOnline is a digital commerce studio helping brands build credible websites, ecommerce stores, and online systems that support sales, ordering, and business growth.
           </p>
 
           <div className="mt-10 space-y-5">

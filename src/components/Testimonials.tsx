@@ -24,11 +24,11 @@ const Testimonials = () => {
     <section id="testimonials" className="py-20 bg-white dark:bg-background border-b border-border/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-16 px-4">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest bg-secondary px-3 py-1.5 rounded-full mb-4 inline-block">
-            Real Proof
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
+            Proof
           </span>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground font-heading tracking-tight">
-            Client Success Stories
+            Client Results
           </h2>
           <p className="mt-4 text-muted-foreground text-base max-w-xl mx-auto leading-relaxed font-medium">
             Read how we help companies establish digital credibility and grow.
