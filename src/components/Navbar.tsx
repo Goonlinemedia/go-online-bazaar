@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Navigation } from "lucide-react";
+import { Menu, X, Navigation, Sun, Moon } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { useTheme } from "next-themes";
 
 const navLinks = ["Portfolio", "Services", "Process", "Pricing", "Contact"];
 
@@ -8,10 +9,14 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   const isHome = location.pathname === "/";
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setScrolled(true);
@@ -36,7 +41,7 @@ const Navbar = () => {
           <img 
             src="/logo.png" 
             alt="GoOnline Logo" 
-            className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]" 
+            className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px] dark:invert" 
           />
         </a>
 
@@ -45,7 +50,7 @@ const Navbar = () => {
           <nav 
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className={`flex items-center overflow-hidden rounded-full border border-border bg-background/85 shadow-lg backdrop-blur-md h-12 transition-all duration-500 relative cursor-pointer ${
+            className={`flex items-center overflow-hidden rounded-full border border-border bg-background/85 dark:bg-[#0F172A]/85 shadow-lg backdrop-blur-md h-12 transition-all duration-500 relative cursor-pointer ${
               scrolled && !hovered 
                 ? "w-12 pl-0 pr-0 justify-center" 
                 : "w-[440px] pl-4 pr-1"
@@ -84,8 +89,18 @@ const Navbar = () => {
           </nav>
         </div>
 
-        {/* Right: CTA Action & Mobile trigger */}
-        <div className="z-[130] flex items-center gap-4">
+        {/* Right: Theme Toggle, CTA Action & Mobile Menu Trigger */}
+        <div className="z-[130] flex items-center gap-3 md:gap-4">
+          {mounted && (
+            <button 
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")} 
+              className="flex items-center justify-center bg-background/40 dark:bg-[#1E293B]/40 border border-border hover:border-primary/45 h-9 w-9 rounded-full transition-all duration-300 focus:outline-none cursor-pointer text-primary"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          )}
+
           <a 
             href={isHome ? "#contact" : "/#contact"} 
             className="hidden md:inline-flex btn-primary text-xs font-bold uppercase tracking-wider shadow-sm px-6 py-3 rounded-full"
@@ -95,7 +110,7 @@ const Navbar = () => {
 
           <button 
             onClick={() => setOpen(!open)} 
-            className="md:hidden flex items-center justify-center bg-background/40 border border-border/40 hover:border-primary/45 h-9 w-9 rounded-full transition-all duration-300 focus:outline-none"
+            className="md:hidden flex items-center justify-center bg-background/40 dark:bg-[#1E293B]/40 border border-border/40 hover:border-primary/45 h-9 w-9 rounded-full transition-all duration-300 focus:outline-none"
             aria-label="Toggle navigation menu"
           >
             {open ? <X size={16} className="text-primary" /> : <Menu size={16} className="text-primary" />}
@@ -106,7 +121,7 @@ const Navbar = () => {
 
       {/* Mobile Drawer Menu */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-[110] bg-background/95 backdrop-blur-xl flex flex-col justify-center px-8 animate-fade-in">
+        <div className="md:hidden fixed inset-0 z-[110] bg-background/95 dark:bg-background/98 backdrop-blur-xl flex flex-col justify-center px-8 animate-fade-in">
           <div className="space-y-6 flex flex-col items-center">
             {navLinks.map((link, idx) => {
               const isPricingLink = link === "Pricing";
