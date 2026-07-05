@@ -95,7 +95,7 @@ const RefundPolicy = () => {
             <p>
               For refund requests or questions, contact us:<br />
               <strong>Email:</strong> <a href="mailto:goonlinemedia0@gmail.com" className="text-primary hover:underline transition-colors">goonlinemedia0@gmail.com</a><br />
-              <strong>Phone/WhatsApp:</strong> <a href="https://wa.me/2348035826698" className="text-primary hover:underline transition-colors">+234 803 582 6698</a>
+              <strong>Phone/WhatsApp:</strong> <a href="https://wa.me/2347081150770" className="text-primary hover:underline transition-colors">+234 708 115 0770</a>
             </p>
           </section>
 

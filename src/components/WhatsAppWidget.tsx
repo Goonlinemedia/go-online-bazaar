@@ -8,7 +8,7 @@ const WhatsAppWidget = () => {
   const [message, setMessage] = useState("");
   const { trackEvent } = useAnalytics();
 
-  const phoneNumber = "2348035826698";
+  const phoneNumber = "2347081150770";
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();

@@ -79,8 +79,8 @@ const ContactSection = () => {
           <div className="mt-10 space-y-6">
             {[
               { icon: Mail, label: "Email Us", value: "goonlinemedia0@gmail.com", href: "mailto:goonlinemedia0@gmail.com" },
-              { icon: Phone, label: "Call Us", value: "+234 803 582 6698", href: "tel:+2348035826698" },
-              { icon: MapPin, label: "Visit Us", value: "Irepo Estate, Ikotun Lagos, Nigeria" },
+              { icon: Phone, label: "Call Us", value: "+234 708 115 0770", href: "tel:+2347081150770" },
+              { icon: MapPin, label: "Visit Us", value: "9, Bashiru Yakubu Street, Irepo Estate, Ikotun, Lagos" },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-accent text-primary flex items-center justify-center shrink-0">

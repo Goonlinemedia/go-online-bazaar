@@ -33,7 +33,7 @@ const Footer = () => {
           </p>
           <div className="flex gap-4 mt-2">
             <a 
-              href="https://wa.me/2348035826698" 
+              href="https://wa.me/2347081150770" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
@@ -88,13 +88,13 @@ const Footer = () => {
             </li>
             <li className="flex items-center gap-3">
               <Phone size={14} className="text-primary shrink-0" />
-              <a href="tel:+2348035826698" className="hover:text-primary transition-colors">
-                +234 803 582 6698
+              <a href="tel:+2347081150770" className="hover:text-primary transition-colors">
+                +234 708 115 0770
               </a>
             </li>
             <li className="flex items-start gap-3">
               <MapPin size={14} className="text-primary shrink-0 mt-0.5" />
-              <span>Irepo Estate, Ikotun Lagos, Nigeria</span>
+              <span>9, Bashiru Yakubu Street, Irepo Estate, Ikotun, Lagos</span>
             </li>
           </ul>
         </div>
