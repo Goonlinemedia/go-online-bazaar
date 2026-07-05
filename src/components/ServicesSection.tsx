@@ -45,7 +45,7 @@ const services = [
 
 const ServicesSection = () => {
   return (
-    <section id="services" className="py-24 md:py-32 bg-transparent relative overflow-hidden border-b border-border/50">
+    <section id="services" className="section-padding relative overflow-hidden bg-transparent border-b border-border/50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">

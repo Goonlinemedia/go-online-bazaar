@@ -25,7 +25,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section id="process" className="py-24 md:py-32 relative overflow-hidden bg-transparent border-b border-border/50">
+    <section id="process" className="section-padding relative overflow-hidden bg-transparent border-b border-border/50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20" data-reveal>
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">

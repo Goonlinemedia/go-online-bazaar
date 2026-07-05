@@ -11,6 +11,8 @@ const PricingSection = () => {
     const contactSection = document.getElementById("contact");
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = "/#contact";
     }
   };
 

@@ -1,8 +1,11 @@
-import { ArrowRight, Globe, Book, GraduationCap, ShoppingBag } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { useLocation } from "react-router-dom";
 
 const HeroSection = () => {
   const { trackEvent } = useAnalytics();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   const handleWorkClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -10,51 +13,38 @@ const HeroSection = () => {
     const portfolioSection = document.getElementById("portfolio");
     if (portfolioSection) {
       portfolioSection.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = "/#portfolio";
     }
   };
 
   return (
-    <section id="home" className="pt-32 pb-20 md:pt-40 md:pb-28 px-4 relative overflow-hidden bg-[#FCFCFD] dark:bg-background">
-      {/* Background blobs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/30 rounded-full blur-[150px] pointer-events-none opacity-5" />
+    <section id="home" className="pt-36 pb-20 lg:pt-48 lg:pb-32 px-6 relative overflow-hidden bg-[#FCFCFD] dark:bg-background">
+      {/* Calm glowing blur backdrops */}
+      <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-0 left-10 w-[350px] h-[350px] bg-primary/20 rounded-full blur-[120px] pointer-events-none opacity-5" />
 
       <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-center relative z-10">
         
-        {/* Left Column — Copwriting and CTA */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left" data-reveal>
+        {/* Left Column — Core Copy */}
+        <div className="lg:col-span-6 flex flex-col items-start text-left" data-reveal>
           <div className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-6">
             Digital Website Partner
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-[62px] font-bold text-foreground leading-[1.1] tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-bold text-foreground leading-[1.15] tracking-tight mb-6 font-heading">
             Professional Websites That Grow Your Business
           </h1>
 
-          <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed mb-8">
-            We design and build modern websites for businesses, churches, schools, NGOs, startups, and online stores—helping you attract customers, build credibility, and grow online.
+          <p className="text-sm sm:text-base text-muted-foreground max-w-lg leading-relaxed mb-10 font-medium">
+            We design and build modern websites for businesses, schools, churches, and NGOs—helping you attract customers, build credibility, and grow online.
           </p>
-
-          {/* SaaS bulleted checks */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-3.5 mb-10 w-full max-w-md">
-            {[
-              "Free setup & onboarding",
-              "Mobile responsive designs",
-              "Payment gateways integrated",
-              "Delivered in days, not months"
-            ].map((feature) => (
-              <div key={feature} className="flex items-center gap-2.5 text-sm font-semibold text-muted-foreground">
-                <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] shrink-0">✓</span>
-                <span>{feature}</span>
-              </div>
-            ))}
-          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <a 
-              href="#contact" 
+              href={isHome ? "#contact" : "/#contact"} 
               onClick={() => trackEvent("cta_click", { section: "hero", button: "get_started" })}
-              className="btn-primary text-sm py-4 px-8 inline-flex items-center justify-center gap-2 shadow-md"
+              className="btn-primary text-sm py-4 px-8 inline-flex items-center justify-center gap-2 shadow-sm"
             >
               Get Started <ArrowRight size={16} />
             </a>
@@ -68,94 +58,66 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Right Column — Grid Collage of Mockup Websites */}
-        <div className="lg:col-span-5 relative w-full h-[400px] select-none flex items-center justify-center" data-reveal data-reveal-delay="2">
-          
-          {/* Collage Container */}
-          <div className="relative w-full h-full max-w-[450px]">
+        {/* Right Column — Single Premium Mockup */}
+        <div className="lg:col-span-6 relative w-full select-none flex items-center justify-center" data-reveal data-reveal-delay="2">
+          {/* Subtle Radial Glow Behind Mockup */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-full blur-[100px] pointer-events-none animate-pulse-glow" />
+
+          {/* Device Mockup */}
+          <div className="w-full max-w-[500px] aspect-[4/3] rounded-[24px] bg-[#0F172A] border border-[#334155] shadow-2xl p-3 flex flex-col relative overflow-hidden group">
             
-            {/* CARD 1: Corporate Business Site (Left-Top Back) */}
-            <div className="absolute top-2 left-2 z-10 w-[210px] aspect-[4/3] rounded-2xl bg-white dark:bg-card border border-border shadow-lg p-3 flex flex-col justify-between animate-float">
-              <div className="flex items-center justify-between pb-1 border-b border-border/80 text-[7px] text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Globe size={10} className="text-blue-500" />
-                  <span className="font-bold text-foreground">ApexCorp</span>
-                </div>
-                <span>Services &bull; About</span>
+            {/* Browser Header Bar */}
+            <div className="bg-[#1E293B] border-b border-[#334155]/60 px-4 py-2 flex items-center justify-between shrink-0 text-white/40">
+              <div className="flex gap-1.5 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
               </div>
-              <div className="flex-1 my-2 bg-slate-50 dark:bg-slate-900 rounded p-2 flex flex-col justify-center gap-1.5">
-                <div className="h-2 w-20 bg-slate-300 dark:bg-slate-700 rounded" />
-                <div className="h-1.5 w-28 bg-slate-200 dark:bg-slate-800 rounded" />
-                <div className="h-1.5 w-16 bg-slate-200 dark:bg-slate-800 rounded" />
-                <div className="h-3 w-10 bg-primary/20 rounded mt-1" />
+              <div className="w-40 bg-[#0F172A] rounded py-0.5 text-[6px] text-slate-500 font-mono text-center tracking-tight border border-slate-800/40 truncate">
+                goonline.agency/showcase
               </div>
-              <div className="text-[6px] text-muted-foreground">© ApexCorp Industries</div>
+              <div className="w-3" />
             </div>
 
-            {/* CARD 2: Church Website (Right-Top Back) */}
-            <div className="absolute top-6 right-2 z-10 w-[200px] aspect-[4/3] rounded-2xl bg-white dark:bg-card border border-border shadow-lg p-3 flex flex-col justify-between animate-float [animation-delay:1.5s]">
-              <div className="flex items-center justify-between pb-1 border-b border-border/80 text-[7px] text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Book size={10} className="text-amber-500" />
-                  <span className="font-bold text-foreground">Faith Chapel</span>
+            {/* Mock website screen with custom slow parallax background scroll */}
+            <div className="flex-1 bg-slate-900 rounded-lg p-4 flex flex-col justify-between relative overflow-hidden font-sans text-white/90">
+              <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+              
+              {/* Mock Header */}
+              <div className="flex justify-between items-center pb-2 border-b border-slate-800">
+                <span className="text-[8px] font-bold tracking-wider text-white">Apex Digital</span>
+                <div className="flex gap-2 text-[6px] text-slate-400">
+                  <span>Solutions</span>
+                  <span>Portfolios</span>
+                  <span>Contact</span>
                 </div>
-                <span>Media</span>
               </div>
-              <div className="flex-1 my-2 bg-amber-50/50 dark:bg-amber-950/10 rounded p-2 flex flex-col justify-between">
+
+              {/* Mock Hero Area */}
+              <div className="flex-1 flex flex-col justify-center my-4 gap-2">
+                <div className="text-[10px] font-bold text-primary">Web Solutions</div>
+                <div className="h-4 w-32 bg-white rounded-sm" />
+                <div className="h-2 w-48 bg-slate-700 rounded-sm" />
+                <div className="h-2 w-32 bg-slate-700 rounded-sm" />
+              </div>
+
+              {/* Mock Content Stats */}
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800">
                 <div>
-                  <div className="text-[8px] font-bold text-amber-700 dark:text-amber-500">Live Sunday Stream</div>
-                  <div className="h-1 w-20 bg-amber-200 dark:bg-amber-800 rounded mt-1" />
+                  <div className="text-[8px] font-bold text-white">99%</div>
+                  <div className="text-[5px] text-slate-500 uppercase">Conversion</div>
                 </div>
-                <div className="h-3 w-full bg-[#FFF7ED] dark:bg-amber-950/20 text-[7px] text-primary flex items-center justify-center rounded font-semibold border border-primary/10">
-                  Give Online
-                </div>
-              </div>
-              <div className="text-[6px] text-muted-foreground">Faith Chapel Ministry</div>
-            </div>
-
-            {/* CARD 3: School Portal (Left-Bottom Mid) */}
-            <div className="absolute bottom-6 left-6 z-20 w-[200px] aspect-[4/3] rounded-2xl bg-white dark:bg-card border border-border shadow-xl p-3 flex flex-col justify-between animate-float [animation-delay:2s]">
-              <div className="flex items-center justify-between pb-1 border-b border-border/80 text-[7px] text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <GraduationCap size={10} className="text-indigo-500" />
-                  <span className="font-bold text-foreground">Premier Prep</span>
-                </div>
-                <span>Portals</span>
-              </div>
-              <div className="flex-1 my-2 bg-indigo-50/50 dark:bg-indigo-950/10 rounded p-2 flex flex-col justify-between">
                 <div>
-                  <div className="text-[8px] font-bold text-indigo-700 dark:text-indigo-400">Admissions Open</div>
-                  <div className="text-[6px] text-muted-foreground mt-0.5">2026/2027 Academic Year</div>
+                  <div className="text-[8px] font-bold text-white">100+</div>
+                  <div className="text-[5px] text-slate-500 uppercase">Launches</div>
                 </div>
-                <div className="h-3 w-16 bg-indigo-600 text-[6px] text-white flex items-center justify-center rounded font-bold">
-                  Apply Now
+                <div>
+                  <div className="text-[8px] font-bold text-white">24/7</div>
+                  <div className="text-[5px] text-slate-500 uppercase">Support</div>
                 </div>
               </div>
-              <div className="text-[6px] text-indigo-600/80">Active Portal</div>
-            </div>
 
-            {/* CARD 4: E-commerce Store (Center-Front Foreground) */}
-            <div className="absolute bottom-2 right-4 z-30 w-[220px] aspect-[4/3] rounded-2xl bg-white dark:bg-card border-2 border-primary/20 shadow-2xl p-3.5 flex flex-col justify-between animate-float [animation-delay:0.7s]">
-              <div className="flex items-center justify-between pb-1 border-b border-border/80 text-[7px] text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <ShoppingBag size={10} className="text-emerald-500" />
-                  <span className="font-bold text-foreground">Luxe Fashion</span>
-                </div>
-                <span>Catalog</span>
-              </div>
-              <div className="flex-1 my-2 bg-slate-50 dark:bg-slate-900 rounded p-2 flex gap-2">
-                <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded shrink-0" />
-                <div className="flex-1 flex flex-col justify-center gap-1">
-                  <div className="h-2 w-16 bg-slate-300 dark:bg-slate-700 rounded" />
-                  <div className="h-1.5 w-10 bg-slate-200 dark:bg-slate-800 rounded" />
-                  <div className="text-[8px] font-bold text-primary">₦24,500.00</div>
-                </div>
-              </div>
-              <div className="h-4.5 w-full bg-primary text-[8px] text-white flex items-center justify-center rounded-lg font-bold hover:bg-[#EA580C] transition-colors">
-                Checkout
-              </div>
             </div>
-
           </div>
         </div>
 

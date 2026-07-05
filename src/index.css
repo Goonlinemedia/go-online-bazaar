@@ -112,7 +112,7 @@
     font-family: var(--font-heading);
   }
   .section-padding {
-    @apply px-4 sm:px-6 lg:px-8 py-28 md:py-32;
+    @apply px-4 sm:px-6 lg:px-8 py-32 lg:py-40;
   }
   .glass-card {
     @apply bg-white dark:bg-card border border-border rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)];

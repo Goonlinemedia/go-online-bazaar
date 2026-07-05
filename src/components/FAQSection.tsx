@@ -2,7 +2,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 const FAQSection = () => {
   return (
-    <section id="faq" className="py-24 md:py-32 relative overflow-hidden bg-transparent border-b border-border/50">
+    <section id="faq" className="section-padding relative overflow-hidden bg-transparent border-b border-border/50">
       <div className="max-w-3xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16" data-reveal>
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">

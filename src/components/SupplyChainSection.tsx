@@ -29,7 +29,7 @@ const operations = [
 
 const SupplyChainSection = () => {
   return (
-    <section id="operations" className="py-24 md:py-32 bg-transparent relative overflow-hidden border-b border-border/50">
+    <section id="operations" className="section-padding bg-transparent relative overflow-hidden border-b border-border/50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
