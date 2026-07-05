@@ -1,11 +1,11 @@
-import { ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { useAnalytics } from "@/hooks/use-analytics";
 
 const PricingSection = () => {
   const { trackEvent } = useAnalytics();
 
-  const handleCTA = () => {
-    trackEvent("pricing_cta_click", { action_id: "request_quote" });
+  const handleCTA = (pkgName: string) => {
+    trackEvent("pricing_cta_click", { package_name: pkgName });
     
     // Smooth scroll to contact section
     const contactSection = document.getElementById("contact");
@@ -14,33 +14,144 @@ const PricingSection = () => {
     }
   };
 
-  return (
-    <div id="pricing" className="w-full bg-background py-24 md:py-32 relative overflow-hidden border-b border-border/30">
-      {/* Background blobs */}
-      <div className="aura-blob bg-primary w-[300px] h-[300px] -left-12 bottom-0 opacity-[0.03]" />
+  const packages = [
+    {
+      name: "Starter Web Presence",
+      tag: "Business & Portfolios",
+      priceLabel: "₦150,000",
+      desc: "For businesses, consultants, and startups looking to establish an elegant online showcase.",
+      features: [
+        "Custom landing page layout",
+        "Mobile responsive design",
+        "Core SEO implementation",
+        "Contact & inquiry form",
+        "Domain & hosting mapping",
+      ],
+      isPopular: false,
+    },
+    {
+      name: "Professional Platform",
+      tag: "Churches, Schools & NGOs",
+      priceLabel: "₦250,000",
+      desc: "For organizations requiring interactive portals, online giving setups, admissions, or listings directories.",
+      features: [
+        "Everything in Starter tier",
+        "Custom database collections",
+        "Online donations & giving setup",
+        "Timetables & event managers",
+        "Payment gateways integration",
+        "Admissions or registration channels",
+      ],
+      isPopular: true,
+    },
+    {
+      name: "Enterprise Solutions",
+      tag: "Bespoke Systems",
+      priceLabel: "Custom Quote",
+      desc: "For full-scale e-commerce stores, logistics platforms, or organizations requiring bespoke operational databases.",
+      features: [
+        "Bespoke system flows",
+        "Multi-merchant e-commerce setups",
+        "Courier & tracking integrations",
+        "Custom student or membership databases",
+        "Priority 24/7 account management",
+      ],
+      isPopular: false,
+    },
+  ];
 
-      <div className="max-w-4xl mx-auto px-6 text-center relative z-10" data-reveal>
+  return (
+    <div id="pricing" className="w-full bg-transparent py-24 md:py-32 relative overflow-hidden border-b border-border/50">
+      <div className="section-number">04</div>
+
+      {/* Header */}
+      <section className="relative px-6 lg:px-8 max-w-7xl mx-auto text-center mb-20" data-reveal>
         <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
-          Pricing
+          Pricing & Plans
         </span>
-        <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight mb-12 font-heading">
+        <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight mt-2 mb-4 font-heading">
           Plans for Growing Businesses
         </h2>
-        
-        <div className="glass-panel p-10 md:p-16 max-w-2xl mx-auto border-border/50 bg-card/40 backdrop-blur-md shadow-sm">
-          <div className="text-3xl md:text-4xl font-bold text-foreground mb-4 font-heading tracking-tight">
-            Projects start from ₦150,000
-          </div>
-          <p className="text-sm md:text-base text-muted-foreground mb-8 font-medium leading-relaxed max-w-md mx-auto">
-            Custom quotes available for companies, ecommerce brands, and organizations.
-          </p>
-          <button 
-            onClick={handleCTA}
-            className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 shadow-sm text-sm"
+        <p className="text-base text-muted-foreground max-w-xl mx-auto font-medium">
+          Choose a flat-rate package to establish credibility, or request a custom quote for complex enterprise flows.
+        </p>
+      </section>
+
+      {/* Pricing Cards Grid (3 Columns) */}
+      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6 lg:px-8 mb-16 items-center">
+        {packages.map((pkg, i) => (
+          <div
+            key={pkg.name}
+            data-reveal
+            data-reveal-delay={i + 1}
+            onClick={() => handleCTA(pkg.name)}
+            className={`group relative flex flex-col justify-between rounded-3xl p-8 transition-all duration-500 cursor-pointer overflow-hidden bg-card ${
+              pkg.isPopular
+                ? "border-2 border-primary shadow-[0_20px_50px_rgba(249,115,22,0.1)] md:-translate-y-3 hover:-translate-y-4"
+                : "border border-border shadow-[0_10px_40px_rgba(0,0,0,0.08)] hover:-translate-y-[6px] hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)]"
+            }`}
           >
-            Start a Project <ArrowRight size={14} />
-          </button>
-        </div>
+            {pkg.isPopular && (
+              <div className="absolute top-4 right-4 bg-primary text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                Most Popular
+              </div>
+            )}
+            
+            <div>
+              <div className="flex flex-col gap-1 mb-6">
+                <span className={`text-[10px] font-bold uppercase tracking-[0.1em] ${pkg.isPopular ? 'text-primary' : 'text-muted-foreground'}`}>
+                  {pkg.tag}
+                </span>
+                <h3 className="text-xl font-bold font-heading text-foreground tracking-tight">
+                  {pkg.name}
+                </h3>
+              </div>
+              <p className="text-xs font-medium text-muted-foreground leading-relaxed mb-6">
+                {pkg.desc}
+              </p>
+              
+              <div className="border-t border-b border-border/50 py-4 mb-8">
+                <span className="text-2xl font-bold text-foreground font-heading">
+                  {pkg.priceLabel}
+                </span>
+              </div>
+
+              <ul className="space-y-4 mb-10">
+                {pkg.features.map((f, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <div className={`mt-1 rounded-full p-0.5 ${pkg.isPopular ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+                      <Check size={12} className="stroke-[3px]" />
+                    </div>
+                    <span className="text-xs font-medium text-foreground tracking-tight leading-relaxed">
+                      {f}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <button 
+              className={`w-full py-3.5 text-xs font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${
+                pkg.isPopular
+                  ? "bg-primary text-white hover:bg-primary/95 shadow-sm"
+                  : "bg-secondary text-foreground hover:bg-border"
+              }`}
+            >
+              Get Started <ArrowRight size={12} />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Quote Prompt */}
+      <div className="max-w-xl mx-auto px-6 text-center">
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Need a completely custom ordering workflow or bespoke catalog configurations? 
+          <br className="hidden md:block" />
+          <a href="#contact" className="text-primary font-bold hover:underline ml-1">
+            Connect with our lead developer directly
+          </a>
+        </p>
       </div>
     </div>
   );

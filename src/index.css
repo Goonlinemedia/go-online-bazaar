@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,45 +6,45 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 225 39% 7%;
+    --background: 240 14% 99%;
+    --foreground: 220 43% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 225 39% 7%;
+    --card-foreground: 220 43% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 225 39% 7%;
+    --popover-foreground: 220 43% 11%;
 
-    --primary: 174 77% 26%;
+    --primary: 24 95% 53%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 95%;
-    --secondary-foreground: 225 39% 7%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 220 43% 11%;
 
-    --muted: 210 15% 94%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 240 14% 99%;
+    --muted-foreground: 215 19% 34%;
 
-    --accent: 223 47% 11%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 34 100% 96%;
+    --accent-foreground: 24 95% 53%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 16% 90%;
-    --input: 215 16% 90%;
-    --ring: 174 77% 26%;
+    --border: 220 17% 93%;
+    --input: 220 17% 93%;
+    --ring: 24 95% 53%;
 
-    --radius: 0.75rem;
+    --radius: 1.5rem;
 
-    --teal: 174 77% 26%;
-    --teal-light: 174 60% 40%;
-    --teal-dark: 174 90% 15%;
-    --navy: 228 62% 5%;
-    --navy-soft: 225 39% 7%;
-    --purple: 174 77% 26%;
+    --teal: 24 95% 53%;
+    --teal-light: 24 95% 65%;
+    --teal-dark: 20 92% 48%;
+    --navy: 220 43% 11%;
+    --navy-soft: 215 19% 34%;
+    --purple: 24 95% 53%;
 
     --font-heading: 'Manrope', sans-serif;
-    --font-body: 'Manrope', sans-serif;
+    --font-body: 'Inter', sans-serif;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -57,25 +57,25 @@
   }
 
   .dark {
-    --background: 228 62% 5%;
+    --background: 222 47% 11%;
     --foreground: 210 20% 98%;
-    --card: 225 39% 7%;
+    --card: 222 47% 13%;
     --card-foreground: 210 20% 98%;
-    --popover: 225 39% 7%;
+    --popover: 222 47% 13%;
     --popover-foreground: 210 20% 98%;
-    --primary: 174 77% 35%;
+    --primary: 24 95% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 223 47% 11%;
+    --secondary: 222 47% 15%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 223 47% 11%;
+    --muted: 222 47% 15%;
     --muted-foreground: 215 16% 65%;
-    --accent: 174 77% 35%;
+    --accent: 24 95% 53%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 223 47% 15%;
-    --input: 223 47% 15%;
-    --ring: 174 77% 35%;
+    --border: 222 47% 20%;
+    --input: 222 47% 20%;
+    --ring: 24 95% 53%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -102,26 +102,26 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-primary-foreground px-6 py-3 md:px-8 md:py-3.5 rounded-xl font-semibold text-sm md:text-base
-           transition-all duration-300 hover:opacity-90 active:scale-[0.98];
+    @apply bg-primary text-primary-foreground px-6 py-3.5 rounded-[14px] font-semibold text-base
+           transition-all duration-300 hover:bg-[#EA580C] hover:-translate-y-[3px] hover:shadow-md active:translate-y-0 active:scale-[0.98] shadow-sm;
     font-family: var(--font-heading);
   }
   .btn-outline {
-    @apply border border-border text-foreground px-6 py-3 md:px-8 md:py-3.5 rounded-xl font-semibold text-sm md:text-base
-           transition-all duration-300 hover:bg-secondary active:scale-[0.98];
+    @apply border border-border bg-card text-foreground px-6 py-3.5 rounded-[14px] font-semibold text-base
+           transition-all duration-300 hover:bg-secondary hover:-translate-y-[3px] hover:shadow-md active:translate-y-0 active:scale-[0.98] shadow-sm;
     font-family: var(--font-heading);
   }
   .section-padding {
-    @apply px-4 sm:px-6 lg:px-8 py-20 md:py-32;
+    @apply px-4 sm:px-6 lg:px-8 py-28 md:py-32;
   }
   .glass-card {
-    @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-sm;
+    @apply bg-white dark:bg-card border border-border rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)];
   }
   .glass-panel {
-    @apply bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-3xl;
+    @apply bg-white dark:bg-card border border-border rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)];
   }
   .gradient-text {
-    @apply text-foreground font-bold;
+    @apply text-primary font-bold;
   }
   .text-glow {
     text-shadow: 0 0 20px hsl(var(--primary) / 0.1);
@@ -129,7 +129,7 @@
   .section-number {
     @apply text-8xl md:text-[12rem] font-black text-primary/5 absolute -top-12 -left-8 pointer-events-none select-none;
     font-family: var(--font-heading);
-    -webkit-text-stroke: 1px hsl(var(--primary) / 0.05);
+    -webkit-text-stroke: 1px hsl(var(--primary) / 0.03);
   }
   .aura-blob {
     @apply absolute rounded-full blur-[120px] opacity-10 animate-pulse;

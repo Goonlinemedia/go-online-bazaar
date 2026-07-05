@@ -29,7 +29,7 @@ const operations = [
 
 const SupplyChainSection = () => {
   return (
-    <section id="operations" className="py-20 relative overflow-hidden bg-background border-b border-border/30">
+    <section id="operations" className="py-24 md:py-32 bg-transparent relative overflow-hidden border-b border-border/50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
@@ -47,7 +47,7 @@ const SupplyChainSection = () => {
           {operations.map((op, idx) => (
             <div
               key={idx}
-              className="bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full"
+              className="bg-card p-8 rounded-3xl border border-border shadow-[0_10px_40px_rgba(0,0,0,0.08)] hover:-translate-y-[6px] hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] transition-all duration-500 group flex flex-col h-full"
             >
               <div className={`w-10 h-10 rounded-xl ${op.color} flex items-center justify-center mb-6`}>
                 <op.icon size={18} />

@@ -65,35 +65,35 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="section-padding bg-secondary/50">
+    <section id="contact" className="section-padding bg-transparent border-b border-border/50">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12">
         <div>
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Contact</span>
-          <h2 className="mt-3 text-3xl md:text-4xl font-heading font-bold text-foreground">
+          <h2 className="mt-3 text-3xl md:text-5xl font-heading font-bold text-foreground">
             Start a Project
           </h2>
           <p className="mt-4 text-sm text-muted-foreground max-w-md leading-relaxed font-medium">
-            GoOnline is a digital commerce studio helping brands build credible websites, ecommerce stores, and online systems that support sales, ordering, and business growth.
+            GoOnline is a digital solutions agency designing high-performance websites and custom portals for businesses, churches, schools, NGOs, and growing brands.
           </p>
 
-          <div className="mt-10 space-y-5">
+          <div className="mt-10 space-y-6">
             {[
               { icon: Mail, label: "Email Us", value: "goonlinemedia0@gmail.com", href: "mailto:goonlinemedia0@gmail.com" },
               { icon: Phone, label: "Call Us", value: "+234 803 582 6698", href: "tel:+2348035826698" },
               { icon: MapPin, label: "Visit Us", value: "Irepo Estate, Ikotun Lagos, Nigeria" },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-accent text-primary flex items-center justify-center shrink-0">
                   <item.icon className="text-primary" size={18} />
                 </div>
                 <div>
                   <div className="font-semibold text-foreground text-sm">{item.label}</div>
                   {item.href ? (
-                    <a href={item.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    <a href={item.href} className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
                       {item.value}
                     </a>
                   ) : (
-                    <p className="text-sm text-muted-foreground">{item.value}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{item.value}</p>
                   )}
                 </div>
               </div>
@@ -101,7 +101,7 @@ const ContactSection = () => {
           </div>
         </div>
 
-        <div className="glass-card p-8">
+        <div className="bg-card p-8 rounded-3xl border border-border shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
           <h3 className="text-lg font-heading font-bold text-foreground mb-6">Send a Message</h3>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <input
@@ -110,7 +110,7 @@ const ContactSection = () => {
               value={form.name}
               onChange={handleChange}
               placeholder="Your name"
-              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full rounded-xl border border-border bg-background px-4.5 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
             />
             <div className="grid sm:grid-cols-2 gap-4">
               <input
@@ -120,14 +120,14 @@ const ContactSection = () => {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Email"
-                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full rounded-xl border border-border bg-background px-4.5 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
               />
               <input
                 name="mobile"
                 value={form.mobile}
                 onChange={handleChange}
                 placeholder="Phone"
-                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full rounded-xl border border-border bg-background px-4.5 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
               />
             </div>
             <textarea
@@ -137,7 +137,7 @@ const ContactSection = () => {
               onChange={handleChange}
               placeholder="Your message..."
               rows={4}
-              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              className="w-full rounded-xl border border-border bg-background px-4.5 py-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 resize-none"
             />
             <button 
               type="submit" 
