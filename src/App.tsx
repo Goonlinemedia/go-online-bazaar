@@ -6,6 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
+import Portfolio from "./pages/Portfolio";
+import Services from "./pages/Services";
+import Process from "./pages/Process";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -26,6 +30,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/process" element={<Process />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route 
               path="/admin" 

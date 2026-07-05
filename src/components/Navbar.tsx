@@ -64,10 +64,7 @@ const Navbar = () => {
             {/* Links Container - visible when expanded */}
             <div className={`flex items-center gap-1 pr-4 transition-all duration-500 ${scrolled && !hovered ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
               {navLinks.map((link) => {
-                const isPricingLink = link === "Pricing";
-                const href = isPricingLink 
-                  ? "/pricing" 
-                  : (isHome ? `#${link.toLowerCase().replace(/\s/g, "")}` : `/#${link.toLowerCase().replace(/\s/g, "")}`);
+                const href = `/${link.toLowerCase().replace(/\s/g, "")}`;
                 
                 return (
                   <div key={link}>
@@ -102,7 +99,7 @@ const Navbar = () => {
           )}
 
           <a 
-            href={isHome ? "#contact" : "/#contact"} 
+            href="/contact" 
             className="hidden md:inline-flex btn-primary text-xs font-bold uppercase tracking-wider shadow-sm px-6 py-3 rounded-full"
           >
             Start a Project
@@ -124,10 +121,7 @@ const Navbar = () => {
         <div className="md:hidden fixed inset-0 z-[110] bg-background/95 dark:bg-background/98 backdrop-blur-xl flex flex-col justify-center px-8 animate-fade-in">
           <div className="space-y-6 flex flex-col items-center">
             {navLinks.map((link, idx) => {
-              const isPricingLink = link === "Pricing";
-              const href = isPricingLink 
-                ? "/pricing" 
-                : (isHome ? `#${link.toLowerCase().replace(/\s/g, "")}` : `/#${link.toLowerCase().replace(/\s/g, "")}`);
+              const href = `/${link.toLowerCase().replace(/\s/g, "")}`;
               
               return (
                 <a
@@ -142,7 +136,7 @@ const Navbar = () => {
               );
             })}
             <a 
-              href={isHome ? "#contact" : "/#contact"} 
+              href="/contact" 
               onClick={() => setOpen(false)} 
               className="btn-primary text-sm font-bold uppercase tracking-wider w-full max-w-xs text-center py-4 rounded-full mt-8 shadow-sm"
             >

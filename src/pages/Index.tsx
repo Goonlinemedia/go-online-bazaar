@@ -74,7 +74,7 @@ const Index = () => {
           <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Establish Your Presence</div>
           <div className="text-xs font-bold text-foreground">Build a premium website</div>
         </div>
-        <a href="#contact" className="btn-primary text-xs py-2.5 px-5 shadow-sm">
+        <a href="/contact" className="btn-primary text-xs py-2.5 px-5 shadow-sm">
           Start a Project
         </a>
       </div>

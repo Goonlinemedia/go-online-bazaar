@@ -96,7 +96,7 @@ const VendorSpotlights = () => {
             </p>
           </div>
           <div className="flex flex-col items-start lg:items-end gap-2 shrink-0">
-            <a href="#contact" className="btn-primary text-sm px-6 py-3.5 shadow-sm">
+            <a href="/contact" className="btn-primary text-sm px-6 py-3.5 shadow-sm">
               Start a Project
             </a>
           </div>

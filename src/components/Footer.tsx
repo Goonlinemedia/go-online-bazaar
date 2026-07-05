@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Twitter, Instagram, ArrowRight } from "lucide-react";
 
 const quickLinks = [
-  { label: "Portfolio", href: "/#portfolio" },
-  { label: "Services", href: "/#services" },
-  { label: "Process", href: "/#process" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Services", href: "/services" },
+  { label: "Process", href: "/process" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const Footer = () => {

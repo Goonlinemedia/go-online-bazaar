@@ -187,7 +187,7 @@ export const Header = () => {
     if (portfolioSection) {
       portfolioSection.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = "/#portfolio";
+      window.location.href = "/portfolio";
     }
   };
 
@@ -207,7 +207,7 @@ export const Header = () => {
 
       <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
         <a 
-          href={isHome ? "#contact" : "/#contact"} 
+          href="/contact" 
           onClick={() => trackEvent("cta_click", { section: "hero", button: "get_started" })}
           className="btn-primary text-sm py-4 px-8 inline-flex items-center justify-center gap-2 shadow-sm rounded-full"
         >

@@ -80,7 +80,7 @@ const ProblemSolutionSection = () => {
                 <p className="text-sm font-bold text-foreground font-heading">Automate Your Operations</p>
                 <p className="text-xs text-muted-foreground font-medium">We design the store, you capture the sales.</p>
               </div>
-              <a href="#contact" className="btn-primary py-2.5 px-6 text-xs shadow-sm inline-flex items-center justify-center shrink-0">
+              <a href="/contact" className="btn-primary py-2.5 px-6 text-xs shadow-sm inline-flex items-center justify-center shrink-0">
                 Build My Store
               </a>
             </div>

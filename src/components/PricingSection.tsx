@@ -12,7 +12,7 @@ const PricingSection = () => {
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = "/#contact";
+      window.location.href = "/contact";
     }
   };
 
@@ -150,7 +150,7 @@ const PricingSection = () => {
         <p className="text-xs text-muted-foreground leading-relaxed">
           Need a completely custom ordering workflow or bespoke catalog configurations? 
           <br className="hidden md:block" />
-          <a href="#contact" className="text-primary font-bold hover:underline ml-1">
+          <a href="/contact" className="text-primary font-bold hover:underline ml-1">
             Connect with our lead developer directly
           </a>
         </p>

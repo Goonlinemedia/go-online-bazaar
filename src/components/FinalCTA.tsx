@@ -14,7 +14,7 @@ const FinalCTA = () => {
 
         <div className="flex flex-col items-center">
           <a 
-            href="#contact" 
+            href="/contact" 
             className="group bg-white text-primary hover:bg-white/95 text-sm font-bold py-3.5 px-8 rounded-xl shadow-xl transition-all duration-300 flex items-center gap-2"
           >
             Start a Project
