@@ -116,32 +116,53 @@ const Navbar = () => {
 
       </div>
 
+      {/* Mobile Drawer Backdrop */}
+      {open && (
+        <div 
+          className="md:hidden fixed inset-0 z-[110] bg-black/40 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
       {/* Mobile Drawer Menu */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-[110] bg-background/95 dark:bg-background/98 backdrop-blur-xl flex flex-col justify-center px-8 animate-fade-in">
-          <div className="space-y-6 flex flex-col items-center">
-            {navLinks.map((link, idx) => {
-              const href = `/${link.toLowerCase().replace(/\s/g, "")}`;
-              
-              return (
-                <a
-                  key={link}
-                  href={href}
-                  className="text-lg font-bold text-muted-foreground hover:text-primary uppercase tracking-widest transition-colors font-heading"
-                  onClick={() => setOpen(false)}
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                >
-                  {link}
-                </a>
-              );
-            })}
-            <a 
-              href="/contact" 
-              onClick={() => setOpen(false)} 
-              className="btn-primary text-sm font-bold uppercase tracking-wider w-full max-w-xs text-center py-4 rounded-full mt-8 shadow-sm"
-            >
-              Start a Project
-            </a>
+        <div className="md:hidden fixed top-0 right-0 bottom-0 z-[120] w-[280px] sm:w-[320px] bg-slate-50 dark:bg-slate-900 border-l border-border shadow-2xl p-8 flex flex-col justify-between animate-slide-in-right">
+          <div>
+            {/* Header row in drawer */}
+            <div className="flex justify-between items-center mb-12">
+              <span className="text-sm font-bold text-primary tracking-widest uppercase font-heading">
+                GoOnline
+              </span>
+              <button 
+                onClick={() => setOpen(false)} 
+                className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Links, left-aligned, stacked, bold, uppercase */}
+            <nav className="flex flex-col gap-6 text-left">
+              {navLinks.map((link) => {
+                const href = `/${link.toLowerCase().replace(/\s/g, "")}`;
+                
+                return (
+                  <a
+                    key={link}
+                    href={href}
+                    className="text-[15px] font-bold text-slate-800 dark:text-slate-200 hover:text-primary uppercase tracking-widest transition-colors font-heading"
+                    onClick={() => setOpen(false)}
+                  >
+                    {link}
+                  </a>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Footer copyright section at bottom */}
+          <div className="text-[10px] text-slate-400 font-medium tracking-widest uppercase font-heading">
+            © {new Date().getFullYear()} GoOnline
           </div>
         </div>
       )}
