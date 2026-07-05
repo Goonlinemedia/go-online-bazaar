@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Twitter, Instagram, ArrowRight } from "lucide-react";
 
+const quickLinks = [
+  { label: "Portfolio", href: "/#portfolio" },
+  { label: "Services", href: "/#services" },
+  { label: "Process", href: "/#process" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Contact", href: "/#contact" },
+];
+
 const Footer = () => {
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,13 +63,13 @@ const Footer = () => {
         <div>
           <h4 className="font-bold text-white mb-6 text-xs uppercase tracking-wider">Quick Links</h4>
           <ul className="space-y-3 text-xs font-medium">
-            {["Portfolio", "Services", "Process", "Pricing", "Contact"].map((l) => (
-              <li key={l}>
+            {quickLinks.map((link) => (
+              <li key={link.label}>
                 <a 
-                  href={`#${l.toLowerCase()}`} 
+                  href={link.href}
                   className="hover:text-primary transition-all duration-300 transform hover:translate-x-1 inline-block"
                 >
-                  {l}
+                  {link.label}
                 </a>
               </li>
             ))}

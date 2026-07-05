@@ -67,13 +67,13 @@ const PricingSection = () => {
       {/* Header */}
       <section className="relative px-6 lg:px-8 max-w-7xl mx-auto text-center mb-20" data-reveal>
         <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
-          Pricing & Plans
+          Website Investment
         </span>
         <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight mt-2 mb-4 font-heading">
-          Plans for Growing Businesses
+          Clear Packages for Serious Growth
         </h2>
         <p className="text-base text-muted-foreground max-w-xl mx-auto font-medium">
-          Choose a flat-rate package to establish credibility, or request a custom quote for complex enterprise flows.
+          Choose a focused package for a polished digital presence, or request a custom quote for advanced portals, commerce, and operational systems.
         </p>
       </section>
 

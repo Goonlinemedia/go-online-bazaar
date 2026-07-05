@@ -38,7 +38,7 @@ const WhatsAppAdvantage = () => {
             </div>
 
             <div className="mt-12">
-              <a href="#pricing" className="btn-primary inline-flex items-center gap-2 group text-lg py-4 px-8">
+              <a href="/pricing" className="btn-primary inline-flex items-center gap-2 group text-lg py-4 px-8">
                 Build My Store Today
                 <ShoppingCart className="group-hover:translate-x-1 transition-transform" size={20} />
               </a>

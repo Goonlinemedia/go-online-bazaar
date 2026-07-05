@@ -6,7 +6,6 @@ import VendorSpotlights from "@/components/VendorSpotlights";
 import ServicesSection from "@/components/ServicesSection";
 import SupplyChainSection from "@/components/SupplyChainSection";
 import HowItWorks from "@/components/HowItWorks";
-import PricingSection from "@/components/PricingSection";
 import Testimonials from "@/components/Testimonials";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
@@ -50,22 +49,17 @@ const Index = () => {
         <HowItWorks />
       </div>
 
-      {/* 7. Pricing & Quotes */}
-      <div className="bg-white dark:bg-background">
-        <PricingSection />
-      </div>
-
-      {/* 8. Testimonials */}
+      {/* 7. Testimonials */}
       <div className="bg-[#FFF7ED]/30 dark:bg-orange-950/10">
         <Testimonials />
       </div>
 
-      {/* 9. FAQ */}
+      {/* 8. FAQ */}
       <div className="bg-white dark:bg-background">
         <FAQSection />
       </div>
 
-      {/* 10. Contact */}
+      {/* 9. Contact */}
       <div className="bg-[#FAFAFA] dark:bg-slate-900/40">
         <ContactSection />
       </div>
@@ -77,8 +71,8 @@ const Index = () => {
       {/* Sticky Bottom CTA for Mobile */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-card/95 backdrop-blur-md border-t border-border px-6 py-3.5 md:hidden flex justify-between items-center shadow-lg">
         <div>
-          <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Start Accepting Orders</div>
-          <div className="text-xs font-bold text-foreground">Projects start from ₦150,000</div>
+          <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Ready to upgrade?</div>
+          <div className="text-xs font-bold text-foreground">Book a private consultation</div>
         </div>
         <a href="#contact" className="btn-primary text-xs py-2.5 px-5 shadow-sm">
           Start a Project
