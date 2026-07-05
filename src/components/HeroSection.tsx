@@ -101,30 +101,40 @@ const HeroSection = () => {
     offset: ["start start", "end start"],
   });
 
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
 
   const translateX = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, 1000]),
+    useTransform(scrollYProgress, [0, 1], [0, isMobile ? 300 : 1000]),
     springConfig
   );
   const translateXReverse = useSpring(
-    useTransform(scrollYProgress, [0, 1], [0, -1000]),
+    useTransform(scrollYProgress, [0, 1], [0, isMobile ? -300 : -1000]),
     springConfig
   );
   const rotateX = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [15, 0]),
+    useTransform(scrollYProgress, [0, 0.2], [isMobile ? 2 : 15, 0]),
     springConfig
   );
   const opacity = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [0.2, 1]),
+    useTransform(scrollYProgress, [0, 0.2], [isMobile ? 0.6 : 0.2, 1]),
     springConfig
   );
   const rotateZ = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [20, 0]),
+    useTransform(scrollYProgress, [0, 0.2], [isMobile ? 2 : 20, 0]),
     springConfig
   );
   const translateY = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [-700, 500]),
+    useTransform(scrollYProgress, [0, 0.2], [isMobile ? -400 : -700, isMobile ? 100 : 500]),
     springConfig
   );
 
@@ -132,10 +142,11 @@ const HeroSection = () => {
     <section 
       id="home"
       ref={ref} 
-      className="h-[300vh] py-32 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d] bg-[#FCFCFD] dark:bg-background"
+      className="h-[150vh] md:h-[300vh] py-16 md:py-32 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d] bg-[#FCFCFD] dark:bg-background"
     >
       <Header />
       <motion.div
+        className="relative z-10"
         style={{
           rotateX,
           rotateZ,
@@ -143,7 +154,7 @@ const HeroSection = () => {
           opacity,
         }}
       >
-        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
+        <motion.div className="flex flex-row-reverse space-x-reverse space-x-8 md:space-x-20 mb-8 md:mb-20">
           {firstRow.map((product) => (
             <ProductCard
               product={product}
@@ -152,7 +163,7 @@ const HeroSection = () => {
             />
           ))}
         </motion.div>
-        <motion.div className="flex flex-row mb-20 space-x-20">
+        <motion.div className="flex flex-row mb-8 md:mb-20 space-x-8 md:space-x-20">
           {secondRow.map((product) => (
             <ProductCard
               product={product}
@@ -161,7 +172,7 @@ const HeroSection = () => {
             />
           ))}
         </motion.div>
-        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20">
+        <motion.div className="flex flex-row-reverse space-x-reverse space-x-8 md:space-x-20">
           {thirdRow.map((product) => (
             <ProductCard
               product={product}
@@ -197,11 +208,11 @@ export const Header = () => {
         Digital Website Partner
       </div>
 
-      <h1 className="text-4xl sm:text-5xl lg:text-[62px] font-bold text-foreground leading-[1.1] tracking-tight mb-6 font-heading">
+      <h1 className="text-3xl sm:text-5xl lg:text-[62px] font-medium text-foreground leading-[1.1] tracking-tight mb-6 font-display">
         Professional Websites <br /> That Grow Your Business
       </h1>
 
-      <p className="text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed mb-10 font-medium">
+      <p className="text-sm sm:text-base text-muted-foreground/80 max-w-xl leading-relaxed mb-10 font-normal font-body">
         We design and build modern websites for businesses, schools, churches, and NGOs—helping you attract customers, build credibility, and grow online.
       </p>
 
@@ -247,7 +258,7 @@ export const ProductCard = ({
         y: -20,
       }}
       key={product.title}
-      className="group/product h-72 w-[24rem] md:h-96 md:w-[30rem] relative flex-shrink-0 rounded-2xl overflow-hidden shadow-md"
+      className="group/product h-52 w-[18rem] md:h-96 md:w-[30rem] relative flex-shrink-0 rounded-2xl overflow-hidden shadow-md"
     >
       {isExternal ? (
         <a

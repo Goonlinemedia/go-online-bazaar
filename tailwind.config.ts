@@ -18,7 +18,7 @@ export default {
       fontFamily: {
         heading: ['Mont', 'Manrope', 'sans-serif'],
         body: ['DM Sans', 'Inter', 'sans-serif'],
-        display: ['Avakine', 'Rovale', 'ancola', 'Anton', 'serif'],
+        display: ['Cormorant Garamond', 'Barcurly', 'Borina', 'Histograph', 'Avakine', 'Rovale', 'ancola', 'Anton', 'serif'],
         impact: ['Anton', 'sans-serif'],
       },
       colors: {
