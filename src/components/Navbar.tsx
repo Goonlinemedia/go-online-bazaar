@@ -1,18 +1,34 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, Navigation } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const navLinks = ["Portfolio", "Services", "Process", "Pricing", "Contact"];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <a href={isHome ? "#" : "/"} className="flex items-center overflow-visible">
+    <header className="fixed top-0 inset-x-0 z-50 py-6 bg-transparent">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between pointer-events-auto relative">
+        
+        {/* Left: Brand Logo */}
+        <a href={isHome ? "#" : "/"} className="flex items-center overflow-visible z-[130]">
           <img 
             src="/logo.png" 
             alt="GoOnline Logo" 
@@ -20,66 +36,103 @@ const Navbar = () => {
           />
         </a>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => {
-            const isPricingLink = link === "Pricing";
-            const href = isPricingLink 
-              ? "/pricing" 
-              : (isHome ? `#${link.toLowerCase().replace(/\s/g, "")}` : `/#${link.toLowerCase().replace(/\s/g, "")}`);
+        {/* Center: Dynamic Floating Navigation Pill (Desktop) */}
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[120] hidden md:block">
+          <nav 
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className={`flex items-center overflow-hidden rounded-full border border-border bg-background/85 shadow-lg backdrop-blur-md h-12 transition-all duration-500 relative cursor-pointer ${
+              scrolled && !hovered 
+                ? "w-12 pl-0 pr-0 justify-center" 
+                : "w-[440px] pl-4 pr-1"
+            }`}
+          >
+            {/* Navigation Icon (Left) - visible when expanded */}
+            <div className={`flex-shrink-0 flex items-center text-primary transition-all duration-300 ${scrolled && !hovered ? "opacity-0 scale-50" : "opacity-100 scale-100"}`}>
+              <Navigation size={14} className="rotate-45 fill-current" />
+            </div>
             
-            return (
-              <a
-                key={link}
-                href={href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link}
-              </a>
-            );
-          })}
+            {/* Links Container - visible when expanded */}
+            <div className={`flex items-center gap-1 pr-4 transition-all duration-500 ${scrolled && !hovered ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
+              {navLinks.map((link) => {
+                const isPricingLink = link === "Pricing";
+                const href = isPricingLink 
+                  ? "/pricing" 
+                  : (isHome ? `#${link.toLowerCase().replace(/\s/g, "")}` : `/#${link.toLowerCase().replace(/\s/g, "")}`);
+                
+                return (
+                  <div key={link}>
+                    <a
+                      href={href}
+                      className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 uppercase tracking-wider inline-block font-heading"
+                    >
+                      {link}
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Menu Hamburger Icon - visible when collapsed */}
+            <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-500 ${scrolled && !hovered ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}>
+              <Menu size={16} className="text-primary stroke-[3px]" />
+            </div>
+          </nav>
         </div>
 
-        <a 
-          href={isHome ? "#contact" : "/#contact"} 
-          className="hidden md:inline-flex btn-primary text-sm shadow-sm px-5 py-2.5 rounded-xl"
-        >
-          Start a Project
-        </a>
-
-        <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {open && (
-        <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-3">
-          {navLinks.map((link) => {
-            const isPricingLink = link === "Pricing";
-            const href = isPricingLink 
-              ? "/pricing" 
-              : (isHome ? `#${link.toLowerCase().replace(/\s/g, "")}` : `/#${link.toLowerCase().replace(/\s/g, "")}`);
-            
-            return (
-              <a
-                key={link}
-                href={href}
-                className="block text-sm font-medium text-muted-foreground hover:text-foreground"
-                onClick={() => setOpen(false)}
-              >
-                {link}
-              </a>
-            );
-          })}
+        {/* Right: CTA Action & Mobile trigger */}
+        <div className="z-[130] flex items-center gap-4">
           <a 
             href={isHome ? "#contact" : "/#contact"} 
-            onClick={() => setOpen(false)} 
-            className="btn-primary text-sm inline-block w-full text-center py-2.5 rounded-xl"
+            className="hidden md:inline-flex btn-primary text-xs font-bold uppercase tracking-wider shadow-sm px-6 py-3 rounded-full"
           >
             Start a Project
           </a>
+
+          <button 
+            onClick={() => setOpen(!open)} 
+            className="md:hidden flex items-center justify-center bg-background/40 border border-border/40 hover:border-primary/45 h-9 w-9 rounded-full transition-all duration-300 focus:outline-none"
+            aria-label="Toggle navigation menu"
+          >
+            {open ? <X size={16} className="text-primary" /> : <Menu size={16} className="text-primary" />}
+          </button>
+        </div>
+
+      </div>
+
+      {/* Mobile Drawer Menu */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-[110] bg-background/95 backdrop-blur-xl flex flex-col justify-center px-8 animate-fade-in">
+          <div className="space-y-6 flex flex-col items-center">
+            {navLinks.map((link, idx) => {
+              const isPricingLink = link === "Pricing";
+              const href = isPricingLink 
+                ? "/pricing" 
+                : (isHome ? `#${link.toLowerCase().replace(/\s/g, "")}` : `/#${link.toLowerCase().replace(/\s/g, "")}`);
+              
+              return (
+                <a
+                  key={link}
+                  href={href}
+                  className="text-lg font-bold text-muted-foreground hover:text-primary uppercase tracking-widest transition-colors font-heading"
+                  onClick={() => setOpen(false)}
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                >
+                  {link}
+                </a>
+              );
+            })}
+            <a 
+              href={isHome ? "#contact" : "/#contact"} 
+              onClick={() => setOpen(false)} 
+              className="btn-primary text-sm font-bold uppercase tracking-wider w-full max-w-xs text-center py-4 rounded-full mt-8 shadow-sm"
+            >
+              Start a Project
+            </a>
+          </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 };
 
