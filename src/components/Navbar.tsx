@@ -29,11 +29,12 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 backdrop-blur-md ${
-      scrolled 
-        ? "py-3.5 bg-[#FCFCFD]/95 dark:bg-background/95 border-b border-border" 
-        : "py-5 bg-[#FCFCFD]/80 dark:bg-background/80 border-b border-border/50"
-    }`}>
+    <>
+      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 backdrop-blur-md ${
+        scrolled 
+          ? "py-3.5 bg-[#FCFCFD]/95 dark:bg-background/95 border-b border-border" 
+          : "py-5 bg-[#FCFCFD]/80 dark:bg-background/80 border-b border-border/50"
+      }`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between pointer-events-auto relative">
         
         {/* Left: Brand Logo */}
@@ -115,6 +116,7 @@ const Navbar = () => {
         </div>
 
       </div>
+    </header>
 
       {/* Mobile Drawer Backdrop */}
       {open && (
@@ -171,7 +173,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
 
