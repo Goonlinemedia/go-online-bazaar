@@ -1,27 +1,27 @@
 const testimonials = [
   {
-    headline: "Our giving and sermon streams grew 40%",
-    quote: "They designed a beautiful sermon archiving media library and integrated secure donations. Our members can easily support the ministry and catch up on services from anywhere.",
-    author: "Pastor David E.",
-    role: "Senior Pastor, Faith Community",
+    headline: "Established a high-end digital booking portal",
+    quote: "My photography booking site is flawless. The gallery loading speeds are incredible, and clients can easily reserve slots and make direct inquiries. It elevated my business profile instantly.",
+    author: "Meshach S.",
+    role: "Founder, Meshach Photography",
     location: "Lagos, NG",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
     stars: 5,
   },
   {
-    headline: "Admissions portal simplified student tracking",
-    quote: "We needed a portal that handles admissions inquiries, newsletters, and fees documentation. GoOnline built a highly functional platform that parents trust.",
-    author: "Dr. Kunle A.",
-    role: "Administrator, Premier Prep Academy",
+    headline: "Automated listings captured 3x more inquiries",
+    quote: "Our property showcase platform operates completely on autopilot. Real estate clients browse our active listings and contact us directly, which tripled our lead generation rate.",
+    author: "Audu K.",
+    role: "Director, GoOnline Estates",
     location: "Abuja, NG",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
     stars: 5,
   },
   {
-    headline: "Secured international shipments with credibility",
-    quote: "Corporate clients expect an established web presence. The professional site designed by GoOnline gave us the exact authority we needed to secure shipping contracts.",
-    author: "Sarah B.",
-    role: "Director of Ops, Apex Logistics",
+    headline: "Seamless custom catalog configurations",
+    quote: "The template-based ordering and download portal is exactly what we needed. Our corporate clients can customize catalog structures and request quotes without any manual bottlenecks.",
+    author: "Tobi S.",
+    role: "Lead Designer, PrintHub",
     location: "Port Harcourt, NG",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
     stars: 5,
@@ -40,7 +40,7 @@ const Testimonials = () => {
             Client Results
           </h2>
           <p className="mt-4 text-base text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
-            Read how we help organizations establish digital credibility and grow.
+            Read feedback directly from the organizations and brands that trust us to power their platforms.
           </p>
         </div>
 
