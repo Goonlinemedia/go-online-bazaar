@@ -134,7 +134,7 @@ const HeroSection = () => {
     springConfig
   );
   const translateY = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [isMobile ? -400 : -700, isMobile ? 100 : 500]),
+    useTransform(scrollYProgress, [0, 0.2], [isMobile ? -200 : -700, isMobile ? 100 : 500]),
     springConfig
   );
 
@@ -144,9 +144,12 @@ const HeroSection = () => {
       ref={ref} 
       className="h-[150vh] md:h-[300vh] py-16 md:py-32 overflow-hidden antialiased relative flex flex-col self-auto md:[perspective:1000px] md:[transform-style:preserve-3d] bg-[#FCFCFD] dark:bg-background"
     >
+      {/* Background gradient overlay to protect text contrast on mobile and desktop */}
+      <div className="absolute inset-x-0 top-0 h-[480px] md:h-[650px] bg-gradient-to-b from-[#FCFCFD] via-[#FCFCFD]/95 to-transparent dark:from-background dark:via-background/95 dark:to-transparent z-10 pointer-events-none" />
+
       <Header />
       <motion.div
-        className="relative z-10"
+        className="relative z-0"
         style={{
           rotateX,
           rotateZ,
@@ -208,13 +211,14 @@ export const Header = () => {
         Digital Website Partner
       </div>
 
-      <h1 className="text-3xl sm:text-5xl lg:text-[62px] font-medium text-foreground leading-[1.1] tracking-tight mb-6 font-display">
+      <h1 className="text-3xl sm:text-5xl lg:text-[62px] font-bold text-foreground leading-[1.1] tracking-tight mb-6 font-display">
         Professional Websites <br /> That Grow Your Business
       </h1>
 
-      <p className="text-sm sm:text-base text-muted-foreground/80 max-w-xl leading-relaxed mb-10 font-normal font-body">
+      <p className="text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed mb-10 font-normal font-body">
         We design and build modern websites for businesses, schools, churches, and NGOs—helping you attract customers, build credibility, and grow online.
       </p>
+
 
       <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
         <a 
