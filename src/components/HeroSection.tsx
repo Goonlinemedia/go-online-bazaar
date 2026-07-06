@@ -92,9 +92,13 @@ export const products = [
 ];
 
 const HeroSection = () => {
-  const firstRow = products.slice(0, 5);
-  const secondRow = products.slice(5, 10);
-  const thirdRow = products.slice(10, 15);
+  const uniqueProducts = products.slice(0, 5);
+  
+  // Offset the rows so that different projects are shown vertically and don't repeat on mobile viewports
+  const firstRow = uniqueProducts;
+  const secondRow = [uniqueProducts[2], uniqueProducts[3], uniqueProducts[4], uniqueProducts[0], uniqueProducts[1]];
+  const thirdRow = [uniqueProducts[4], uniqueProducts[0], uniqueProducts[1], uniqueProducts[2], uniqueProducts[3]];
+
   const ref = React.useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
