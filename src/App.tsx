@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
-import Pricing from "./pages/Pricing";
+import Solutions from "./pages/Solutions";
 import Portfolio from "./pages/Portfolio";
 import Services from "./pages/Services";
 import Process from "./pages/Process";
@@ -29,7 +29,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/solutions" element={<Solutions />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/services" element={<Services />} />
             <Route path="/process" element={<Process />} />

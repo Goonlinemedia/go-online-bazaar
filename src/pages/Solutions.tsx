@@ -3,7 +3,7 @@ import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
-const Pricing = () => {
+const Solutions = () => {
   useScrollReveal();
 
   return (
@@ -17,4 +17,4 @@ const Pricing = () => {
   );
 };
 
-export default Pricing;
+export default Solutions;

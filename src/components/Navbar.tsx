@@ -3,7 +3,13 @@ import { Menu, X, Navigation, Sun, Moon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
 
-const navLinks = ["Portfolio", "Services", "Process", "Pricing", "Contact"];
+const navLinks = [
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Services", href: "/services" },
+  { label: "Process", href: "/process" },
+  { label: "Solutions", href: "/solutions" },
+  { label: "Contact", href: "/contact" },
+];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -64,20 +70,16 @@ const Navbar = () => {
             
             {/* Links Container - visible when expanded */}
             <div className={`flex items-center gap-1 pr-4 transition-all duration-500 ${scrolled && !hovered ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
-              {navLinks.map((link) => {
-                const href = `/${link.toLowerCase().replace(/\s/g, "")}`;
-                
-                return (
-                  <div key={link}>
-                    <a
-                      href={href}
-                      className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 uppercase tracking-wider inline-block font-heading"
-                    >
-                      {link}
-                    </a>
-                  </div>
-                );
-              })}
+              {navLinks.map((link) => (
+                <div key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 uppercase tracking-wider inline-block font-heading"
+                  >
+                    {link.label}
+                  </a>
+                </div>
+              ))}
             </div>
 
             {/* Menu Hamburger Icon - visible when collapsed */}
@@ -150,20 +152,16 @@ const Navbar = () => {
 
             {/* Links, left-aligned, stacked, bold, uppercase */}
             <nav className="flex flex-col gap-6 text-left">
-              {navLinks.map((link) => {
-                const href = `/${link.toLowerCase().replace(/\s/g, "")}`;
-                
-                return (
-                  <a
-                    key={link}
-                    href={href}
-                    className="text-[15px] font-bold text-slate-800 dark:text-slate-200 hover:text-primary uppercase tracking-widest transition-colors font-heading"
-                    onClick={() => setOpen(false)}
-                  >
-                    {link}
-                  </a>
-                );
-              })}
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-[15px] font-bold text-slate-800 dark:text-slate-200 hover:text-primary uppercase tracking-widest transition-colors font-heading"
+                  onClick={() => setOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
             </nav>
           </div>
 

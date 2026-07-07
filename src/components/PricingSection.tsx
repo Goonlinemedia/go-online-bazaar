@@ -20,45 +20,50 @@ const PricingSection = () => {
     {
       name: "Starter Web Presence",
       tag: "Business & Portfolios",
-      priceLabel: "₦150,000",
-      desc: "For businesses, consultants, and startups looking to establish an elegant online showcase.",
+      desc: "For businesses, consultants and startups looking to establish an elegant online presence.",
+      highlight: "Small Businesses",
+      investment: "Request Estimate",
       features: [
-        "Custom landing page layout",
-        "Mobile responsive design",
-        "Core SEO implementation",
-        "Contact & inquiry form",
-        "Domain & hosting mapping",
+        "Custom landing page",
+        "Responsive Design",
+        "SEO Ready",
+        "Contact Form",
+        "Domain & Hosting Setup",
       ],
       isPopular: false,
+      ctaText: "Get Started",
     },
     {
       name: "Professional Platform",
-      tag: "Churches, Schools & NGOs",
-      priceLabel: "₦250,000",
-      desc: "For organizations requiring interactive portals, online giving setups, admissions, or listings directories.",
+      tag: "Churches • Schools • NGOs",
+      desc: "Designed for organizations requiring online portals, admissions, directories or donations.",
+      highlight: "Growing Organizations",
+      investment: "Bespoke Quote",
       features: [
-        "Everything in Starter tier",
-        "Custom database collections",
-        "Online donations & giving setup",
-        "Timetables & event managers",
-        "Payment gateways integration",
-        "Admissions or registration channels",
+        "Everything in Starter",
+        "Database Collections",
+        "Payment Integration",
+        "Registration System",
+        "Event Management",
       ],
       isPopular: true,
+      ctaText: "Book Consultation",
     },
     {
       name: "Enterprise Solutions",
       tag: "Bespoke Systems",
-      priceLabel: "Custom Quote",
-      desc: "For full-scale e-commerce stores, logistics platforms, or organizations requiring bespoke operational databases.",
+      desc: "Complex applications built specifically around your business operations.",
+      highlight: "Complex Workflows",
+      investment: "Custom Proposal",
       features: [
-        "Bespoke system flows",
-        "Multi-merchant e-commerce setups",
-        "Courier & tracking integrations",
-        "Custom student or membership databases",
-        "Priority 24/7 account management",
+        "Custom Workflows",
+        "Multi-user Systems",
+        "API Integrations",
+        "Reporting Dashboard",
+        "Dedicated Support",
       ],
       isPopular: false,
+      ctaText: "Request Proposal",
     },
   ];
 
@@ -69,13 +74,13 @@ const PricingSection = () => {
       {/* Header */}
       <section className="relative px-6 lg:px-8 max-w-7xl mx-auto text-center mb-20" data-reveal>
         <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 inline-block">
-          Website Investment
+          Solutions Suite
         </span>
         <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight mt-2 mb-4 font-heading">
-          Clear Packages for Serious Growth
+          Engineered for Growth & Scale
         </h2>
         <p className="text-base text-muted-foreground max-w-xl mx-auto font-medium">
-          Choose a focused package for a polished digital presence, or request a custom quote for advanced portals, commerce, and operational systems.
+          Select a tailored engagement model positioned for your organization's specific requirements, or contact us for a custom solution.
         </p>
       </section>
 
@@ -95,7 +100,7 @@ const PricingSection = () => {
           >
             {pkg.isPopular && (
               <div className="absolute top-4 right-4 bg-primary text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                Most Popular
+                MOST POPULAR
               </div>
             )}
             
@@ -112,10 +117,23 @@ const PricingSection = () => {
                 {pkg.desc}
               </p>
               
-              <div className="border-t border-b border-border/50 py-4 mb-8">
-                <span className="text-2xl font-bold text-foreground font-heading">
-                  {pkg.priceLabel}
-                </span>
+              <div className="border-t border-b border-border/50 py-4 mb-8 grid grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground block mb-1">
+                    Client Fit
+                  </span>
+                  <span className="text-xs font-bold text-foreground block leading-tight">
+                    {pkg.highlight}
+                  </span>
+                </div>
+                <div className="border-l border-border/50 pl-4">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground block mb-1">
+                    Investment
+                  </span>
+                  <span className={`text-xs font-extrabold tracking-wide uppercase block ${pkg.isPopular ? 'text-primary' : 'text-foreground'}`}>
+                    {pkg.investment}
+                  </span>
+                </div>
               </div>
 
               <ul className="space-y-4 mb-10">
@@ -139,7 +157,7 @@ const PricingSection = () => {
                   : "bg-secondary text-foreground hover:bg-border"
               }`}
             >
-              Get Started <ArrowRight size={12} />
+              {pkg.ctaText} <ArrowRight size={12} />
             </button>
           </div>
         ))}
@@ -148,10 +166,10 @@ const PricingSection = () => {
       {/* Quote Prompt */}
       <div className="max-w-xl mx-auto px-6 text-center">
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Need a completely custom ordering workflow or bespoke catalog configurations? 
+          Require custom workflows, third-party integrations, or dedicated cloud infrastructure?
           <br className="hidden md:block" />
           <a href="/contact" className="text-primary font-bold hover:underline ml-1">
-            Connect with our lead developer directly
+            Let's discuss a custom blueprint for your project
           </a>
         </p>
       </div>
