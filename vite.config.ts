@@ -19,4 +19,27 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("framer-motion")) {
+              return "vendor-framer";
+            }
+            if (id.includes("@tanstack")) {
+              return "vendor-query";
+            }
+            if (id.includes("firebase") || id.includes("@firebase")) {
+              return "vendor-firebase";
+            }
+            if (id.includes("lucide-react")) {
+              return "vendor-lucide";
+            }
+            return "vendor-core";
+          }
+        }
+      }
+    }
+  }
 }));

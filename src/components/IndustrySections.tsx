@@ -83,7 +83,7 @@ const IndustrySections = () => {
               </div>
               <a 
                 href="/contact" 
-                className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group/link mt-2"
+                className="text-xs font-bold text-primary dark:text-orange-400 hover:underline flex items-center gap-1 group/link mt-2"
               >
                 Learn More <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
               </a>

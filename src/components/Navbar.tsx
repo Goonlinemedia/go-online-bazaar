@@ -48,6 +48,8 @@ const Navbar = () => {
           <img 
             src="/logo.webp" 
             alt="GoOnline Logo" 
+            width={160}
+            height={160}
             className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px] dark:invert" 
           />
         </a>

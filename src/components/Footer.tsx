@@ -18,42 +18,44 @@ const Footer = () => {
   return (
     <footer className="bg-[#0F172A] text-slate-400 py-20 px-6 lg:px-8 border-t border-slate-800">
       <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
-        
+
         {/* Brand & Socials Column */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center overflow-visible">
-            <img 
-              src="/logo.webp" 
-              alt="GoOnline Logo" 
-              className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]" 
+            <img
+              src="/logo.webp"
+              alt="GoOnline Logo"
+              width={160}
+              height={160}
+              className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]"
             />
           </div>
           <p className="text-xs leading-relaxed mt-4 text-slate-400">
             GoOnline is a digital solutions agency designing high-performance websites and custom portals for businesses, churches, schools, NGOs, and growing brands.
           </p>
           <div className="flex gap-4 mt-2">
-            <a 
-              href="https://wa.me/2347081150770" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://wa.me/2347081150770"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
               aria-label="Contact us on WhatsApp"
             >
               <Phone size={14} />
             </a>
-            <a 
-              href="https://twitter.com/GoOnline" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://twitter.com/GoOnline"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
               aria-label="Follow us on Twitter"
             >
               <Twitter size={14} />
             </a>
-            <a 
-              href="https://instagram.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
               aria-label="Follow us on Instagram"
             >
@@ -68,7 +70,7 @@ const Footer = () => {
           <ul className="space-y-3 text-xs font-medium">
             {quickLinks.map((link) => (
               <li key={link.label}>
-                <a 
+                <a
                   href={link.href}
                   className="hover:text-primary transition-all duration-300 transform hover:translate-x-1 inline-block"
                 >
@@ -109,14 +111,14 @@ const Footer = () => {
             Get design insights, ecommerce tips, and business growth tools directly to your inbox.
           </p>
           <form className="flex gap-2" onSubmit={handleSubscribe}>
-            <input 
-              type="email" 
+            <input
+              type="email"
               required
               placeholder="Email address"
               className="bg-slate-900 border border-slate-800 text-xs rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary w-full"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="bg-primary text-white p-2 rounded-xl hover:bg-[#EA580C] transition-colors shrink-0"
               aria-label="Subscribe to newsletter"
             >
@@ -129,7 +131,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-slate-500">
         <p>© {new Date().getFullYear()} GoOnline Media. All rights reserved.</p>
-        <div className="flex gap-6 font-medium">
+        <div className="flex gap-6 font-medium text-slate-400">
           <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
           <Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link>
           <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>

@@ -70,7 +70,7 @@ const ServicesSection = () => {
                   <div className="w-10 h-10 rounded-xl bg-accent text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
                     <service.icon size={18} />
                   </div>
-                  <span className="text-3xl font-bold text-foreground/5 group-hover:text-primary/10 transition-colors duration-500">0{idx + 1}</span>
+                  <span className="text-3xl font-bold text-foreground/5 group-hover:text-primary/10 transition-colors duration-500" aria-hidden="true">0{idx + 1}</span>
                 </div>
                 <h3 className="text-base font-bold text-foreground mb-3 font-heading tracking-tight">
                   {service.title}
@@ -81,7 +81,7 @@ const ServicesSection = () => {
               </div>
               <a 
                 href="/contact" 
-                className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group/link mt-2"
+                className="text-xs font-bold text-primary dark:text-orange-400 hover:underline flex items-center gap-1 group/link mt-2"
               >
                 Learn More <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
               </a>
