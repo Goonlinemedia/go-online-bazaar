@@ -17,7 +17,7 @@ const ProblemSolutionSection = () => {
 
   return (
     <section id="solution" className="section-padding relative overflow-hidden bg-[#FAFAFA] dark:bg-slate-900/10">
-      <div className="section-number">02</div>
+      <div className="section-number" aria-hidden="true">02</div>
       <div className="aura-blob bg-primary/5 w-[500px] h-[500px] -left-24 bottom-0" />
 
       <div className="max-w-7xl mx-auto relative z-10">

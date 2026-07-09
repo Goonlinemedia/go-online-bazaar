@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
+
 @tailwind components;
 @tailwind utilities;
 
@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 43% 11%;
 
-    --primary: 24 95% 53%;
+    --primary: 24 95% 42%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
@@ -65,7 +65,7 @@
     --card-foreground: 210 20% 98%;
     --popover: 222 47% 13%;
     --popover-foreground: 210 20% 98%;
-    --primary: 24 95% 53%;
+    --primary: 24 95% 42%;
     --primary-foreground: 0 0% 100%;
     --secondary: 222 47% 15%;
     --secondary-foreground: 210 20% 98%;

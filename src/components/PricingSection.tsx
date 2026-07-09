@@ -69,7 +69,7 @@ const PricingSection = () => {
 
   return (
     <div id="pricing" className="w-full bg-transparent py-24 md:py-32 relative overflow-hidden border-b border-border/50">
-      <div className="section-number">04</div>
+      <div className="section-number" aria-hidden="true">04</div>
 
       {/* Header */}
       <section className="relative px-6 lg:px-8 max-w-7xl mx-auto text-center mb-20" data-reveal>

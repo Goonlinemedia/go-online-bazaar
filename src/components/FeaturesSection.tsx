@@ -35,7 +35,7 @@ const features = [
 
 const FeaturesSection = () => (
   <section id="features" className="section-padding relative overflow-hidden">
-    <div className="section-number">01</div>
+    <div className="section-number" aria-hidden="true">01</div>
     <div className="aura-blob bg-teal w-[400px] h-[400px] -right-20 top-0" />
 
     <div className="max-w-7xl mx-auto relative z-10">

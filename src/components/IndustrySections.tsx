@@ -41,7 +41,7 @@ const industries = [
 const IndustrySections = () => {
   return (
     <section id="industries" className="py-24 md:py-32 bg-white dark:bg-card border-b border-border/50 relative overflow-hidden">
-      <div className="section-number">03</div>
+      <div className="section-number" aria-hidden="true">03</div>
       
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20" data-reveal>

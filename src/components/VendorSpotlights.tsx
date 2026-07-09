@@ -17,7 +17,7 @@ const projects = [
     name: "Meshach Photography",
     category: "Businesses",
     tag: "Photography Portfolio",
-    image: "/photography-cover.png",
+    image: "/photography-cover.webp",
     fallbackBg: "from-slate-800 to-zinc-950",
     link: "https://mesh-photography.vercel.app/",
     description: "A premium visual portfolio for bookings, galleries, and client inquiries.",
@@ -28,7 +28,7 @@ const projects = [
     name: "GoOnline Estates",
     category: "Businesses",
     tag: "Real Estate Showcase",
-    image: "/estate-cover.png",
+    image: "/estate-cover.webp",
     fallbackBg: "from-blue-900 to-slate-900",
     link: "https://goonline-estate.vercel.app/",
     description: "An elegant property listings directory with automated communication channels.",
@@ -39,7 +39,7 @@ const projects = [
     name: "PrintHub",
     category: "Businesses",
     tag: "Branding & Print Hub",
-    image: "/printhub-cover.png",
+    image: "/printhub-cover.webp",
     fallbackBg: "from-amber-700 to-slate-900",
     link: "https://print-powerhouse-hub.vercel.app/",
     description: "A clean corporate template and custom catalog configuration portal.",
@@ -50,7 +50,7 @@ const projects = [
     name: "Youth On Fire",
     category: "NGOs",
     tag: "Youth Community Platform",
-    image: "/youth-fire-cover.png",
+    image: "/youth-fire-cover.webp",
     fallbackBg: "from-orange-700 to-red-950",
     link: "https://vibrant-youth-link.vercel.app/",
     description: "A high-performance community portal for events, calendars, and digital resources.",
@@ -61,7 +61,7 @@ const projects = [
     name: "Bitswitch Portal",
     category: "Businesses",
     tag: "Crypto Support Portal",
-    image: "/bitswitch-cover.png",
+    image: "/bitswitch-cover.webp",
     fallbackBg: "from-purple-900 to-slate-900",
     link: "https://bitswitch.vercel.app/",
     description: "A corporate landing page detailing transaction workflows and customer service routes.",
@@ -79,7 +79,7 @@ const VendorSpotlights = () => {
 
   return (
     <section id="portfolio" className="py-24 md:py-32 bg-transparent relative overflow-hidden border-b border-border/50">
-      <div className="section-number">05</div>
+      <div className="section-number" aria-hidden="true">05</div>
       <div className="aura-blob bg-primary w-[500px] h-[500px] -right-24 bottom-0 opacity-[0.02]" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
@@ -154,6 +154,7 @@ const VendorSpotlights = () => {
                   <img 
                     src={p.image} 
                     alt={p.name} 
+                    loading="lazy"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                       const parent = e.currentTarget.parentElement;
@@ -178,7 +179,7 @@ const VendorSpotlights = () => {
                 <div className="p-8 flex-grow flex flex-col justify-between">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-lg font-bold font-heading text-foreground tracking-tight">{p.name}</h4>
+                      <h3 className="text-lg font-bold font-heading text-foreground tracking-tight">{p.name}</h3>
                       {isClickable && (
                         <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                           <ExternalLink size={12} className="text-muted-foreground group-hover:text-white transition-colors" />

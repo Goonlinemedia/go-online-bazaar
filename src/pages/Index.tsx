@@ -20,49 +20,51 @@ const Index = () => {
     <div className="min-h-screen bg-background relative selection:bg-primary/20 pb-16 md:pb-0">
       <Navbar />
       
-      {/* 1. Hero */}
-      <HeroSection />
+      <main>
+        {/* 1. Hero */}
+        <HeroSection />
 
-      {/* Trust Badging Block */}
-      <TrustSection />
+        {/* Trust Badging Block */}
+        <TrustSection />
 
-      {/* 2. Industry Sections */}
-      <IndustrySections />
+        {/* 2. Industry Sections */}
+        <IndustrySections />
 
-      {/* 3. Selected Work (Portfolio) */}
-      <div className="bg-white dark:bg-background">
-        <VendorSpotlights />
-      </div>
+        {/* 3. Selected Work (Portfolio) */}
+        <div className="bg-white dark:bg-background">
+          <VendorSpotlights />
+        </div>
 
-      {/* 4. Services */}
-      <div className="bg-[#FFF7ED]/30 dark:bg-orange-950/10">
-        <ServicesSection />
-      </div>
+        {/* 4. Services */}
+        <div className="bg-[#FFF7ED]/30 dark:bg-orange-950/10">
+          <ServicesSection />
+        </div>
 
-      {/* 5. Ecommerce & Operations */}
-      <div className="bg-white dark:bg-background">
-        <SupplyChainSection />
-      </div>
+        {/* 5. Ecommerce & Operations */}
+        <div className="bg-white dark:bg-background">
+          <SupplyChainSection />
+        </div>
 
-      {/* 6. Process */}
-      <div className="bg-[#FAFAFA] dark:bg-slate-900/40">
-        <HowItWorks />
-      </div>
+        {/* 6. Process */}
+        <div className="bg-[#FAFAFA] dark:bg-slate-900/40">
+          <HowItWorks />
+        </div>
 
-      {/* 7. Testimonials */}
-      <div className="bg-[#FFF7ED]/30 dark:bg-orange-950/10">
-        <Testimonials />
-      </div>
+        {/* 7. Testimonials */}
+        <div className="bg-[#FFF7ED]/30 dark:bg-orange-950/10">
+          <Testimonials />
+        </div>
 
-      {/* 8. FAQ */}
-      <div className="bg-white dark:bg-background">
-        <FAQSection />
-      </div>
+        {/* 8. FAQ */}
+        <div className="bg-white dark:bg-background">
+          <FAQSection />
+        </div>
 
-      {/* 9. Contact */}
-      <div className="bg-[#FAFAFA] dark:bg-slate-900/40">
-        <ContactSection />
-      </div>
+        {/* 9. Contact */}
+        <div className="bg-[#FAFAFA] dark:bg-slate-900/40">
+          <ContactSection />
+        </div>
+      </main>
 
       {/* Footer & Scroll Utilities */}
       <Footer />

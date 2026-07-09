@@ -15,79 +15,79 @@ export const products = [
   {
     title: "Meshach Photography",
     link: "https://mesh-photography.vercel.app/",
-    thumbnail: "/photography-cover.png",
+    thumbnail: "/photography-cover.webp",
   },
   {
     title: "GoOnline Estates",
     link: "https://goonline-estate.vercel.app/",
-    thumbnail: "/estate-cover.png",
+    thumbnail: "/estate-cover.webp",
   },
   {
     title: "PrintHub",
     link: "https://print-powerhouse-hub.vercel.app/",
-    thumbnail: "/printhub-cover.png",
+    thumbnail: "/printhub-cover.webp",
   },
   {
     title: "Youth On Fire",
     link: "https://vibrant-youth-link.vercel.app/",
-    thumbnail: "/youth-fire-cover.png",
+    thumbnail: "/youth-fire-cover.webp",
   },
   {
     title: "Bitswitch Portal",
     link: "https://bitswitch.vercel.app/",
-    thumbnail: "/bitswitch-cover.png",
+    thumbnail: "/bitswitch-cover.webp",
   },
   // Row 2 (Repeated for balanced visual scrolling)
   {
     title: "Meshach Photography",
     link: "https://mesh-photography.vercel.app/",
-    thumbnail: "/photography-cover.png",
+    thumbnail: "/photography-cover.webp",
   },
   {
     title: "GoOnline Estates",
     link: "https://goonline-estate.vercel.app/",
-    thumbnail: "/estate-cover.png",
+    thumbnail: "/estate-cover.webp",
   },
   {
     title: "PrintHub",
     link: "https://print-powerhouse-hub.vercel.app/",
-    thumbnail: "/printhub-cover.png",
+    thumbnail: "/printhub-cover.webp",
   },
   {
     title: "Youth On Fire",
     link: "https://vibrant-youth-link.vercel.app/",
-    thumbnail: "/youth-fire-cover.png",
+    thumbnail: "/youth-fire-cover.webp",
   },
   {
     title: "Bitswitch Portal",
     link: "https://bitswitch.vercel.app/",
-    thumbnail: "/bitswitch-cover.png",
+    thumbnail: "/bitswitch-cover.webp",
   },
   // Row 3 (Repeated for balanced visual scrolling)
   {
     title: "Meshach Photography",
     link: "https://mesh-photography.vercel.app/",
-    thumbnail: "/photography-cover.png",
+    thumbnail: "/photography-cover.webp",
   },
   {
     title: "GoOnline Estates",
     link: "https://goonline-estate.vercel.app/",
-    thumbnail: "/estate-cover.png",
+    thumbnail: "/estate-cover.webp",
   },
   {
     title: "PrintHub",
     link: "https://print-powerhouse-hub.vercel.app/",
-    thumbnail: "/printhub-cover.png",
+    thumbnail: "/printhub-cover.webp",
   },
   {
     title: "Youth On Fire",
     link: "https://vibrant-youth-link.vercel.app/",
-    thumbnail: "/youth-fire-cover.png",
+    thumbnail: "/youth-fire-cover.webp",
   },
   {
     title: "Bitswitch Portal",
     link: "https://bitswitch.vercel.app/",
-    thumbnail: "/bitswitch-cover.png",
+    thumbnail: "/bitswitch-cover.webp",
   },
 ];
 
@@ -279,6 +279,7 @@ export const ProductCard = ({
             src={product.thumbnail}
             className="object-cover object-left-top absolute h-full w-full inset-0"
             alt={product.title}
+            fetchPriority="high"
           />
         </a>
       ) : (
@@ -290,6 +291,7 @@ export const ProductCard = ({
             src={product.thumbnail}
             className="object-cover object-left-top absolute h-full w-full inset-0"
             alt={product.title}
+            fetchPriority="high"
           />
         </Link>
       )}

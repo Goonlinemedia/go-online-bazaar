@@ -23,7 +23,7 @@ const Footer = () => {
         <div className="flex flex-col gap-4">
           <div className="flex items-center overflow-visible">
             <img 
-              src="/logo.png" 
+              src="/logo.webp" 
               alt="GoOnline Logo" 
               className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px]" 
             />
@@ -37,6 +37,7 @@ const Footer = () => {
               target="_blank" 
               rel="noopener noreferrer" 
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
+              aria-label="Contact us on WhatsApp"
             >
               <Phone size={14} />
             </a>
@@ -45,6 +46,7 @@ const Footer = () => {
               target="_blank" 
               rel="noopener noreferrer" 
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
+              aria-label="Follow us on Twitter"
             >
               <Twitter size={14} />
             </a>
@@ -53,6 +55,7 @@ const Footer = () => {
               target="_blank" 
               rel="noopener noreferrer" 
               className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-primary hover:text-white transition-colors"
+              aria-label="Follow us on Instagram"
             >
               <Instagram size={14} />
             </a>
@@ -115,6 +118,7 @@ const Footer = () => {
             <button 
               type="submit" 
               className="bg-primary text-white p-2 rounded-xl hover:bg-[#EA580C] transition-colors shrink-0"
+              aria-label="Subscribe to newsletter"
             >
               <ArrowRight size={14} />
             </button>

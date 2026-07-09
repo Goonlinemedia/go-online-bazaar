@@ -46,7 +46,7 @@ const Navbar = () => {
         {/* Left: Brand Logo */}
         <a href={isHome ? "#" : "/"} className="flex items-center overflow-visible z-[130]">
           <img 
-            src="/logo.png" 
+            src="/logo.webp" 
             alt="GoOnline Logo" 
             className="h-[32px] md:h-[40px] w-auto object-contain scale-[3] md:scale-[3.5] origin-left translate-y-[2px] md:translate-y-[4px] dark:invert" 
           />
