@@ -2,10 +2,23 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Terms of Service | GoOnline"
+        description="Read the Terms of Service for GoOnline's premium website design, development, and ecommerce systems."
+        path="/terms-of-service"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Terms of Service - GoOnline",
+          "description": "Read the Terms of Service for GoOnline.",
+          "url": "https://www.goonline.com.ng/terms-of-service"
+        }}
+      />
       <Navbar />
       
       <main className="max-w-4xl mx-auto px-4 pt-32 pb-20">

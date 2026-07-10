@@ -26,9 +26,10 @@
       ]
     }
   ],
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|.*\\..*|assets/).*)",
       "destination": "/index.html"
     }
   ]

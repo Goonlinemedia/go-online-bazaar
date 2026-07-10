@@ -1,0 +1,12 @@
+[
+  { "path": "/" },
+  { "path": "/solutions" },
+  { "path": "/portfolio" },
+  { "path": "/services" },
+  { "path": "/process" },
+  { "path": "/contact" },
+  { "path": "/login" },
+  { "path": "/terms-of-service" },
+  { "path": "/privacy-policy" },
+  { "path": "/refund-policy" }
+]

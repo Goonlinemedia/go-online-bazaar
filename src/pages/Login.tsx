@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import SEO from "@/components/SEO";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +32,12 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 sm:p-6">
+      <SEO 
+        title="Admin Login | GoOnline"
+        description="Log in to the GoOnline management and admin dashboard."
+        path="/login"
+        noIndex={true}
+      />
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background opacity-50" />
 
       <Card className="w-full max-w-md shadow-2xl border-primary/10">

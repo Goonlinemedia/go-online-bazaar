@@ -2,10 +2,23 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Privacy Policy | GoOnline"
+        description="Read our Privacy Policy to understand how GoOnline collects, uses, and protects your personal data and information."
+        path="/privacy-policy"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Privacy Policy - GoOnline",
+          "description": "Read our Privacy Policy to understand how GoOnline collects, uses, and protects your personal data and information.",
+          "url": "https://www.goonline.com.ng/privacy-policy"
+        }}
+      />
       <Navbar />
       
       <main className="max-w-4xl mx-auto px-4 pt-32 pb-20">

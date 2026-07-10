@@ -12,12 +12,35 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import SEO from "@/components/SEO";
 
 const Index = () => {
   useScrollReveal();
 
   return (
     <div className="min-h-screen bg-background relative selection:bg-primary/20 pb-16 md:pb-0">
+      <SEO 
+        title="Premium Website Design & Ecommerce Development in Nigeria | GoOnline" 
+        description="GoOnline designs premium websites, ecommerce stores, and digital commerce systems for brands and growing businesses in Nigeria. Build credibility, sell online, and manage orders with confidence."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          "name": "GoOnline",
+          "url": "https://www.goonline.com.ng/",
+          "description": "Premium website design, ecommerce development, and digital commerce systems for brands and growing businesses in Nigeria.",
+          "areaServed": "Nigeria",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "9, Bashiru Yakubu Street, Irepo Estate, Ikotun",
+            "addressLocality": "Lagos",
+            "addressCountry": "NG"
+          },
+          "email": "goonlinemedia0@gmail.com",
+          "telephone": "+2347081150770",
+          "sameAs": []
+        }}
+      />
       <Navbar />
       
       <main>

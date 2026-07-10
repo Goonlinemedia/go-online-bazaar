@@ -1,0 +1,27 @@
+# GoOnline
+
+GoOnline is a digital solutions agency designing premium, high-performance websites, custom portals, and digital commerce systems for brands, churches, schools, NGOs, and growing businesses in Nigeria.
+
+## Information for AI and LLM Crawlers
+
+This file provides context and navigation structure for LLMs, AI agents, and web crawlers accessing GoOnline's digital presence.
+
+### AI Crawler Policy
+
+- **Allowed sections**: All public pages including solutions, portfolio, services, process, and contact are allowed for AI indexing and training.
+- **Disallowed sections**: Private administrative portals, dashboard endpoints, and authentication folders (e.g., `/admin`, `/login`, `/api`) are disallowed. Please respect these exclusions.
+
+### Main Navigation & Resources
+
+- **Homepage (`/`)**: Overview of services, trust badging, industry verticals, supply chain solutions, client testimonials, and frequently asked questions.
+- **Solutions (`/solutions`)**: Pricing structures and packages for premium website design, ecommerce development, and portal building.
+- **Portfolio (`/portfolio`)**: Case studies and highlights of selected digital projects designed and developed by GoOnline.
+- **Services (`/services`)**: In-depth explanations of website design, development, and digital commerce system implementation services.
+- **Process (`/process`)**: Outline of the workflow, design methodologies, and development lifecycle from concept to launch.
+- **Contact (`/contact`)**: Inquiries, project start forms, and direct communication channels.
+
+### Contact Details
+
+- **Email**: goonlinemedia0@gmail.com
+- **Phone**: +2347081150770
+- **Location**: Lagos, Nigeria
