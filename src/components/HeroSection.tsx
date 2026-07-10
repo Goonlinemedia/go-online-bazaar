@@ -162,11 +162,12 @@ const HeroSection = () => {
         }}
       >
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-8 md:space-x-20 mb-8 md:mb-20">
-          {firstRow.map((product) => (
+          {firstRow.map((product, index) => (
             <ProductCard
               product={product}
               translate={translateX}
               key={product.title}
+              isLcp={index === 0 || index === 1}
             />
           ))}
         </motion.div>
@@ -176,6 +177,7 @@ const HeroSection = () => {
               product={product}
               translate={translateXReverse}
               key={product.title}
+              isLcp={false}
             />
           ))}
         </motion.div>
@@ -185,6 +187,7 @@ const HeroSection = () => {
               product={product}
               translate={translateX}
               key={product.title}
+              isLcp={false}
             />
           ))}
         </motion.div>
@@ -247,6 +250,7 @@ export const Header = () => {
 export const ProductCard = ({
   product,
   translate,
+  isLcp = false,
 }: {
   product: {
     title: string;
@@ -254,6 +258,7 @@ export const ProductCard = ({
     thumbnail: string;
   };
   translate: MotionValue<number>;
+  isLcp?: boolean;
 }) => {
   const isExternal = product.link.startsWith("http");
 
@@ -279,7 +284,9 @@ export const ProductCard = ({
             src={product.thumbnail}
             className="object-cover object-left-top absolute h-full w-full inset-0"
             alt={product.title}
-            fetchPriority="high"
+            width={480}
+            height={384}
+            {...(isLcp ? { fetchpriority: "high" } : { loading: "lazy" })}
           />
         </a>
       ) : (
@@ -291,7 +298,9 @@ export const ProductCard = ({
             src={product.thumbnail}
             className="object-cover object-left-top absolute h-full w-full inset-0"
             alt={product.title}
-            fetchPriority="high"
+            width={480}
+            height={384}
+            {...(isLcp ? { fetchpriority: "high" } : { loading: "lazy" })}
           />
         </Link>
       )}

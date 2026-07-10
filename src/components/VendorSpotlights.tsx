@@ -154,6 +154,8 @@ const VendorSpotlights = () => {
                   <img 
                     src={p.image} 
                     alt={p.name} 
+                    width={400}
+                    height={208}
                     loading="lazy"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';

@@ -74,6 +74,9 @@ const Testimonials = () => {
                 <img 
                   src={t.avatar} 
                   alt={t.author} 
+                  width={36}
+                  height={36}
+                  loading="lazy"
                   className="w-9 h-9 rounded-full object-cover border border-border bg-muted"
                 />
                 <div>
