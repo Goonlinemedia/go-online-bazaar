@@ -1,5 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Twitter, Instagram, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { newsletterSchema } from "@/lib/validation";
+import { sanitizeEmail } from "@/lib/sanitize";
 
 const quickLinks = [
   { label: "Portfolio", href: "/portfolio" },
@@ -10,9 +16,45 @@ const quickLinks = [
 ];
 
 const Footer = () => {
-  const handleSubscribe = (e: React.FormEvent) => {
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterError, setNewsletterError] = useState("");
+
+  const handleNewsletterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setNewsletterEmail(val);
+    const result = newsletterSchema.safeParse({ email: val });
+    if (!result.success) {
+      setNewsletterError(result.error.issues[0]?.message || "Invalid email");
+    } else {
+      setNewsletterError("");
+    }
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Newsletter mock handler
+    setNewsletterError("");
+
+    const result = newsletterSchema.safeParse({ email: newsletterEmail });
+    if (!result.success) {
+      const errMsg = result.error.issues[0]?.message || "Please enter a valid email address.";
+      setNewsletterError(errMsg);
+      toast.error(errMsg);
+      return;
+    }
+
+    const sanitizedEmail = sanitizeEmail(result.data.email);
+
+    try {
+      await addDoc(collection(db, "newsletter"), {
+        email: sanitizedEmail,
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Successfully subscribed to our newsletter!");
+      setNewsletterEmail("");
+    } catch (err: any) {
+      console.error("[Newsletter Error]", err);
+      toast.error("Failed to subscribe. Please try again later.");
+    }
   };
 
   return (
@@ -110,16 +152,20 @@ const Footer = () => {
           <p className="text-xs leading-relaxed mb-4">
             Get design insights, ecommerce tips, and business growth tools directly to your inbox.
           </p>
-          <form className="flex gap-2" onSubmit={handleSubscribe}>
-            <input
-              type="email"
-              required
-              placeholder="Email address"
-              className="bg-slate-900 border border-slate-800 text-xs rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary w-full"
-            />
+          <form className="flex gap-2 items-start" onSubmit={handleSubscribe}>
+            <div className="w-full">
+              <input
+                type="email"
+                value={newsletterEmail}
+                onChange={handleNewsletterChange}
+                placeholder="Email address"
+                className={`bg-slate-900 border text-xs rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 w-full ${newsletterError ? 'border-destructive focus:ring-destructive' : 'border-slate-800 focus:ring-primary'}`}
+              />
+              {newsletterError && <p className="text-destructive text-[10px] mt-1 font-medium">{newsletterError}</p>}
+            </div>
             <button
               type="submit"
-              className="bg-primary text-white p-2 rounded-xl hover:bg-[#EA580C] transition-colors shrink-0"
+              className="bg-primary text-white p-2.5 rounded-xl hover:bg-[#EA580C] transition-colors shrink-0 h-9"
               aria-label="Subscribe to newsletter"
             >
               <ArrowRight size={14} />
