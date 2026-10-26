@@ -56,6 +56,15 @@ async function main() {
       }
     }
     console.log(`✔ prerendered ${written} routes`);
+
+    // Ensure client-side SPA routes that aren't prerendered have index.html fallback for static hosts like Vercel
+    const spaFallbackRoutes = ['admin', 'unsubscribe'];
+    for (const r of spaFallbackRoutes) {
+      const dir = path.join(DIST, r);
+      fs.mkdirSync(dir, { recursive: true });
+      fs.copyFileSync(TEMPLATE_PATH, path.join(dir, 'index.html'));
+      console.log(`✔ created static SPA fallback for /${r}`);
+    }
   } finally {
     await vite.close();
   }

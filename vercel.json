@@ -29,7 +29,11 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/((?!api/|.*\\..*|assets/).*)",
+      "source": "/api/:match*",
+      "destination": "/api/:match*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
