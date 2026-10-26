@@ -32,5 +32,15 @@
       "source": "/((?!api/|.*\\..*|assets/).*)",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/prospecting/cron",
+      "schedule": "0 8,14 * * 1-5"
+    },
+    {
+      "path": "/api/prospecting/process-queue",
+      "schedule": "*/20 9-17 * * 1-5"
+    }
   ]
 }

@@ -40,8 +40,10 @@ import {
   Activity,
   LayoutDashboard,
   Calendar,
-  Eye
+  Eye,
+  Sparkles
 } from "lucide-react";
+import { ProspectingHub } from "@/components/prospecting/ProspectingHub";
 import { 
   Card, 
   CardContent, 
@@ -314,6 +316,7 @@ const AdminDashboard = () => {
         <TabsList className="bg-background border shadow-sm p-1">
           <TabsTrigger value="overview" className="gap-2"><LayoutDashboard size={16} /> Overview</TabsTrigger>
           <TabsTrigger value="leads" className="gap-2"><Users size={16} /> Leads ({filteredLeadsData.length})</TabsTrigger>
+          <TabsTrigger value="prospecting" className="gap-2"><Sparkles size={16} /> Prospecting Hub</TabsTrigger>
           <TabsTrigger value="events" className="gap-2"><Activity size={16} /> Live Feed</TabsTrigger>
         </TabsList>
 
@@ -576,6 +579,10 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="prospecting">
+          <ProspectingHub />
         </TabsContent>
       </Tabs>
     </div>
