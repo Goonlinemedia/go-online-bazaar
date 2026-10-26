@@ -80,6 +80,7 @@ export const ProspectingHub = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedService, setSelectedService] = useState<string>("all");
+  const [selectedRegion, setSelectedRegion] = useState<string>("all");
 
   // Dialog States
   const [previewProspect, setPreviewProspect] = useState<Prospect | null>(null);
@@ -240,8 +241,9 @@ export const ProspectingHub = () => {
     
     const matchesStatus = selectedStatus === "all" || p.status === selectedStatus;
     const matchesService = selectedService === "all" || p.classification.matchedService === selectedService;
+    const matchesRegion = selectedRegion === "all" || p.classification.region === selectedRegion;
 
-    return matchesSearch && matchesStatus && matchesService;
+    return matchesSearch && matchesStatus && matchesService && matchesRegion;
   });
 
   const qualifiedCount = prospects.filter((p) => p.status === "qualified" || p.qualification.isEligible).length;
@@ -441,6 +443,27 @@ export const ProspectingHub = () => {
                 {srv === "all" ? "All Services" : SERVICE_LABELS[srv as ServiceType].split(" ")[0]}
               </Button>
             ))}
+
+            <div className="w-full flex flex-wrap items-center gap-2 pt-2 border-t">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">Target Market:</span>
+              {[
+                { id: "all", label: "All Regions" },
+                { id: "United States", label: "🇺🇸 United States" },
+                { id: "United Kingdom", label: "🇬🇧 United Kingdom" },
+                { id: "Canada", label: "🇨🇦 Canada" },
+                { id: "Europe", label: "🇪🇺 Europe" },
+              ].map((reg) => (
+                <Button
+                  key={reg.id}
+                  size="sm"
+                  variant={selectedRegion === reg.id ? "default" : "outline"}
+                  onClick={() => setSelectedRegion(reg.id)}
+                  className="text-[11px] h-7 px-2.5 rounded-full"
+                >
+                  {reg.label}
+                </Button>
+              ))}
+            </div>
           </div>
         </CardHeader>
 
@@ -501,6 +524,14 @@ export const ProspectingHub = () => {
                         {p.classification.budgetMentioned && (
                           <div className="text-[10px] text-emerald-600 font-mono mt-0.5">
                             Budget: {p.classification.budgetMentioned}
+                          </div>
+                        )}
+                        {p.classification.region && (
+                          <div className="text-[10px] text-muted-foreground mt-0.5 font-medium flex items-center gap-1">
+                            {p.classification.region === "United States" ? "🇺🇸" :
+                             p.classification.region === "United Kingdom" ? "🇬🇧" :
+                             p.classification.region === "Canada" ? "🇨🇦" :
+                             p.classification.region === "Europe" ? "🇪🇺" : "🌐"} {p.classification.region}
                           </div>
                         )}
                       </TableCell>

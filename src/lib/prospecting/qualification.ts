@@ -1,10 +1,11 @@
-import { ServiceType } from "./types";
+import { ServiceType, TargetRegion } from "./types";
 
 interface ClassificationResult {
   matchedService: ServiceType;
   confidenceScore: number;
   extractedKeywords: string[];
   budgetMentioned?: string;
+  region: TargetRegion;
 }
 
 interface QualificationResult {
@@ -12,6 +13,48 @@ interface QualificationResult {
   isEligible: boolean;
   reasons: string[];
   redFlags: string[];
+}
+
+/**
+ * Detects whether inquiry targets the US, UK, Canada, or Europe
+ */
+export function detectTargetRegion(text: string, email: string = ""): TargetRegion {
+  const norm = text.toLowerCase();
+  const domain = email.toLowerCase().split("@")[1] || "";
+
+  // 1. United Kingdom
+  if (
+    /£|gbp|united\s*kingdom|\buk\b|london|manchester|birmingham|england|scotland|wales|\bgmt\b|\bbst\b/i.test(norm) ||
+    domain.endsWith(".uk") || domain.endsWith(".co.uk")
+  ) {
+    return "United Kingdom";
+  }
+
+  // 2. Canada
+  if (
+    /cad|c\$|canada|toronto|vancouver|montreal|calgary|ottawa|ontario|quebec|alberta/i.test(norm) ||
+    domain.endsWith(".ca")
+  ) {
+    return "Canada";
+  }
+
+  // 3. Europe
+  if (
+    /€|eur|europe|\beu\b|germany|france|netherlands|berlin|paris|amsterdam|dublin|ireland|madrid|spain|italy|\bcet\b/i.test(norm) ||
+    domain.endsWith(".eu") || domain.endsWith(".de") || domain.endsWith(".fr") || domain.endsWith(".nl") || domain.endsWith(".ie") || domain.endsWith(".es")
+  ) {
+    return "Europe";
+  }
+
+  // 4. United States
+  if (
+    /usd|\$|united\s*states|\busa\b|\bus\b|new\s*york|california|texas|florida|chicago|los\s*angeles|seattle|austin|miami|san\s*francisco|\best\b|\bpst\b|\bcst\b/i.test(norm) ||
+    domain.endsWith(".us")
+  ) {
+    return "United States";
+  }
+
+  return "Global";
 }
 
 // Service keyword lexicons tailored to GoOnline's 5 offerings
@@ -96,12 +139,14 @@ export function classifyRequest(text: string): ClassificationResult {
   const budgetMentioned = budgetMatch ? budgetMatch[0].trim() : undefined;
 
   const confidenceScore = maxCount > 0 ? Math.min(1.0, 0.4 + maxCount * 0.15) : 0.4;
+  const region = detectTargetRegion(text);
 
   return {
     matchedService: topService,
     confidenceScore: parseFloat(confidenceScore.toFixed(2)),
     extractedKeywords: uniqueKeywords.slice(0, 8),
     budgetMentioned,
+    region,
   };
 }
 
@@ -172,6 +217,12 @@ export function qualifyProspect(
   } else if (email.includes("@")) {
     score += 10;
     reasons.push("Direct verified email provided");
+  }
+
+  // 5. Target Region Match (US, UK, Canada, Europe)
+  if (classification.region && classification.region !== "Global") {
+    score += 15;
+    reasons.push(`Target Market Match: ${classification.region} commercial request`);
   }
 
   // Clamp score between 0 and 100

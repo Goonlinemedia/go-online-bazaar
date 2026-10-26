@@ -34,6 +34,13 @@ export type ProspectSourcePlatform =
   | "twitter_x"
   | "job_board";
 
+export type TargetRegion = 
+  | "United States"
+  | "United Kingdom"
+  | "Canada"
+  | "Europe"
+  | "Global";
+
 export interface Prospect {
   id: string;
   source: {
@@ -56,6 +63,7 @@ export interface Prospect {
     confidenceScore: number;
     extractedKeywords: string[];
     budgetMentioned?: string;
+    region?: TargetRegion;
   };
   qualification: {
     score: number; // 0 - 100

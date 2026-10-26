@@ -2,18 +2,62 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 /**
  * Automated Lead Discovery Engine:
- * Scans Google, public developer forums, and RSS feeds for people/businesses
- * actively looking for website developers.
+ * Specifically tuned to discover commercial website requests from:
+ * - United States (US)
+ * - United Kingdom (UK)
+ * - Canada (CA)
+ * - Europe (EU)
  */
+
+export type TargetRegion = "United States" | "United Kingdom" | "Canada" | "Europe" | "Global";
 
 interface DiscoveredLead {
   id: string;
-  platform: "reddit_feed" | "google_search" | "hacker_news" | "job_board";
+  platform: "reddit_feed" | "google_search" | "job_board";
   title: string;
   content: string;
   url: string;
   authorEmail?: string;
   companyName?: string;
+  region: TargetRegion;
+}
+
+function detectRegion(text: string, domain: string = ""): TargetRegion {
+  const norm = text.toLowerCase();
+
+  // 1. United Kingdom
+  if (
+    /£|gbp|united\s*kingdom|\buk\b|london|manchester|birmingham|england|scotland|\bgmt\b|\bbst\b/i.test(norm) ||
+    domain.endsWith(".uk") || domain.endsWith(".co.uk")
+  ) {
+    return "United Kingdom";
+  }
+
+  // 2. Canada
+  if (
+    /cad|c\$|canada|toronto|vancouver|montreal|calgary|ottawa|ontario|quebec|alberta/i.test(norm) ||
+    domain.endsWith(".ca")
+  ) {
+    return "Canada";
+  }
+
+  // 3. Europe
+  if (
+    /€|eur|europe|\beu\b|germany|france|netherlands|berlin|paris|amsterdam|dublin|ireland|madrid|spain|italy|\bcet\b/i.test(norm) ||
+    domain.endsWith(".eu") || domain.endsWith(".de") || domain.endsWith(".fr") || domain.endsWith(".nl") || domain.endsWith(".ie") || domain.endsWith(".es")
+  ) {
+    return "Europe";
+  }
+
+  // 4. United States
+  if (
+    /usd|\$|united\s*states|\busa\b|\bus\b|new\s*york|california|texas|florida|chicago|los\s*angeles|seattle|austin|miami|san\s*francisco|\best\b|\bpst\b|\bcst\b/i.test(norm) ||
+    domain.endsWith(".us")
+  ) {
+    return "United States";
+  }
+
+  return "Global";
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -28,73 +72,87 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const discoveredLeads: DiscoveredLead[] = [];
 
   // ========================================================
-  // SOURCE 1: Live Reddit RSS Hiring Feeds (100% Free, No Key Required)
+  // SOURCE 1: Multi-Region Developer RSS Feeds (US, UK, Canada, Europe)
   // ========================================================
-  try {
-    const rssRes = await fetch("https://www.reddit.com/r/forhire/new.rss", {
-      headers: { "User-Agent": "web:goonline-prospecting:v1.0 (by /u/goonlinemedia)" }
-    });
+  const feedSources = [
+    { name: "Reddit ForHire", url: "https://www.reddit.com/r/forhire/new.rss" },
+    { name: "Reddit Freelance", url: "https://www.reddit.com/r/freelance_forhire/new.rss" },
+    { name: "WeWorkRemotely", url: "https://weworkremotely.com/categories/remote-programming-jobs.rss" }
+  ];
 
-    if (rssRes.ok) {
-      const xml = await rssRes.text();
-      const entries = xml.split("<entry>").slice(1);
+  for (const feed of feedSources) {
+    try {
+      const rssRes = await fetch(feed.url, {
+        headers: { "User-Agent": "web:goonline-prospecting:v1.0 (by /u/goonlinemedia)" }
+      });
 
-      for (const entry of entries) {
-        const titleMatch = entry.match(/<title>(.*?)<\/title>/);
-        const linkMatch = entry.match(/<link href="([^"]+)"/);
-        const contentMatch = entry.match(/<content type="html">([\s\S]*?)<\/content>/);
+      if (rssRes.ok) {
+        const xml = await rssRes.text();
+        const isAtom = xml.includes("<entry>");
+        const items = isAtom ? xml.split("<entry>").slice(1) : xml.split("<item>").slice(1);
 
-        if (titleMatch) {
-          const rawTitle = titleMatch[1];
-          const url = linkMatch ? linkMatch[1] : "";
-          const rawContent = contentMatch ? contentMatch[1].replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ") : "";
+        for (const item of items) {
+          const titleMatch = item.match(/<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/);
+          const linkMatch = item.match(/<link(?: href="([^"]+)"|>([^<]+)<\/link>)/);
+          const contentMatch = item.match(/<(?:content type="html"|description)>([\s\S]*?)<\/(?:content|description)>/);
 
-          // Filter for hiring posts that mention website, dev, ecommerce, app, redesign
-          const isHiring = /\[hiring\]/i.test(rawTitle);
-          const isWebRelated = /web|site|dev|store|app|redesign|landing|booking/i.test(rawTitle + " " + rawContent);
+          if (titleMatch) {
+            const rawTitle = titleMatch[1];
+            const url = linkMatch ? (linkMatch[1] || linkMatch[2] || "") : "";
+            const rawContent = contentMatch ? contentMatch[1].replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ") : "";
 
-          if (isHiring && isWebRelated) {
-            // Extract contact email if provided
-            const emailMatch = (rawTitle + " " + rawContent).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            const combined = `${rawTitle} ${rawContent}`;
+            const isHiring = /\[hiring\]|hiring|contract|developer needed|looking for/i.test(combined);
+            const isWebRelated = /web|site|dev|store|app|redesign|landing|booking|ecommerce|e-commerce/i.test(combined);
 
-            discoveredLeads.push({
-              id: `feed_${Buffer.from(url).toString("base64").slice(0, 16)}`,
-              platform: "reddit_feed",
-              title: rawTitle.replace(/&amp;/g, "&"),
-              content: rawContent.trim().slice(0, 800),
-              url: url,
-              authorEmail: emailMatch ? emailMatch[0].toLowerCase() : undefined,
-            });
+            if (isHiring && isWebRelated) {
+              const emailMatch = combined.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+              const region = detectRegion(combined, emailMatch ? emailMatch[0].split("@")[1] : "");
+
+              discoveredLeads.push({
+                id: `feed_${Buffer.from(url).toString("base64").slice(0, 16)}`,
+                platform: feed.name.includes("Reddit") ? "reddit_feed" : "job_board",
+                title: rawTitle.replace(/&amp;/g, "&"),
+                content: rawContent.trim().slice(0, 800),
+                url: url,
+                authorEmail: emailMatch ? emailMatch[0].toLowerCase() : undefined,
+                region,
+              });
+            }
           }
         }
       }
+    } catch (feedErr) {
+      console.warn(`Feed error (${feed.name}):`, feedErr);
     }
-  } catch (err) {
-    console.warn("Reddit RSS fetch warning:", err);
   }
 
   // ========================================================
-  // SOURCE 2: Google Custom Search API (If GOOGLE_SEARCH_KEY provided)
-  // Google provides 100 free searches every single day.
+  // SOURCE 2: Google Search Targeting US, UK, Canada & Europe
   // ========================================================
   const googleApiKey = process.env.GOOGLE_SEARCH_API_KEY;
   const googleCx = process.env.GOOGLE_SEARCH_CX;
 
   if (googleApiKey && googleCx) {
-    try {
-      const queries = [
-        '"looking for a web developer" OR "need a website designer" budget',
-        '"request for proposal" "website redesign" 2026',
-      ];
-      
-      for (const q of queries) {
+    const regionalQueries = [
+      '"looking for a web developer" (US OR UK OR Canada OR Europe OR London OR "New York") budget',
+      '"request for proposal" "website redesign" (USA OR UK OR Canada OR Europe) 2026',
+      '"need an e-commerce website" (USD OR GBP OR CAD OR EUR)',
+      '"need a booking system" (London OR "New York" OR Toronto OR Berlin)',
+    ];
+
+    for (const q of regionalQueries) {
+      try {
         const gUrl = `https://www.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${googleCx}&q=${encodeURIComponent(q)}&num=10`;
         const gRes = await fetch(gUrl);
         if (gRes.ok) {
           const gData = await gRes.json();
           const items = gData.items || [];
           for (const item of items) {
-            const emailMatch = (item.title + " " + item.snippet).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            const combined = `${item.title} ${item.snippet}`;
+            const emailMatch = combined.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            const region = detectRegion(combined);
+
             discoveredLeads.push({
               id: `google_${Buffer.from(item.link).toString("base64").slice(0, 16)}`,
               platform: "google_search",
@@ -102,19 +160,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               content: item.snippet,
               url: item.link,
               authorEmail: emailMatch ? emailMatch[0].toLowerCase() : undefined,
+              region,
             });
           }
         }
+      } catch (gErr) {
+        console.warn("Google regional search error:", gErr);
       }
-    } catch (gErr) {
-      console.warn("Google search warning:", gErr);
     }
   }
 
   return res.status(200).json({
     success: true,
     totalDiscovered: discoveredLeads.length,
+    regionsCovered: ["United States", "United Kingdom", "Canada", "Europe"],
     leads: discoveredLeads,
-    message: `Discovered ${discoveredLeads.length} active website developer requests.`,
+    message: `Discovered ${discoveredLeads.length} developer requests across US, UK, Canada, and Europe.`,
   });
 }

@@ -46,6 +46,20 @@ describe("Prospecting Qualification Engine", () => {
     expect(qualification.isEligible).toBe(false);
     expect(qualification.redFlags.length).toBeGreaterThan(0);
   });
+
+  it("correctly detects target regions (US, UK, Canada, Europe)", () => {
+    const usResult = classifyRequest("Need a web developer in New York with USD budget of $3,000");
+    expect(usResult.region).toBe("United States");
+
+    const ukResult = classifyRequest("Looking for London agency or developer to build company website, budget £2,500");
+    expect(ukResult.region).toBe("United Kingdom");
+
+    const caResult = classifyRequest("Toronto firm seeking Shopify ecommerce website developer, budget $4,000 CAD");
+    expect(caResult.region).toBe("Canada");
+
+    const euResult = classifyRequest("Berlin tech startup in Europe looking for web app redesign, budget €3,500");
+    expect(euResult.region).toBe("Europe");
+  });
 });
 
 describe("Proposal Synthesis Engine", () => {
