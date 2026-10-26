@@ -15,6 +15,14 @@ export const SERVICE_LABELS: Record<ServiceType, string> = {
   web_application_booking: "Web Application & Booking System",
 };
 
+export type WebsiteStatus = "none_found" | "social_only" | "has_website";
+
+export const WEBSITE_STATUS_LABELS: Record<WebsiteStatus, string> = {
+  none_found: "No Website Found",
+  social_only: "Social Media Only (FB/IG)",
+  has_website: "Existing / Outdated Website",
+};
+
 export type ProspectStatus = 
   | "discovered"
   | "qualified"
@@ -32,7 +40,10 @@ export type ProspectSourcePlatform =
   | "rss_feed"
   | "manual"
   | "twitter_x"
-  | "job_board";
+  | "job_board"
+  | "google_maps"
+  | "business_directory"
+  | "social_media";
 
 export type TargetRegion = 
   | "United States"
@@ -41,8 +52,33 @@ export type TargetRegion =
   | "Europe"
   | "Global";
 
+export interface TargetMarketPreset {
+  country: string;
+  region: TargetRegion;
+  priority: "Priority 1" | "Priority 2" | "Expansion";
+  cities: string[];
+  suggestedIndustries: string[];
+  directoryName: string;
+  directoryBaseUrl: string;
+}
+
+export interface LocalBusinessLeadInput {
+  businessName: string;
+  country: string;
+  city: string;
+  industry: string;
+  websiteStatus: WebsiteStatus;
+  mapsUrl?: string;
+  email: string;
+  phoneNumber?: string;
+  decisionMaker?: string;
+  opportunity?: ServiceType;
+  notes?: string;
+}
+
 export interface Prospect {
   id: string;
+  prospectType?: "local_business_no_website" | "online_job_request";
   source: {
     platform: ProspectSourcePlatform;
     externalId: string;
@@ -50,6 +86,7 @@ export interface Prospect {
     rawTitle: string;
     rawContent: string;
     discoveredAt: Timestamp | string;
+    mapsUrl?: string;
   };
   contact: {
     fullName?: string;
@@ -57,6 +94,12 @@ export interface Prospect {
     email: string;
     emailDomain: string;
     websiteUrl?: string;
+    phoneNumber?: string;
+    decisionMaker?: string;
+    country?: string;
+    city?: string;
+    industry?: string;
+    websiteStatus?: WebsiteStatus;
   };
   classification: {
     matchedService: ServiceType;
@@ -64,6 +107,7 @@ export interface Prospect {
     extractedKeywords: string[];
     budgetMentioned?: string;
     region?: TargetRegion;
+    opportunity?: string;
   };
   qualification: {
     score: number; // 0 - 100

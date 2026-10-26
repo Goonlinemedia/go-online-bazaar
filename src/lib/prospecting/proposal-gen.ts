@@ -194,3 +194,112 @@ To opt out of future proposals, visit: ${ctx.unsubscribeUrl}
     portfolioLinksIncluded: [blueprint.portfolioAnchor]
   };
 }
+
+export interface LocalBusinessProposalContext {
+  businessName: string;
+  decisionMaker?: string;
+  city: string;
+  country?: string;
+  industry: string;
+  websiteStatus: "none_found" | "social_only" | "has_website";
+  opportunity?: ServiceType;
+  senderName?: string;
+  senderEmail?: string;
+  physicalAddress?: string;
+  unsubscribeUrl: string;
+}
+
+/**
+ * Generates cold outreach proposals specifically tailored for local businesses
+ * that have no website or rely solely on Facebook / Instagram.
+ */
+export function generateLocalBusinessProposal(ctx: LocalBusinessProposalContext): ProposalOutput {
+  const recipient = ctx.decisionMaker 
+    ? ctx.decisionMaker.split(" ")[0] 
+    : (ctx.businessName || "Owner");
+  
+  const senderName = ctx.senderName || "Adegboyega";
+  const senderEmail = ctx.senderEmail || "info@goonlinemedia.com";
+  const physicalAddress = ctx.physicalAddress || "GoOnline Media, Victoria Island, Lagos / London HQ";
+
+  const subjectLine = ctx.decisionMaker 
+    ? `Quick question for ${recipient} regarding ${ctx.businessName}`
+    : `Website idea for ${ctx.businessName} in ${ctx.city}`;
+
+  const observationPhrase = ctx.websiteStatus === "social_only"
+    ? "I noticed that customers may currently be finding you mainly through your social media pages."
+    : "I noticed that customers may currently be finding you mainly through your business directory or local listing.";
+
+  const bodyHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1f2937; line-height: 1.6; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .btn { display: inline-block; background-color: #004a8b; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 15px; }
+    .footer { font-size: 11px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 30px; }
+    .unsub { color: #9ca3af; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p>Hi ${recipient},</p>
+    
+    <p>I came across <strong>${ctx.businessName}</strong> while looking at local ${ctx.industry.toLowerCase()} services in ${ctx.city}. ${observationPhrase}</p>
+    
+    <p>I build professional, mobile-friendly websites that help businesses showcase their work, build trust with prospective clients, and generate more direct enquiries.</p>
+    
+    <p>I'd love to explore creating a clean, affordable website tailored specifically to <strong>${ctx.businessName}</strong> — with clear service information, customer reviews, and an easy way for local customers in ${ctx.city} to contact you or request a quote.</p>
+    
+    <p>Would you be open to seeing a few ideas or a quick concept layout for your business?</p>
+    
+    <p style="margin-top: 25px;">
+      Best regards,<br>
+      <strong>${senderName}</strong><br>
+      <span style="color: #4b5563; font-size: 13px;">GoOnline · Website Development & Digital Solutions</span><br>
+      <a href="https://goonlinemedia.com" style="color: #004a8b; font-size: 13px;">goonlinemedia.com</a> · <span style="color: #4b5563; font-size: 13px;">${senderEmail}</span>
+    </p>
+    
+    <div class="footer">
+      <p style="margin: 0 0 6px 0;">${physicalAddress}</p>
+      <p style="margin: 0;">You received this note regarding publicly available business information for ${ctx.businessName}. If you do not wish to receive website concepts, <a href="${ctx.unsubscribeUrl}" class="unsub">click here to opt out immediately</a>.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  const bodyText = `
+Hi ${recipient},
+
+I came across ${ctx.businessName} while looking at local ${ctx.industry.toLowerCase()} services in ${ctx.city}. ${observationPhrase}
+
+I build professional websites that help businesses showcase their services, build trust, and generate more enquiries.
+
+I'd love to explore creating a simple, affordable website tailored to ${ctx.businessName}, with clear service information and an easy way for customers in ${ctx.city} to contact you or request a quote.
+
+Would you be open to seeing a few ideas for your business?
+
+Best regards,
+
+${senderName}
+GoOnline · Website Development & Digital Solutions
+https://goonlinemedia.com · ${senderEmail}
+
+---
+${physicalAddress}
+You received this note regarding publicly available business information for ${ctx.businessName}.
+To opt out, visit: ${ctx.unsubscribeUrl}
+  `.trim();
+
+  return {
+    subjectLine,
+    bodyHtml,
+    bodyText,
+    suggestedTimeline: "7 to 10 business days",
+    portfolioLinksIncluded: ["https://goonlinemedia.com/#services"]
+  };
+}
+

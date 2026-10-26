@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { classifyRequest, qualifyProspect } from "@/lib/prospecting/qualification";
-import { generatePersonalizedProposal } from "@/lib/prospecting/proposal-gen";
+import { classifyRequest, qualifyProspect, scoreLocalBusinessLead } from "@/lib/prospecting/qualification";
+import { generatePersonalizedProposal, generateLocalBusinessProposal } from "@/lib/prospecting/proposal-gen";
 import { normalizeEmail, extractDomain, buildUnsubscribeUrl, verifyUnsubscribeToken } from "@/lib/prospecting/dedup";
+import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
 
 describe("Prospecting Qualification Engine", () => {
   it("correctly classifies an e-commerce request", () => {
@@ -98,3 +99,114 @@ describe("Deduplication & Opt-Out Tokens", () => {
     expect(verifyUnsubscribeToken("other@clientbrand.com", tokenParam)).toBe(false);
   });
 });
+
+describe("Local Business (No Website / Social-Only) Lead Qualification", () => {
+  it("scores a verified local business with no website as highly qualified (score >= 70)", () => {
+    const result = scoreLocalBusinessLead({
+      businessName: "Calgary Precision Plumbing",
+      country: "Canada",
+      city: "Calgary",
+      industry: "Plumbing",
+      websiteStatus: "none_found",
+      hasEmail: true,
+      hasPhone: true,
+      hasDecisionMaker: true,
+      hasMapsUrl: true,
+    });
+
+    expect(result.score).toBeGreaterThanOrEqual(70);
+    expect(result.isEligible).toBe(true);
+    expect(result.redFlags).toHaveLength(0);
+    expect(result.reasons.some(r => r.includes("No website found"))).toBe(true);
+  });
+
+  it("scores a social-media-only business (FB/IG) in the UK as qualified", () => {
+    const result = scoreLocalBusinessLead({
+      businessName: "Leeds Sparkle Cleaning",
+      country: "United Kingdom",
+      city: "Leeds",
+      industry: "Cleaning Services",
+      websiteStatus: "social_only",
+      hasEmail: true,
+      hasPhone: true,
+      hasDecisionMaker: false,
+      hasMapsUrl: true,
+    });
+
+    expect(result.score).toBeGreaterThanOrEqual(65);
+    expect(result.isEligible).toBe(true);
+    expect(result.reasons.some(r => r.includes("Facebook/Instagram"))).toBe(true);
+  });
+
+  it("flags missing email as a red flag for cold email outreach", () => {
+    const result = scoreLocalBusinessLead({
+      businessName: "Tampa Roof Masters",
+      country: "United States",
+      city: "Tampa",
+      industry: "Roofing",
+      websiteStatus: "none_found",
+      hasEmail: false,
+      hasPhone: true,
+      hasDecisionMaker: false,
+      hasMapsUrl: true,
+    });
+
+    expect(result.isEligible).toBe(false);
+    expect(result.redFlags.some(f => f.includes("Missing email"))).toBe(true);
+  });
+});
+
+describe("Local Business Cold Outreach Proposal Generator", () => {
+  it("generates an email proposal customized for no-website businesses", () => {
+    const proposal = generateLocalBusinessProposal({
+      businessName: "Apex Renovation Co.",
+      decisionMaker: "David Miller",
+      city: "Toronto",
+      country: "Canada",
+      industry: "Renovation Contractors",
+      websiteStatus: "none_found",
+      opportunity: "business_website",
+      unsubscribeUrl: "https://goonlinemedia.com/unsubscribe?email=david@apexreno.ca",
+    });
+
+    expect(proposal.subjectLine).toContain("Apex Renovation Co.");
+    expect(proposal.bodyText).toContain("Hi David");
+    expect(proposal.bodyText).toContain("Apex Renovation Co.");
+    expect(proposal.bodyText).toContain("Toronto");
+    expect(proposal.bodyText).toContain("GoOnline");
+    expect(proposal.bodyText).toContain("opt out");
+    expect(proposal.bodyHtml).toContain("https://goonlinemedia.com/unsubscribe");
+  });
+
+  it("generates appropriate wording for social-media-only businesses", () => {
+    const proposal = generateLocalBusinessProposal({
+      businessName: "Bristol Bloom Gardeners",
+      city: "Bristol",
+      country: "United Kingdom",
+      industry: "Gardening Services",
+      websiteStatus: "social_only",
+      opportunity: "business_website",
+      unsubscribeUrl: "https://goonlinemedia.com/unsubscribe?email=contact@bristolbloom.co.uk",
+    });
+
+    expect(proposal.bodyText).toContain("social media");
+    expect(proposal.bodyText).toContain("Bristol Bloom Gardeners");
+  });
+});
+
+describe("Target Market Presets (Canada, UK, US, Europe)", () => {
+  it("includes Priority 1 markets for Canada and UK with search URLs", () => {
+    const canada = TARGET_MARKETS.find(m => m.country === "Canada");
+    expect(canada).toBeDefined();
+    expect(canada?.priority).toBe("Priority 1");
+    expect(canada?.popularCities).toContain("Calgary");
+    expect(canada?.buildMapsSearchUrl("Plumbers", "Calgary")).toContain("Calgary");
+
+    const uk = TARGET_MARKETS.find(m => m.country === "United Kingdom");
+    expect(uk).toBeDefined();
+    expect(uk?.priority).toBe("Priority 1");
+    expect(uk?.popularCities).toContain("Leeds");
+    expect(uk?.buildMapsSearchUrl("Cleaning Companies", "Leeds")).toContain("Leeds");
+  });
+});
+

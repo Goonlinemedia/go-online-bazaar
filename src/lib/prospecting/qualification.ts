@@ -236,3 +236,96 @@ export function qualifyProspect(
     redFlags,
   };
 }
+
+export interface LocalBusinessScoreInput {
+  businessName: string;
+  country: string;
+  city: string;
+  industry: string;
+  websiteStatus: "none_found" | "social_only" | "has_website";
+  hasEmail: boolean;
+  hasPhone: boolean;
+  hasDecisionMaker: boolean;
+  hasMapsUrl: boolean;
+}
+
+/**
+ * Scores a local business lead based on website status, industry, contactability, and market priority.
+ */
+export function scoreLocalBusinessLead(input: LocalBusinessScoreInput): QualificationResult {
+  let score = 0;
+  const reasons: string[] = [];
+  const redFlags: string[] = [];
+
+  // 1. Website Status (Max 35 points)
+  if (input.websiteStatus === "none_found") {
+    score += 35;
+    reasons.push("High Opportunity: No website found on Google Maps or search");
+  } else if (input.websiteStatus === "social_only") {
+    score += 30;
+    reasons.push("High Opportunity: Relies exclusively on Facebook/Instagram");
+  } else {
+    score += 5;
+    reasons.push("Existing website detected (requires redesign or modernization angle)");
+  }
+
+  // 2. High-converting service industry (Max 25 points)
+  const normIndustry = input.industry.toLowerCase();
+  const highIntentKeywords = [
+    "plumb", "clean", "roof", "landscap", "renovat", "auto", "detail", 
+    "mechanic", "builder", "garden", "decorat", "paint", "beauty", "salon", 
+    "barber", "pressure wash", "contractor", "electric", "hvac", "handyman"
+  ];
+  const isHighIntent = highIntentKeywords.some(kw => normIndustry.includes(kw));
+
+  if (isHighIntent) {
+    score += 25;
+    reasons.push(`High-demand local service sector (${input.industry}) with high booking/quote value`);
+  } else {
+    score += 15;
+    reasons.push(`Standard local service business (${input.industry})`);
+  }
+
+  // 3. Contactability & Decision-Maker (Max 25 points)
+  if (input.hasEmail) {
+    score += 15;
+    reasons.push("Verified direct business email available");
+  } else {
+    redFlags.push("Missing email contact (requires phone or social outreach)");
+  }
+
+  if (input.hasDecisionMaker) {
+    score += 10;
+    reasons.push("Owner / decision-maker identified for personalized outreach");
+  } else if (input.hasPhone) {
+    score += 5;
+    reasons.push("Business phone number available as secondary contact");
+  }
+
+  // 4. Source & Verification (Max 15 points)
+  if (input.hasMapsUrl) {
+    score += 10;
+    reasons.push("Verified Google Maps business listing");
+  }
+
+  // 5. Target Region Priority Match
+  const normCountry = input.country.toLowerCase();
+  if (normCountry.includes("canada") || normCountry.includes("united kingdom") || normCountry.includes("uk")) {
+    score += 5;
+    reasons.push("Priority 1 market target (Canada / United Kingdom)");
+  } else if (normCountry.includes("united states") || normCountry.includes("usa") || normCountry.includes("us")) {
+    score += 3;
+    reasons.push("Priority 2 market target (United States)");
+  }
+
+  const finalScore = Math.max(0, Math.min(100, score));
+  const isEligible = finalScore >= 65 && input.hasEmail;
+
+  return {
+    score: finalScore,
+    isEligible,
+    reasons,
+    redFlags,
+  };
+}
+

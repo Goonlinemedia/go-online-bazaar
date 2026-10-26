@@ -4,7 +4,10 @@ import {
   DailyQuota, 
   SuppressionRecord, 
   ServiceType, 
-  SERVICE_LABELS 
+  SERVICE_LABELS,
+  WebsiteStatus,
+  WEBSITE_STATUS_LABELS,
+  LocalBusinessLeadInput 
 } from "@/lib/prospecting/types";
 import { 
   subscribeToProspects, 
@@ -12,8 +15,10 @@ import {
   subscribeToSuppressionList,
   updateProspectStatus,
   ingestManualProspect,
+  ingestLocalBusinessProspect,
   addToSuppressionList
 } from "@/lib/prospecting/prospecting-service";
+import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
 import { 
   Building2, 
   ShoppingBag, 
@@ -38,7 +43,14 @@ import {
   Ban, 
   Flame,
   ArrowUpRight,
-  Info
+  Info,
+  MapPin,
+  Globe,
+  Download,
+  Compass,
+  Navigation,
+  Phone,
+  UserCheck
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -81,11 +93,36 @@ export const ProspectingHub = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedService, setSelectedService] = useState<string>("all");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
+  const [selectedLeadType, setSelectedLeadType] = useState<"all" | "local_business" | "online_feed">("all");
+  const [selectedWebsiteStatus, setSelectedWebsiteStatus] = useState<string>("all");
+
+  // Discovery Assistant State (Canada, UK, US, Europe)
+  const [selectedMarketIndex, setSelectedMarketIndex] = useState(0);
+  const [selectedIndustry, setSelectedIndustry] = useState(TARGET_MARKETS[0].recommendedIndustries[0]);
+  const [selectedCity, setSelectedCity] = useState(TARGET_MARKETS[0].popularCities[0]);
+  const [customCity, setCustomCity] = useState("");
 
   // Dialog States
   const [previewProspect, setPreviewProspect] = useState<Prospect | null>(null);
   const [showIngestDialog, setShowIngestDialog] = useState(false);
+  const [showLocalLeadDialog, setShowLocalLeadDialog] = useState(false);
   const [showSuppressionDialog, setShowSuppressionDialog] = useState(false);
+
+  // Local Business Lead Form State
+  const [localForm, setLocalForm] = useState<LocalBusinessLeadInput>({
+    businessName: "",
+    country: TARGET_MARKETS[0].country,
+    city: TARGET_MARKETS[0].popularCities[0],
+    industry: TARGET_MARKETS[0].recommendedIndustries[0],
+    websiteStatus: "none_found",
+    mapsUrl: "",
+    email: "",
+    phoneNumber: "",
+    decisionMaker: "",
+    opportunity: "business_website",
+    notes: "",
+  });
+  const [isSubmittingLocal, setIsSubmittingLocal] = useState(false);
 
   // Manual Ingest Form State
   const [ingestForm, setIngestForm] = useState({
@@ -281,6 +318,109 @@ export const ProspectingHub = () => {
     }
   };
 
+  const handleLocalBusinessIngest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!localForm.businessName || !localForm.email || !localForm.city || !localForm.industry) {
+      toast.error("Please provide the business name, city, industry, and a public contact email.");
+      return;
+    }
+
+    setIsSubmittingLocal(true);
+    const res = await ingestLocalBusinessProspect(localForm);
+    setIsSubmittingLocal(false);
+
+    if (res.success) {
+      const qScore = (res.qualification as { score?: number })?.score ?? 85;
+      toast.success(`Lead "${localForm.businessName}" ingested and qualified (Score: ${qScore}/100)!`);
+      setShowLocalLeadDialog(false);
+      setLocalForm({
+        businessName: "",
+        country: TARGET_MARKETS[selectedMarketIndex].country,
+        city: selectedCity,
+        industry: selectedIndustry,
+        websiteStatus: "none_found",
+        mapsUrl: "",
+        email: "",
+        phoneNumber: "",
+        decisionMaker: "",
+        opportunity: "business_website",
+        notes: "",
+      });
+    } else {
+      toast.error(res.error || "Failed to ingest local business lead.");
+    }
+  };
+
+  const handleExportGoogleSheetsCSV = () => {
+    if (prospects.length === 0) {
+      toast.info("No leads available in database to export.");
+      return;
+    }
+
+    const headers = [
+      "Business name",
+      "Country",
+      "City",
+      "Industry",
+      "Website status",
+      "Google Maps URL",
+      "Public business email",
+      "Phone number",
+      "Owner or decision-maker",
+      "Opportunity",
+      "Lead score",
+      "Last contacted / status"
+    ];
+
+    const escapeCsv = (val: unknown) => {
+      if (val === undefined || val === null) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvRows = prospects.map((p) => {
+      const name = p.contact.companyName || p.source.rawTitle;
+      const country = p.contact.country || p.classification.region || "";
+      const city = p.contact.city || "";
+      const industry = p.contact.industry || p.classification.extractedKeywords?.[0] || "";
+      const statusLabel = p.contact.websiteStatus 
+        ? WEBSITE_STATUS_LABELS[p.contact.websiteStatus]
+        : (p.source.platform === "google_maps" ? "No website found" : "Online Ingest");
+      const mapsUrl = p.source.mapsUrl || (p.source.platform === "google_maps" ? p.source.sourceUrl : "");
+      const email = p.contact.email && !p.contact.email.includes(".inquiry") ? p.contact.email : "";
+      const phone = p.contact.phoneNumber || "";
+      const owner = p.contact.decisionMaker || p.contact.fullName || "";
+      const opportunity = SERVICE_LABELS[p.classification.matchedService] || "Business Website";
+      const score = p.qualification?.score ?? 0;
+      const leadStatus = p.status;
+
+      return [
+        escapeCsv(name),
+        escapeCsv(country),
+        escapeCsv(city),
+        escapeCsv(industry),
+        escapeCsv(statusLabel),
+        escapeCsv(mapsUrl),
+        escapeCsv(email),
+        escapeCsv(phone),
+        escapeCsv(owner),
+        escapeCsv(opportunity),
+        escapeCsv(score),
+        escapeCsv(leadStatus),
+      ].join(",");
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...csvRows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `GoOnline_Lead_Database_${format(new Date(), "yyyy-MM-dd")}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Downloaded GoOnline Lead Database in Google Sheets CSV format!");
+  };
+
   const handleAddSuppression = async () => {
     if (!newSuppressionTarget) return;
     try {
@@ -318,7 +458,7 @@ export const ProspectingHub = () => {
 
       await updateProspectStatus(p.id, "sent");
       toast.success(`Proposal sent to ${p.contact.email} via Google Workspace!`);
-    } catch (err: unknown) {
+    } catch {
       // In local dev without active local serverless, update status in Firestore with notice
       await updateProspectStatus(p.id, "sent");
       toast.success(`Proposal marked as sent for ${p.contact.email}`);
@@ -332,13 +472,24 @@ export const ProspectingHub = () => {
     const matchesSearch = 
       p.contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.contact.companyName && p.contact.companyName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.contact.city && p.contact.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.contact.industry && p.contact.industry.toLowerCase().includes(searchTerm.toLowerCase())) ||
       p.source.rawTitle.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = selectedStatus === "all" || p.status === selectedStatus;
     const matchesService = selectedService === "all" || p.classification.matchedService === selectedService;
     const matchesRegion = selectedRegion === "all" || p.classification.region === selectedRegion;
 
-    return matchesSearch && matchesStatus && matchesService && matchesRegion;
+    const matchesType = 
+      selectedLeadType === "all" || 
+      (selectedLeadType === "local_business" && (p.prospectType === "local_business_no_website" || p.source.platform === "google_maps")) ||
+      (selectedLeadType === "online_feed" && p.prospectType !== "local_business_no_website" && p.source.platform !== "google_maps");
+
+    const matchesWebsiteStatus = 
+      selectedWebsiteStatus === "all" ||
+      p.contact.websiteStatus === selectedWebsiteStatus;
+
+    return matchesSearch && matchesStatus && matchesService && matchesRegion && matchesType && matchesWebsiteStatus;
   });
 
   const qualifiedCount = prospects.filter((p) => p.status === "qualified" || p.qualification.isEligible).length;
@@ -403,10 +554,42 @@ export const ProspectingHub = () => {
           </Button>
 
           <Button 
+            onClick={() => {
+              setLocalForm({
+                businessName: "",
+                country: TARGET_MARKETS[selectedMarketIndex].country,
+                city: customCity.trim() || selectedCity,
+                industry: selectedIndustry,
+                websiteStatus: "none_found",
+                mapsUrl: "",
+                email: "",
+                phoneNumber: "",
+                decisionMaker: "",
+                opportunity: "business_website",
+                notes: "",
+              });
+              setShowLocalLeadDialog(true);
+            }}
+            className="text-xs font-semibold gap-1.5 shadow-sm bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <MapPin size={15} /> Add Local Lead
+          </Button>
+
+          <Button 
             onClick={() => setShowIngestDialog(true)}
+            variant="secondary"
             className="text-xs font-semibold gap-1.5 shadow-sm"
           >
-            <PlusCircle size={15} /> Quick Ingest Request
+            <PlusCircle size={15} /> Ingest Dev Request
+          </Button>
+
+          <Button 
+            variant="outline"
+            onClick={handleExportGoogleSheetsCSV}
+            className="text-xs font-semibold gap-1.5 shadow-sm border-dashed"
+            title="Download CSV database for Google Sheets"
+          >
+            <Download size={14} /> Export CSV
           </Button>
 
           <Button 
@@ -496,6 +679,187 @@ export const ProspectingHub = () => {
         </Card>
       </div>
 
+      {/* International Lead Discovery Assistant: Canada, UK, US, Europe */}
+      <Card className="border border-primary/20 bg-gradient-to-br from-card via-background to-primary/5 shadow-sm overflow-hidden">
+        <CardHeader className="pb-3 border-b border-border/50">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Compass size={18} />
+              </div>
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  International Lead Discovery Assistant
+                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-300">
+                    {TARGET_MARKETS[selectedMarketIndex].priority}
+                  </Badge>
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Target active local businesses in Canada, UK, US & Europe that have no website or rely solely on social media.
+                </CardDescription>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportGoogleSheetsCSV}
+                className="text-xs gap-1.5 h-8 border-dashed"
+              >
+                <Download size={13} /> Export Google Sheets CSV
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setLocalForm({
+                    businessName: "",
+                    country: TARGET_MARKETS[selectedMarketIndex].country,
+                    city: customCity.trim() || selectedCity,
+                    industry: selectedIndustry,
+                    websiteStatus: "none_found",
+                    mapsUrl: "",
+                    email: "",
+                    phoneNumber: "",
+                    decisionMaker: "",
+                    opportunity: "business_website",
+                    notes: "",
+                  });
+                  setShowLocalLeadDialog(true);
+                }}
+                className="text-xs gap-1.5 h-8 shadow-sm bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <PlusCircle size={14} /> Log Found Lead
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4 space-y-4">
+          {/* Market Country Selector Tabs */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {TARGET_MARKETS.map((market, idx) => (
+              <button
+                key={market.country}
+                type="button"
+                onClick={() => {
+                  setSelectedMarketIndex(idx);
+                  setSelectedIndustry(market.recommendedIndustries[0]);
+                  setSelectedCity(market.popularCities[0]);
+                  setCustomCity("");
+                }}
+                className={`p-2.5 rounded-xl text-left border transition-all ${
+                  selectedMarketIndex === idx 
+                    ? "bg-primary/10 border-primary text-foreground shadow-sm ring-1 ring-primary/30" 
+                    : "bg-secondary/20 border-border/60 hover:bg-secondary/40 text-muted-foreground"
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    {market.country === "Canada" ? "🇨🇦" :
+                     market.country === "United Kingdom" ? "🇬🇧" :
+                     market.country === "United States" ? "🇺🇸" : "🇪🇺"} {market.country}
+                  </span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold ${
+                    market.priority === "Priority 1" ? "bg-emerald-100 text-emerald-800" :
+                    market.priority === "Priority 2" ? "bg-blue-100 text-blue-800" :
+                    "bg-purple-100 text-purple-800"
+                  }`}>
+                    {market.priority}
+                  </span>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1 truncate">
+                  {market.recommendedIndustries.slice(0, 3).join(", ")}
+                </p>
+              </button>
+            ))}
+          </div>
+
+          {/* Quick Query Pickers & Search Actions */}
+          <div className="p-3.5 bg-background rounded-xl border border-border/70 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 flex-grow">
+              {/* Industry Selection */}
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                  Target Industry:
+                </label>
+                <select
+                  value={selectedIndustry}
+                  onChange={(e) => setSelectedIndustry(e.target.value)}
+                  className="w-full text-xs h-8 px-2 rounded-md border border-input bg-background"
+                >
+                  {TARGET_MARKETS[selectedMarketIndex].recommendedIndustries.map((ind) => (
+                    <option key={ind} value={ind}>{ind}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* City Selection */}
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                  Target City:
+                </label>
+                <select
+                  value={selectedCity}
+                  onChange={(e) => {
+                    setSelectedCity(e.target.value);
+                    setCustomCity("");
+                  }}
+                  className="w-full text-xs h-8 px-2 rounded-md border border-input bg-background"
+                >
+                  {TARGET_MARKETS[selectedMarketIndex].popularCities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Or Custom City */}
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground block mb-1">
+                  Or Custom City:
+                </label>
+                <Input
+                  placeholder="e.g. Manchester, Dallas..."
+                  value={customCity}
+                  onChange={(e) => setCustomCity(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+            </div>
+
+            {/* Direct Action Launchers */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0">
+              <a
+                href={TARGET_MARKETS[selectedMarketIndex].buildMapsSearchUrl(
+                  selectedIndustry,
+                  customCity.trim() || selectedCity
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
+                title="Search Google Maps listings for businesses in this industry & city"
+              >
+                <Navigation size={13} />
+                <span>Google Maps ↗</span>
+              </a>
+
+              <a
+                href={TARGET_MARKETS[selectedMarketIndex].buildDirectoryUrl(
+                  selectedIndustry,
+                  customCity.trim() || selectedCity
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground border shadow-sm transition-colors"
+                title="Search business directories like Yell, Yelp, YellowPages"
+              >
+                <Globe size={13} />
+                <span>{TARGET_MARKETS[selectedMarketIndex].defaultDirectoryName.split(" ")[0]} ↗</span>
+              </a>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Main Prospects Management Card */}
       <Card className="border-none shadow-md bg-background">
         <CardHeader className="space-y-4">
@@ -553,9 +917,9 @@ export const ProspectingHub = () => {
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">Target Market:</span>
               {[
                 { id: "all", label: "All Regions" },
-                { id: "United States", label: "🇺🇸 United States" },
-                { id: "United Kingdom", label: "🇬🇧 United Kingdom" },
                 { id: "Canada", label: "🇨🇦 Canada" },
+                { id: "United Kingdom", label: "🇬🇧 United Kingdom" },
+                { id: "United States", label: "🇺🇸 United States" },
                 { id: "Europe", label: "🇪🇺 Europe" },
               ].map((reg) => (
                 <Button
@@ -566,6 +930,45 @@ export const ProspectingHub = () => {
                   className="text-[11px] h-7 px-2.5 rounded-full"
                 >
                   {reg.label}
+                </Button>
+              ))}
+            </div>
+
+            <div className="w-full flex flex-wrap items-center gap-2 pt-2 border-t">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">Pipeline Type:</span>
+              {[
+                { id: "all", label: "All Leads" },
+                { id: "local_business", label: "🗺️ No-Website Local Leads" },
+                { id: "online_feed", label: "💻 Developer Requests" },
+              ].map((lt) => (
+                <Button
+                  key={lt.id}
+                  size="sm"
+                  variant={selectedLeadType === lt.id ? "default" : "outline"}
+                  onClick={() => setSelectedLeadType(lt.id as any)}
+                  className="text-[11px] h-7 px-2.5 rounded-full"
+                >
+                  {lt.label}
+                </Button>
+              ))}
+
+              <div className="h-4 w-[1px] bg-border mx-2 hidden lg:block" />
+
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">Website Status:</span>
+              {[
+                { id: "all", label: "All Statuses" },
+                { id: "none_found", label: "🚫 No Website" },
+                { id: "social_only", label: "📱 Social-Only" },
+                { id: "has_website", label: "⚠️ Has Website" },
+              ].map((ws) => (
+                <Button
+                  key={ws.id}
+                  size="sm"
+                  variant={selectedWebsiteStatus === ws.id ? "secondary" : "ghost"}
+                  onClick={() => setSelectedWebsiteStatus(ws.id)}
+                  className="text-[11px] h-7 px-2 rounded-full"
+                >
+                  {ws.label}
                 </Button>
               ))}
             </div>
@@ -601,9 +1004,33 @@ export const ProspectingHub = () => {
                   {filteredProspects.map((p) => (
                     <TableRow key={p.id} className="hover:bg-secondary/10 transition-colors">
                       <TableCell>
-                        <div className="font-semibold text-sm text-foreground flex items-center gap-1.5">
-                          {p.contact.companyName || p.contact.fullName || "Prospective Client"}
-                          {p.source.sourceUrl && (
+                        <div className="font-semibold text-sm text-foreground flex items-center gap-1.5 flex-wrap">
+                          <span>{p.contact.companyName || p.contact.fullName || "Prospective Client"}</span>
+                          {p.contact.websiteStatus && (
+                            <Badge 
+                              variant={p.contact.websiteStatus === "none_found" ? "destructive" : "secondary"}
+                              className={`text-[9px] px-1.5 py-0 font-medium ${
+                                p.contact.websiteStatus === "social_only" ? "bg-purple-100 text-purple-800 border-purple-200" :
+                                p.contact.websiteStatus === "none_found" ? "bg-rose-100 text-rose-800 border-rose-200" :
+                                "bg-slate-100 text-slate-800"
+                              }`}
+                            >
+                              {p.contact.websiteStatus === "none_found" ? "🚫 No Website" :
+                               p.contact.websiteStatus === "social_only" ? "📱 Social-Only" : "⚠️ Has Site"}
+                            </Badge>
+                          )}
+                          {p.source.mapsUrl && (
+                            <a 
+                              href={p.source.mapsUrl} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="text-blue-600 hover:text-blue-800 text-[11px] flex items-center gap-0.5 font-medium"
+                              title="Google Maps Profile"
+                            >
+                              <MapPin size={11} /> Maps ↗
+                            </a>
+                          )}
+                          {p.source.sourceUrl && !p.source.mapsUrl && (
                             <a 
                               href={p.source.sourceUrl} 
                               target="_blank" 
@@ -615,7 +1042,38 @@ export const ProspectingHub = () => {
                             </a>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground font-mono">{p.contact.email}</div>
+
+                        <div className="text-xs text-muted-foreground font-mono flex items-center gap-2 mt-0.5">
+                          <span>{p.contact.email}</span>
+                          {p.contact.phoneNumber && (
+                            <span className="text-[11px] text-muted-foreground font-sans flex items-center gap-0.5">
+                              <Phone size={10} /> {p.contact.phoneNumber}
+                            </span>
+                          )}
+                        </div>
+
+                        {p.contact.city && (
+                          <div className="text-[11px] text-muted-foreground flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span className="flex items-center gap-1 font-medium">
+                              <MapPin size={10} className="text-primary" /> {p.contact.city}, {p.contact.country || p.classification.region}
+                            </span>
+                            {p.contact.decisionMaker && (
+                              <span className="flex items-center gap-1 font-medium text-foreground/80">
+                                <UserCheck size={10} className="text-emerald-600" /> {p.contact.decisionMaker}
+                              </span>
+                            )}
+                            <a
+                              href={`https://www.google.com/search?q=${encodeURIComponent(`"${p.contact.companyName || ""}" ${p.contact.city || ""} website`)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-primary hover:underline flex items-center gap-0.5 text-[10px]"
+                              title="Verify on Google Search"
+                            >
+                              <Search size={9} /> Verify ↗
+                            </a>
+                          </div>
+                        )}
+
                         <div className="text-[11px] text-muted-foreground/80 line-clamp-1 mt-0.5" title={p.source.rawTitle}>
                           "{p.source.rawTitle}"
                         </div>
@@ -675,7 +1133,13 @@ export const ProspectingHub = () => {
                       </TableCell>
 
                       <TableCell className="text-xs text-muted-foreground capitalize">
-                        {p.source.platform}
+                        {p.prospectType === "local_business_no_website" ? (
+                          <span className="inline-flex items-center gap-1 font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-[11px]">
+                            <MapPin size={11} /> Google Maps
+                          </span>
+                        ) : (
+                          p.source.platform.replace("_", " ")
+                        )}
                       </TableCell>
 
                       <TableCell className="text-right">
@@ -815,6 +1279,186 @@ export const ProspectingHub = () => {
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL: Log Discovered Local Business Lead (No Website / Social-Only) */}
+      <Dialog open={showLocalLeadDialog} onOpenChange={setShowLocalLeadDialog}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-100 text-blue-800 text-[10px]">
+                {localForm.country} · {TARGET_MARKETS[selectedMarketIndex]?.priority || "Priority 1"}
+              </Badge>
+              <Badge variant="outline" className="text-[10px]">
+                {WEBSITE_STATUS_LABELS[localForm.websiteStatus]}
+              </Badge>
+            </div>
+            <DialogTitle className="text-lg font-bold font-heading flex items-center gap-2">
+              <MapPin className="text-blue-600 h-5 w-5" /> Log Local Business Prospect
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Record an active local business with no website or social-only presence. The system will score the opportunity and synthesize a personalized cold proposal.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleLocalBusinessIngest} className="space-y-4 my-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-foreground">Business Name *</label>
+                <Input 
+                  placeholder="e.g. Calgary Precision Plumbing"
+                  value={localForm.businessName}
+                  onChange={(e) => setLocalForm({ ...localForm, businessName: e.target.value })}
+                  className="mt-1 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground">Website Status *</label>
+                <select
+                  value={localForm.websiteStatus}
+                  onChange={(e) => setLocalForm({ ...localForm, websiteStatus: e.target.value as WebsiteStatus })}
+                  className="w-full mt-1 h-9 px-2 text-xs rounded-md border border-input bg-background font-medium"
+                >
+                  <option value="none_found">🚫 No Website Found (Maps / Search)</option>
+                  <option value="social_only">📱 Social Media Only (FB / Instagram)</option>
+                  <option value="has_website">⚠️ Existing / Outdated Website</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-foreground">Country *</label>
+                <select
+                  value={localForm.country}
+                  onChange={(e) => setLocalForm({ ...localForm, country: e.target.value })}
+                  className="w-full mt-1 h-9 px-2 text-xs rounded-md border border-input bg-background"
+                >
+                  {TARGET_MARKETS.map((m) => (
+                    <option key={m.country} value={m.country}>{m.country}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground">City *</label>
+                <Input 
+                  placeholder="e.g. Calgary"
+                  value={localForm.city}
+                  onChange={(e) => setLocalForm({ ...localForm, city: e.target.value })}
+                  className="mt-1 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground">Industry *</label>
+                <Input 
+                  placeholder="e.g. Plumbers, Cleaners..."
+                  value={localForm.industry}
+                  onChange={(e) => setLocalForm({ ...localForm, industry: e.target.value })}
+                  className="mt-1 text-xs"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-foreground">Public Business Email *</label>
+                <Input 
+                  type="email"
+                  placeholder="info@calgaryplumbing.ca"
+                  value={localForm.email}
+                  onChange={(e) => setLocalForm({ ...localForm, email: e.target.value })}
+                  className="mt-1 text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground">Phone Number</label>
+                <Input 
+                  placeholder="e.g. +1 (403) 555-0192"
+                  value={localForm.phoneNumber}
+                  onChange={(e) => setLocalForm({ ...localForm, phoneNumber: e.target.value })}
+                  className="mt-1 text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-foreground">Owner / Decision Maker</label>
+                <Input 
+                  placeholder="e.g. Dave Harrison"
+                  value={localForm.decisionMaker}
+                  onChange={(e) => setLocalForm({ ...localForm, decisionMaker: e.target.value })}
+                  className="mt-1 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground">Opportunity / Service Focus</label>
+                <select
+                  value={localForm.opportunity}
+                  onChange={(e) => setLocalForm({ ...localForm, opportunity: e.target.value as ServiceType })}
+                  className="w-full mt-1 h-9 px-2 text-xs rounded-md border border-input bg-background"
+                >
+                  <option value="business_website">Business Website (Trust & Showcase)</option>
+                  <option value="web_application_booking">Booking System / Enquiries</option>
+                  <option value="ecommerce_website">E-Commerce Storefront</option>
+                  <option value="website_redesign">Modern Redesign & Speed</option>
+                  <option value="landing_page">High-Conversion Landing Page</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-semibold text-foreground">Google Maps URL</label>
+                {localForm.businessName && (
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`"${localForm.businessName}" ${localForm.city} website`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                  >
+                    <Search size={11} /> Verify on Google Search ↗
+                  </a>
+                )}
+              </div>
+              <Input 
+                placeholder="https://maps.google.com/?cid=..."
+                value={localForm.mapsUrl}
+                onChange={(e) => setLocalForm({ ...localForm, mapsUrl: e.target.value })}
+                className="mt-1 text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-foreground">Verification Notes & Details</label>
+              <textarea 
+                rows={2}
+                placeholder="e.g. 48 5-star Google reviews, active on Instagram @calgaryplumbing, needs quote calculator."
+                value={localForm.notes}
+                onChange={(e) => setLocalForm({ ...localForm, notes: e.target.value })}
+                className="w-full mt-1 p-2 text-xs rounded-md border border-input bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" size="sm" onClick={() => setShowLocalLeadDialog(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm" disabled={isSubmittingLocal} className="bg-blue-600 hover:bg-blue-700 text-white">
+                {isSubmittingLocal ? "Saving & Scoring..." : "Score & Ingest Lead"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
