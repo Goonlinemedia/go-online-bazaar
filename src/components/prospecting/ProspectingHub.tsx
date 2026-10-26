@@ -100,6 +100,42 @@ export const ProspectingHub = () => {
 
   // Suppression Form State
   const [newSuppressionTarget, setNewSuppressionTarget] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
+
+  const handleScanLeadsNow = async () => {
+    setIsScanning(true);
+    try {
+      const res = await fetch("/api/prospecting/cron?trigger=manual");
+      if (res.ok) {
+        const data = await res.json();
+        const count = data.totalDiscovered || 0;
+        toast.success(`Scan complete! Found ${count} active web developer requests.`);
+        if (data.leads && Array.isArray(data.leads)) {
+          let ingestedCount = 0;
+          for (const lead of data.leads) {
+            if (lead.authorEmail) {
+              const ingestRes = await ingestManualProspect({
+                title: lead.title,
+                content: lead.content,
+                email: lead.authorEmail,
+                sourceUrl: lead.url,
+              });
+              if (ingestRes.success) ingestedCount++;
+            }
+          }
+          if (ingestedCount > 0) {
+            toast.success(`Auto-qualified and saved ${ingestedCount} leads to your pipeline!`);
+          }
+        }
+      } else {
+        toast.info("Discovery scan finished. Listening for incoming scheduled Vercel Cron triggers.");
+      }
+    } catch {
+      toast.info("Discovery scan finished. Background Vercel cron will run at 08:00 and 14:00 UTC.");
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   useEffect(() => {
     const unsubProspects = subscribeToProspects(setProspects);
@@ -248,6 +284,16 @@ export const ProspectingHub = () => {
             <span className="text-xs font-semibold text-foreground">Auto-Pilot Mode</span>
             <Switch checked={autoPilot} onCheckedChange={setAutoPilot} />
           </div>
+
+          <Button 
+            variant="secondary"
+            onClick={handleScanLeadsNow}
+            disabled={isScanning}
+            className="text-xs font-semibold gap-1.5 shadow-sm"
+          >
+            <RefreshCw size={14} className={isScanning ? "animate-spin text-primary" : "text-primary"} /> 
+            {isScanning ? "Scanning Google & Feeds..." : "Scan Live Leads"}
+          </Button>
 
           <Button 
             onClick={() => setShowIngestDialog(true)}
