@@ -114,12 +114,12 @@ export async function ingestManualProspect(params: {
   forceService?: ServiceType;
 }): Promise<{ success: boolean; prospectId?: string; error?: string; qualification?: unknown }> {
   try {
-    const normEmail = normalizeEmail(params.email);
-    const domain = extractDomain(normEmail);
+    const effectiveEmail = params.email && params.email.includes("@") 
+      ? params.email 
+      : `dm_lead_${Date.now().toString(36)}@reddit.inquiry`;
 
-    if (!normEmail || !normEmail.includes("@")) {
-      return { success: false, error: "Please provide a valid prospect contact email." };
-    }
+    const normEmail = normalizeEmail(effectiveEmail);
+    const domain = extractDomain(normEmail);
 
     // 1. Check suppression list
     const hash = await computeHash(normEmail);
