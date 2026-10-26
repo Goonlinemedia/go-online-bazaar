@@ -114,9 +114,10 @@ export async function ingestManualProspect(params: {
   forceService?: ServiceType;
 }): Promise<{ success: boolean; prospectId?: string; error?: string; qualification?: unknown }> {
   try {
+    const uniqueSuffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const effectiveEmail = params.email && params.email.includes("@") 
       ? params.email 
-      : `dm_lead_${Date.now().toString(36)}@reddit.inquiry`;
+      : `dm_lead_${uniqueSuffix}@reddit.inquiry`;
 
     const normEmail = normalizeEmail(effectiveEmail);
     const domain = extractDomain(normEmail);
@@ -128,11 +129,13 @@ export async function ingestManualProspect(params: {
       return { success: false, error: "This email address is on the opt-out suppression list." };
     }
 
-    // 2. Check for duplicate email in prospects
-    const existingQ = query(collection(db, "prospects"), where("contact.email", "==", normEmail), limit(1));
-    const existingSnap = await getDocs(existingQ);
-    if (!existingSnap.empty) {
-      return { success: false, error: "A prospect with this email address has already been processed." };
+    // 2. Check for duplicate email in prospects (only for real email addresses)
+    if (!normEmail.includes(".inquiry")) {
+      const existingQ = query(collection(db, "prospects"), where("contact.email", "==", normEmail), limit(1));
+      const existingSnap = await getDocs(existingQ);
+      if (!existingSnap.empty) {
+        return { success: false, error: "A prospect with this email address has already been processed." };
+      }
     }
 
     // 3. Classify and Qualify
@@ -190,6 +193,7 @@ export async function ingestManualProspect(params: {
     return { 
       success: true, 
       prospectId, 
+      prospect: prospectDoc,
       qualification 
     };
   } catch (err: unknown) {

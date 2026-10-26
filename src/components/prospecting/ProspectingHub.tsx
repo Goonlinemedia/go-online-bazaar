@@ -117,6 +117,7 @@ export const ProspectingHub = () => {
           let ingestedCount = 0;
           let autoSentCount = 0;
           let currentSent = quota.sentCount;
+          const freshProspects: Prospect[] = [];
 
           for (const lead of data.leads) {
             const ingestRes = await ingestManualProspect({
@@ -126,8 +127,9 @@ export const ProspectingHub = () => {
               sourceUrl: lead.url,
             });
 
-            if (ingestRes.success) {
+            if (ingestRes.success && ingestRes.prospect) {
               ingestedCount++;
+              const p = ingestRes.prospect as Prospect;
 
               // If Auto-Pilot is enabled and prospect has a real direct email:
               if (autoPilot && lead.authorEmail && !lead.authorEmail.includes(".inquiry") && currentSent < 10) {
@@ -137,13 +139,14 @@ export const ProspectingHub = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       recipientEmail: lead.authorEmail,
-                      subject: `Re: Website development for your project — proposal & structure`,
-                      bodyHtml: `<p>Hello, I came across your request regarding website development.</p>`,
-                      bodyText: `Hello, I came across your request regarding website development.`,
+                      subject: p.proposal.subjectLine || `Re: Website development for your project`,
+                      bodyHtml: p.proposal.bodyHtml,
+                      bodyText: p.proposal.bodyText,
                     }),
                   });
                   if (sendRes.ok && ingestRes.prospectId) {
                     await updateProspectStatus(ingestRes.prospectId, "sent");
+                    p.status = "sent";
                     currentSent++;
                     autoSentCount++;
                   }
@@ -151,14 +154,23 @@ export const ProspectingHub = () => {
                   console.warn("Auto-send dispatch error:", sendErr);
                 }
               }
+
+              freshProspects.push(p);
             }
           }
 
-          if (ingestedCount > 0) {
-            toast.success(`Saved ${ingestedCount} qualified leads to your pipeline!`);
+          if (freshProspects.length > 0) {
+            // Update table state immediately so all details appear on screen
+            setProspects(prev => {
+              const existingIds = new Set(prev.map(item => item.id || item.source.sourceUrl));
+              const uniqueNew = freshProspects.filter(item => !existingIds.has(item.id) && !existingIds.has(item.source.sourceUrl));
+              return [...uniqueNew, ...prev];
+            });
+            toast.success(`Loaded ${freshProspects.length} developer requests into your pipeline table below!`);
           }
+
           if (autoSentCount > 0) {
-            toast.success(`🚀 Auto-Pilot: Sent ${autoSentCount} proposals via Google Workspace (${currentSent}/10 daily limit)!`);
+            toast.success(`🚀 Auto-Pilot: Delivered ${autoSentCount} proposals via Google Workspace (${currentSent}/10 limit)!`);
           }
         }
       } else {
