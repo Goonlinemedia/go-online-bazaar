@@ -3,7 +3,14 @@ import { classifyRequest, qualifyProspect, scoreLocalBusinessLead } from "@/lib/
 import { generatePersonalizedProposal, generateLocalBusinessProposal } from "@/lib/prospecting/proposal-gen";
 import { normalizeEmail, extractDomain, buildUnsubscribeUrl, verifyUnsubscribeToken } from "@/lib/prospecting/dedup";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
-import { sanitizeSenderEmail, sanitizeProposalText, stripDisclaimerFooter, sanitizeProspect } from "@/lib/prospecting/prospecting-service";
+import { 
+  sanitizeSenderEmail, 
+  sanitizeProposalText, 
+  stripDisclaimerFooter, 
+  sanitizeProspect,
+  ingestManualProspect,
+  ingestLocalBusinessProspect 
+} from "@/lib/prospecting/prospecting-service";
 import { buildSeedProspects } from "@/lib/prospecting/seed-data";
 
 describe("Prospecting Qualification Engine", () => {
@@ -209,12 +216,16 @@ describe("Target Market Presets (Canada, UK, US, Europe)", () => {
     expect(canada?.priority).toBe("Priority 1");
     expect(canada?.popularCities).toContain("Calgary");
     expect(canada?.buildMapsSearchUrl("Plumbers", "Calgary")).toContain("Calgary");
+    expect(canada?.buildGoogleGmailSearchUrl("Plumbers", "Calgary")).toContain("%40gmail.com");
+    expect(canada?.buildCraigslistSearchUrl("Plumbers", "Calgary")).toContain("site%3Acraigslist.org");
 
     const uk = TARGET_MARKETS.find(m => m.country === "United Kingdom");
     expect(uk).toBeDefined();
     expect(uk?.priority).toBe("Priority 1");
     expect(uk?.popularCities).toContain("Leeds");
     expect(uk?.buildMapsSearchUrl("Cleaning Companies", "Leeds")).toContain("Leeds");
+    expect(uk?.buildGoogleGmailSearchUrl("Cleaning Companies", "Leeds")).toContain("%40gmail.com");
+    expect(uk?.buildCraigslistSearchUrl("Cleaning Companies", "Leeds")).toContain("site%3Acraigslist.org");
   });
 });
 
@@ -313,6 +324,35 @@ To opt out, visit: https://goonlinemedia.com/unsubscribe?email=bookings%40apexau
     expect(sanitized.contact.emailDomain).toBe("gmail.com");
     expect(sanitized.proposal.bodyText).toContain("platinumcitycleaning@gmail.com");
     expect(sanitized.proposal.bodyText).not.toContain("leedspremiercleaners.co.uk");
+  });
+
+  it("strictly enforces visible public contact email for manual lead ingestion", async () => {
+    const withoutEmail = await ingestManualProspect({
+      title: "Looking for developer",
+      content: "Need custom web app with user accounts",
+      email: ""
+    });
+    expect(withoutEmail.success).toBe(false);
+    expect(withoutEmail.error).toContain("Visible public contact email is required");
+
+    const withInquiryEmail = await ingestManualProspect({
+      title: "Looking for developer",
+      content: "Need custom web app with user accounts",
+      email: "dm_lead@reddit.inquiry"
+    });
+    expect(withInquiryEmail.success).toBe(false);
+    expect(withInquiryEmail.error).toContain("Visible public contact email is required");
+
+    const localWithoutEmail = await ingestLocalBusinessProspect({
+      businessName: "No Email Business",
+      country: "Canada",
+      city: "Calgary",
+      industry: "Plumbers",
+      websiteStatus: "none_found",
+      email: ""
+    });
+    expect(localWithoutEmail.success).toBe(false);
+    expect(localWithoutEmail.error).toContain("A visible public business email is required");
   });
 });
 

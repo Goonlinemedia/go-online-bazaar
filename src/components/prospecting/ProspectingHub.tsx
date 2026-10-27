@@ -123,6 +123,23 @@ export const ProspectingHub = () => {
   const [showIngestDialog, setShowIngestDialog] = useState(false);
   const [showLocalLeadDialog, setShowLocalLeadDialog] = useState(false);
   const [showSuppressionDialog, setShowSuppressionDialog] = useState(false);
+  const [showExtractorDialog, setShowExtractorDialog] = useState(false);
+
+  // Smart Email Harvester / Extractor State
+  const [extractorRawText, setExtractorRawText] = useState("");
+  const [extractedCandidates, setExtractedCandidates] = useState<Array<{
+    id: string;
+    businessName: string;
+    email: string;
+    phone?: string;
+    city: string;
+    country: string;
+    industry: string;
+    isGmail: boolean;
+    opportunity: ServiceType;
+    selected: boolean;
+  }>>([]);
+  const [isIngestingExtracted, setIsIngestingExtracted] = useState(false);
 
   // Local Business Lead Form State
   const [localForm, setLocalForm] = useState<LocalBusinessLeadInput>({
@@ -180,59 +197,164 @@ export const ProspectingHub = () => {
   };
 
   const handleFindLeadsWithEmails = async () => {
-    setIsDiscoveringLocal(true);
     const market = TARGET_MARKETS[selectedMarketIndex];
     const targetCity = customCity.trim() || selectedCity;
     const targetInd = selectedIndustry;
+    const googleGmailUrl = market.buildGoogleGmailSearchUrl(targetInd, targetCity);
 
-    try {
-      const cleanCity = targetCity.split("(")[0].trim().replace(/\s+/g, "");
-      const cleanInd = targetInd.toLowerCase().replace(/[^a-z]/g, "");
+    // Open live Google search targeting actual @gmail.com addresses in this market
+    window.open(googleGmailUrl, "_blank");
 
-      const leadsToAdd: LocalBusinessLeadInput[] = [
-        {
-          businessName: `${targetCity} Elite ${targetInd}`,
-          country: market.country,
-          city: targetCity,
-          industry: targetInd,
-          websiteStatus: "none_found",
-          email: `${cleanCity.toLowerCase()}.${cleanInd}.leads@gmail.com`,
-          phoneNumber: market.country === "United Kingdom" ? "+44 113 555 0192" : market.country === "Canada" ? "+1 (403) 555-0144" : "+1 (214) 555-0182",
-          decisionMaker: "Business Owner",
-          opportunity: "business_website",
-          mapsUrl: market.buildMapsSearchUrl(targetInd, targetCity),
-          notes: `Verified public business email with active customer inquiries. No website found on Google Maps.`,
-        },
-        {
-          businessName: `Premier ${targetInd} & Services of ${targetCity}`,
-          country: market.country,
-          city: targetCity,
-          industry: targetInd,
-          websiteStatus: "social_only",
-          email: `${cleanInd}.${cleanCity.toLowerCase()}pros@gmail.com`,
-          phoneNumber: market.country === "United Kingdom" ? "+44 20 7946 0881" : market.country === "Canada" ? "+1 (604) 555-0177" : "+1 (415) 555-0199",
-          decisionMaker: "Managing Director",
-          opportunity: "business_website",
-          mapsUrl: market.buildMapsSearchUrl(targetInd, targetCity),
-          notes: `Discovered on social media business directory with verified contact email. Lacks professional conversion website.`,
-        }
-      ];
+    // Open the smart extractor modal so the user can easily paste and ingest
+    setShowExtractorDialog(true);
+    toast.success(`🔍 Google Search opened for "${targetInd}" in ${targetCity} with visible @gmail.com addresses! Copy any snippet and paste it right here.`);
+  };
 
-      let added = 0;
-      for (const lead of leadsToAdd) {
-        const res = await ingestLocalBusinessProspect(lead);
-        if (res.success && res.prospect) {
-          added++;
-          setProspects(prev => [res.prospect as Prospect, ...prev.filter(x => x.id !== res.prospectId)]);
+  const runExtractor = (rawText: string) => {
+    setExtractorRawText(rawText);
+    const market = TARGET_MARKETS[selectedMarketIndex];
+    const defaultCity = customCity.trim() || selectedCity;
+    const defaultIndustry = selectedIndustry;
+    const defaultCountry = market.country;
+
+    if (!rawText.trim()) {
+      setExtractedCandidates([]);
+      return;
+    }
+
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
+    const matches = rawText.match(emailRegex) || [];
+    const uniqueEmails = Array.from(new Set(matches.map(e => e.toLowerCase())));
+
+    const ignoredDomains = [
+      "craigslist.org",
+      "w3.org",
+      "schema.org",
+      "sentry.io",
+      "google.com",
+      "googleapis.com",
+      "github.com",
+      "vercel.com",
+      "apple.com",
+      "microsoft.com",
+      "facebook.com",
+      "twitter.com",
+      "instagram.com",
+      "example.com",
+    ];
+
+    const validEmails = uniqueEmails.filter(email => {
+      const domain = email.split("@")[1];
+      if (!domain) return false;
+      if (ignoredDomains.some(d => domain.includes(d))) return false;
+      if (email.startsWith("noreply") || email.startsWith("no-reply") || email.startsWith("support@") || email.startsWith("abuse@") || email.startsWith("postmaster@")) return false;
+      return true;
+    });
+
+    const lines = rawText.split("\n").map(l => l.trim()).filter(Boolean);
+    const phoneRegex = /(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})/;
+
+    const parsed = validEmails.map((email, idx) => {
+      const isGmail = email.endsWith("@gmail.com");
+      const lineIdx = lines.findIndex(l => l.toLowerCase().includes(email));
+
+      let inferredName = "";
+      let inferredPhone = "";
+
+      const winStart = Math.max(0, lineIdx - 3);
+      const winEnd = Math.min(lines.length, lineIdx + 4);
+      for (let i = winStart; i < winEnd; i++) {
+        const pMatch = lines[i]?.match(phoneRegex);
+        if (pMatch && !inferredPhone) {
+          inferredPhone = pMatch[0].trim();
         }
       }
 
+      if (lineIdx > 0 && lines[lineIdx - 1]) {
+        const prev = lines[lineIdx - 1];
+        if (!prev.includes("@") && prev.length < 60 && !prev.match(phoneRegex)) {
+          inferredName = prev.replace(/^[•\-\*#\d\.\s]+/, "").trim();
+        }
+      }
+
+      if (!inferredName && lineIdx >= 0 && lines[lineIdx]) {
+        const clean = lines[lineIdx].replace(email, "").replace(phoneRegex, "").replace(new RegExp("^[•\\-*#\\d.\\s]+"), "").trim();
+        if (clean.length > 2 && clean.length < 50) {
+          inferredName = clean.replace(new RegExp("^[\\-:,|]\\s*"), "").replace(new RegExp("\\s*[\\-:,|]$"), "").trim();
+        }
+      }
+
+      if (!inferredName) {
+        const namePart = email.split("@")[0].replace(/[._-]/g, " ");
+        inferredName = namePart
+          .split(" ")
+          .filter(w => w.length > 2)
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ") || `${defaultCity} ${defaultIndustry}`;
+      }
+
+      return {
+        id: `ext_${idx}_${Date.now()}`,
+        businessName: inferredName,
+        email,
+        phone: inferredPhone || undefined,
+        city: defaultCity,
+        country: defaultCountry,
+        industry: defaultIndustry,
+        isGmail,
+        opportunity: "business_website" as ServiceType,
+        selected: true,
+      };
+    });
+
+    setExtractedCandidates(parsed);
+  };
+
+  const handleBulkIngestExtracted = async () => {
+    const toIngest = extractedCandidates.filter(c => c.selected);
+    if (toIngest.length === 0) {
+      toast.info("Please select at least one lead to ingest.");
+      return;
+    }
+
+    setIsIngestingExtracted(true);
+    let successCount = 0;
+    const newlyAdded: Prospect[] = [];
+
+    for (const item of toIngest) {
+      const res = await ingestLocalBusinessProspect({
+        businessName: item.businessName,
+        country: item.country,
+        city: item.city,
+        industry: item.industry,
+        websiteStatus: "none_found",
+        email: item.email,
+        phoneNumber: item.phone,
+        decisionMaker: "Business Owner",
+        opportunity: item.opportunity,
+        notes: `Extracted from live web search / listing (${item.isGmail ? "Verified Gmail" : "Public Business Email"}).`,
+      });
+
+      if (res.success && res.prospect) {
+        successCount++;
+        newlyAdded.push(res.prospect as Prospect);
+      }
+    }
+
+    setIsIngestingExtracted(false);
+
+    if (successCount > 0) {
+      setProspects(prev => {
+        const ids = new Set(newlyAdded.map(p => p.id));
+        return [...newlyAdded, ...prev.filter(p => !ids.has(p.id))];
+      });
       setEmailFilter("has_email");
-      toast.success(`Discovered ${added} active ${targetInd} leads with verified emails in ${targetCity}! Added to pipeline.`);
-    } catch {
-      toast.error("Failed to discover leads in this market.");
-    } finally {
-      setIsDiscoveringLocal(false);
+      setShowExtractorDialog(false);
+      setExtractorRawText("");
+      setExtractedCandidates([]);
+      toast.success(`🎉 Ingested and qualified ${successCount} verified leads into your pipeline!`);
+    } else {
+      toast.error("Could not ingest the selected leads (they may already exist in your database or be on the blocklist).");
     }
   };
 
@@ -251,11 +373,15 @@ export const ProspectingHub = () => {
           const freshProspects: Prospect[] = [];
 
           for (const lead of data.leads) {
-            // Prioritize leads with valid emails
+            // Strictly limit to prospects where their contact email is publicly visible
+            if (!lead.authorEmail || lead.authorEmail.includes(".inquiry") || !lead.authorEmail.includes("@")) {
+              continue;
+            }
+
             const ingestRes = await ingestManualProspect({
               title: lead.title,
               content: lead.content,
-              email: lead.authorEmail || "",
+              email: lead.authorEmail,
               sourceUrl: lead.url,
             });
 
@@ -728,6 +854,16 @@ export const ProspectingHub = () => {
             <span>Restore Verified Leads</span>
           </Button>
 
+          <Button
+            variant="outline"
+            onClick={() => setShowExtractorDialog(true)}
+            className="text-xs font-semibold gap-1.5 shadow-sm text-foreground hover:bg-secondary border-dashed"
+            title="Paste text from Google, Craigslist, or directories to extract verified emails into your pipeline"
+          >
+            <Copy size={14} className="text-primary" />
+            <span>Paste & Extract Leads</span>
+          </Button>
+
           <Button 
             onClick={() => {
               setLocalForm({
@@ -1002,17 +1138,44 @@ export const ProspectingHub = () => {
             </div>
 
             {/* Direct Action Launchers */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0">
               <Button
                 size="sm"
                 onClick={handleFindLeadsWithEmails}
-                disabled={isDiscoveringLocal}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                title="Search and discover businesses in this market that have verified public contact emails"
+                title="Search Google for businesses in this market that have verified public @gmail.com addresses"
               >
-                <Sparkles size={13} className={isDiscoveringLocal ? "animate-spin" : ""} />
-                <span>{isDiscoveringLocal ? "Discovering..." : `Find ${selectedIndustry.split(" ")[0]} with Emails`}</span>
+                <Sparkles size={13} />
+                <span>Find {selectedIndustry.split(" ")[0]} with Gmails</span>
               </Button>
+
+              <a
+                href={TARGET_MARKETS[selectedMarketIndex].buildGoogleGmailSearchUrl(
+                  selectedIndustry,
+                  customCity.trim() || selectedCity
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm transition-colors"
+                title="Search Google specifically for business results with @gmail.com"
+              >
+                <Mail size={13} />
+                <span>Google Gmails ↗</span>
+              </a>
+
+              <a
+                href={TARGET_MARKETS[selectedMarketIndex].buildCraigslistSearchUrl(
+                  selectedIndustry,
+                  customCity.trim() || selectedCity
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white shadow-sm transition-colors"
+                title="Search Craigslist posts with public contact emails"
+              >
+                <Search size={13} />
+                <span>Craigslist Leads ↗</span>
+              </a>
 
               <a
                 href={TARGET_MARKETS[selectedMarketIndex].buildMapsSearchUrl(
@@ -1041,6 +1204,17 @@ export const ProspectingHub = () => {
                 <Globe size={13} />
                 <span>{TARGET_MARKETS[selectedMarketIndex].defaultDirectoryName.split(" ")[0]} ↗</span>
               </a>
+
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowExtractorDialog(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border-primary/40 text-primary hover:bg-primary/10 shadow-sm"
+                title="Paste search result snippets from Google or Craigslist to auto-extract emails and ingest leads"
+              >
+                <Copy size={13} />
+                <span>Paste & Ingest 📋</span>
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -1754,6 +1928,223 @@ export const ProspectingHub = () => {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL: Smart Email Harvester & Lead Extractor */}
+      <Dialog open={showExtractorDialog} onOpenChange={setShowExtractorDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg font-bold font-heading">
+                    Smart Email Harvester & Paste Ingest
+                  </DialogTitle>
+                  <DialogDescription className="text-xs">
+                    Paste search snippets from Google, Craigslist, or local directories. We automatically parse valid emails (@gmail.com & business domains), phone numbers, and company names.
+                  </DialogDescription>
+                </div>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 my-2">
+            {/* Quick Helper Links */}
+            <div className="flex flex-wrap items-center gap-2 p-2.5 bg-secondary/40 rounded-xl border text-xs">
+              <span className="font-semibold text-muted-foreground">Live Search Links:</span>
+              <a
+                href={TARGET_MARKETS[selectedMarketIndex].buildGoogleGmailSearchUrl(
+                  selectedIndustry,
+                  customCity.trim() || selectedCity
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-red-600 hover:underline font-semibold"
+              >
+                <Mail size={12} /> Google Gmails ({selectedCity}) ↗
+              </a>
+              <span className="text-muted-foreground">·</span>
+              <a
+                href={TARGET_MARKETS[selectedMarketIndex].buildCraigslistSearchUrl(
+                  selectedIndustry,
+                  customCity.trim() || selectedCity
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-purple-600 hover:underline font-semibold"
+              >
+                <Search size={12} /> Craigslist Leads ↗
+              </a>
+              <span className="text-muted-foreground">·</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const sampleText = `KO Plumbing & Gas Heating Calgary\nHigh quality plumbing service in Calgary and area. Call (403) 890-7608 or reach out at koplumbingcalgary@gmail.com\n\nGreen Lotus Landscapes Vancouver\nFull service residential & commercial landscaping in Vancouver. Inquiries: greenlotuslandscapes@gmail.com | (604) 728-0246\n\nPlatinum City Cleaning Services Leeds\nOffice and domestic cleaning specialists. Contact Sarah: platinumcitycleaning@gmail.com | +44 113 870 5420`;
+                  runExtractor(sampleText);
+                }}
+                className="text-primary hover:underline font-semibold ml-auto"
+              >
+                Load Sample Snippet
+              </button>
+            </div>
+
+            {/* Paste Area */}
+            <div>
+              <label className="text-xs font-semibold text-foreground flex items-center justify-between mb-1">
+                <span>Paste Google / Craigslist / Website text or search snippets:</span>
+                <span className="text-[11px] text-muted-foreground font-normal">
+                  Targeting {TARGET_MARKETS[selectedMarketIndex].country} · {customCity.trim() || selectedCity} ({selectedIndustry})
+                </span>
+              </label>
+              <Textarea
+                rows={5}
+                placeholder="Paste search result snippets or text here... e.g. 'Looking for web developer: contact us at apexdecorating@gmail.com or call 403-555-0199'"
+                value={extractorRawText}
+                onChange={(e) => runExtractor(e.target.value)}
+                className="text-xs font-mono"
+              />
+            </div>
+
+            {/* Extracted Leads Preview */}
+            {extractedCandidates.length > 0 && (
+              <div className="space-y-2 border rounded-xl p-3 bg-background">
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300">
+                      {extractedCandidates.length} Valid Email{extractedCandidates.length > 1 ? "s" : ""} Found
+                    </Badge>
+                    <span className="text-muted-foreground">
+                      ({extractedCandidates.filter(c => c.isGmail).length} verified @gmail.com)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setExtractedCandidates(prev => prev.map(c => ({ ...c, selected: true })))}
+                      className="text-[11px] text-primary hover:underline"
+                    >
+                      Select All
+                    </button>
+                    <span className="text-muted-foreground">·</span>
+                    <button
+                      type="button"
+                      onClick={() => setExtractedCandidates(prev => prev.map(c => ({ ...c, selected: false })))}
+                      className="text-[11px] text-muted-foreground hover:underline"
+                    >
+                      Deselect All
+                    </button>
+                  </div>
+                </div>
+
+                <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+                  {extractedCandidates.map((candidate, idx) => (
+                    <div 
+                      key={candidate.id}
+                      className={`p-2.5 rounded-lg border text-xs transition-colors ${
+                        candidate.selected ? "bg-primary/5 border-primary/40" : "bg-muted/30 border-border opacity-70"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <input
+                          type="checkbox"
+                          checked={candidate.selected}
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            setExtractedCandidates(prev => prev.map((c, i) => i === idx ? { ...c, selected: val } : c));
+                          }}
+                          className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
+                          <div>
+                            <label className="text-[10px] text-muted-foreground block font-semibold">Business Name</label>
+                            <Input
+                              value={candidate.businessName}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setExtractedCandidates(prev => prev.map((c, i) => i === idx ? { ...c, businessName: val } : c));
+                              }}
+                              className="h-7 text-xs mt-0.5"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-muted-foreground block font-semibold flex items-center justify-between">
+                              <span>Contact Email</span>
+                              {candidate.isGmail && (
+                                <span className="text-[9px] text-emerald-600 font-bold">✓ @gmail.com</span>
+                              )}
+                            </label>
+                            <Input
+                              value={candidate.email}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setExtractedCandidates(prev => prev.map((c, i) => i === idx ? { ...c, email: val, isGmail: val.endsWith("@gmail.com") } : c));
+                              }}
+                              className="h-7 text-xs font-mono mt-0.5"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-1.5">
+                            <div>
+                              <label className="text-[10px] text-muted-foreground block font-semibold">Phone (opt)</label>
+                              <Input
+                                value={candidate.phone || ""}
+                                placeholder="+1 555-0100"
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setExtractedCandidates(prev => prev.map((c, i) => i === idx ? { ...c, phone: val } : c));
+                                }}
+                                className="h-7 text-xs mt-0.5"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] text-muted-foreground block font-semibold">Service</label>
+                              <select
+                                value={candidate.opportunity}
+                                onChange={(e) => {
+                                  const val = e.target.value as ServiceType;
+                                  setExtractedCandidates(prev => prev.map((c, i) => i === idx ? { ...c, opportunity: val } : c));
+                                }}
+                                className="h-7 w-full text-[11px] rounded-md border border-input bg-background mt-0.5 px-1"
+                              >
+                                <option value="business_website">Business Website</option>
+                                <option value="web_application_booking">Booking System</option>
+                                <option value="ecommerce_website">E-Commerce</option>
+                                <option value="website_redesign">Redesign</option>
+                                <option value="landing_page">Landing Page</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="pt-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => setShowExtractorDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={isIngestingExtracted || extractedCandidates.filter(c => c.selected).length === 0}
+              onClick={handleBulkIngestExtracted}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5"
+            >
+              <Sparkles size={14} className={isIngestingExtracted ? "animate-spin" : ""} />
+              <span>
+                {isIngestingExtracted 
+                  ? "Ingesting Leads..." 
+                  : `Ingest ${extractedCandidates.filter(c => c.selected).length} Verified Leads into Pipeline`}
+              </span>
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

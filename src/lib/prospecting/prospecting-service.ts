@@ -150,7 +150,9 @@ export function getCachedProspects(): Prospect[] {
       const sanitizedJsonStr = sanitizeSenderEmail(cached);
       const parsed = JSON.parse(sanitizedJsonStr);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map(sanitizeProspect);
+        return parsed
+          .map(sanitizeProspect)
+          .filter(p => Boolean(p.contact?.email && !p.contact.email.includes(".inquiry") && p.contact.email.includes("@")));
       }
     }
   } catch (e) {
@@ -242,7 +244,10 @@ export function subscribeToProspects(callback: (prospects: Prospect[]) => void) 
           const prospects: Prospect[] = [];
           snapshot.forEach((doc) => {
             const data = { id: doc.id, ...doc.data() } as Prospect;
-            prospects.push(sanitizeProspect(data));
+            const cleaned = sanitizeProspect(data);
+            if (cleaned.contact?.email && !cleaned.contact.email.includes(".inquiry") && cleaned.contact.email.includes("@")) {
+              prospects.push(cleaned);
+            }
           });
           setCachedProspects(prospects);
           callback(prospects);
@@ -339,10 +344,11 @@ export async function ingestManualProspect(params: {
   forceService?: ServiceType;
 }): Promise<{ success: boolean; prospectId?: string; prospect?: Prospect; error?: string; qualification?: unknown }> {
   try {
-    const uniqueSuffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const effectiveEmail = params.email && params.email.includes("@") 
-      ? params.email 
-      : `dm_lead_${uniqueSuffix}@reddit.inquiry`;
+    if (!params.email || !params.email.includes("@") || params.email.includes(".inquiry")) {
+      return { success: false, error: "Visible public contact email is required to ingest this prospect." };
+    }
+
+    const effectiveEmail = params.email;
 
     const normEmail = normalizeEmail(effectiveEmail);
     const domain = extractDomain(normEmail);
@@ -446,6 +452,10 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
   qualification?: unknown;
 }> {
   try {
+    if (!params.email || !params.email.includes("@") || params.email.includes(".inquiry")) {
+      return { success: false, error: "A visible public business email is required to log this lead." };
+    }
+
     const normEmail = normalizeEmail(params.email);
     const domain = extractDomain(normEmail);
 

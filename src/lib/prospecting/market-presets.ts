@@ -10,6 +10,8 @@ export interface TargetMarket {
   buildMapsSearchUrl: (industry: string, city: string) => string;
   buildGoogleSearchVerificationUrl: (businessName: string, city: string) => string;
   buildDirectoryUrl: (industry: string, city: string) => string;
+  buildGoogleGmailSearchUrl: (industry: string, city: string) => string;
+  buildCraigslistSearchUrl: (industry: string, city: string) => string;
 }
 
 export const TARGET_MARKETS: TargetMarket[] = [
@@ -35,6 +37,10 @@ export const TARGET_MARKETS: TargetMarket[] = [
       `https://www.google.com/search?q=${encodeURIComponent(`"${businessName}" ${city} Canada website`)}`,
     buildDirectoryUrl: (industry: string, city: string) => 
       `https://www.yellowpages.ca/search/si/1/${encodeURIComponent(industry)}/${encodeURIComponent(`${city}+AB`)}`,
+    buildGoogleGmailSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`"${industry}" "${city}" Canada "@gmail.com"`)}`,
+    buildCraigslistSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`site:craigslist.org ("${industry}" OR "website" OR "services") "${city}" "@gmail.com"`)}`,
   },
   {
     country: "United Kingdom",
@@ -58,6 +64,10 @@ export const TARGET_MARKETS: TargetMarket[] = [
       `https://www.google.com/search?q=${encodeURIComponent(`"${businessName}" ${city} UK website`)}`,
     buildDirectoryUrl: (industry: string, city: string) => 
       `https://www.yell.com/ucs/UcsSearchAction.do?keywords=${encodeURIComponent(industry)}&location=${encodeURIComponent(city)}`,
+    buildGoogleGmailSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`"${industry}" "${city}" UK "@gmail.com"`)}`,
+    buildCraigslistSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`site:craigslist.org ("${industry}" OR "website" OR "services") "${city}" "@gmail.com"`)}`,
   },
   {
     country: "United States",
@@ -81,6 +91,10 @@ export const TARGET_MARKETS: TargetMarket[] = [
       `https://www.google.com/search?q=${encodeURIComponent(`"${businessName}" ${city} website`)}`,
     buildDirectoryUrl: (industry: string, city: string) => 
       `https://www.yelp.com/search?find_desc=${encodeURIComponent(industry)}&find_loc=${encodeURIComponent(city)}`,
+    buildGoogleGmailSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`"${industry}" "${city}" "@gmail.com"`)}`,
+    buildCraigslistSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`site:craigslist.org ("${industry}" OR "website" OR "services") "${city}" "@gmail.com"`)}`,
   },
   {
     country: "Europe (Selected)",
@@ -102,5 +116,9 @@ export const TARGET_MARKETS: TargetMarket[] = [
       `https://www.google.com/search?q=${encodeURIComponent(`"${businessName}" ${city} website`)}`,
     buildDirectoryUrl: (industry: string, city: string) => 
       `https://www.europages.com/companies/${encodeURIComponent(industry)}.html`,
+    buildGoogleGmailSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`"${industry}" "${city}" "@gmail.com"`)}`,
+    buildCraigslistSearchUrl: (industry: string, city: string) => 
+      `https://www.google.com/search?q=${encodeURIComponent(`site:craigslist.org ("${industry}" OR "website") "${city}" "@gmail.com"`)}`,
   },
 ];
