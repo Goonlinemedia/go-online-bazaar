@@ -74,6 +74,7 @@ export type ProspectStatus =
 
 export type ProspectSourcePlatform = 
   | "google_places"
+  | "google_maps"
   | "google_search"
   | "openstreetmap"
   | "business_directory"

@@ -707,10 +707,11 @@ export const ProspectingHub = () => {
       const country = p.contact.country || p.classification.region || "";
       const city = p.contact.city || "";
       const industry = p.contact.industry || p.classification.extractedKeywords?.[0] || "";
+      const isLocalSource = p.source.platform === "google_maps" || p.source.platform === "google_places" || p.source.platform === "openstreetmap";
       const statusLabel = p.contact.websiteStatus 
         ? WEBSITE_STATUS_LABELS[p.contact.websiteStatus]
-        : (p.source.platform === "google_maps" ? "No website found" : "Online Ingest");
-      const mapsUrl = p.source.mapsUrl || (p.source.platform === "google_maps" ? p.source.sourceUrl : "");
+        : (isLocalSource ? "No website found" : "Online Ingest");
+      const mapsUrl = p.source.mapsUrl || (isLocalSource ? p.source.sourceUrl : "");
       const email = p.contact.email && !p.contact.email.includes(".inquiry") ? p.contact.email : "";
       const phone = p.contact.phoneNumber || "";
       const owner = p.contact.decisionMaker || p.contact.fullName || "";
@@ -856,10 +857,16 @@ export const ProspectingHub = () => {
     const matchesService = selectedService === "all" || p.classification.matchedService === selectedService;
     const matchesRegion = selectedRegion === "all" || p.classification.region === selectedRegion;
 
+    const isLocalProspect = 
+      p.prospectType === "local_business_no_website" || 
+      p.source.platform === "google_maps" || 
+      p.source.platform === "google_places" || 
+      p.source.platform === "openstreetmap";
+
     const matchesType = 
       selectedLeadType === "all" || 
-      (selectedLeadType === "local_business" && (p.prospectType === "local_business_no_website" || p.source.platform === "google_maps")) ||
-      (selectedLeadType === "online_feed" && p.prospectType !== "local_business_no_website" && p.source.platform !== "google_maps");
+      (selectedLeadType === "local_business" && isLocalProspect) ||
+      (selectedLeadType === "online_feed" && !isLocalProspect);
 
     const matchesWebsiteStatus = 
       selectedWebsiteStatus === "all" ||
