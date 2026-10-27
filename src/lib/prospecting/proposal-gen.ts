@@ -89,7 +89,7 @@ export function generatePersonalizedProposal(ctx: ProposalContext): ProposalOutp
     ? `your project for ${ctx.companyName}` 
     : (ctx.rawTitle.length > 50 ? `${ctx.rawTitle.slice(0, 48)}...` : ctx.rawTitle);
 
-  const senderName = ctx.senderName || "Adegboyega";
+  const senderName = ctx.senderName || "Emmanuel";
   const senderEmail = ctx.senderEmail || "goonlinemedia0@gmail.com";
   const physicalAddress = ctx.physicalAddress || "GoOnline Media, Victoria Island, Lagos / London HQ";
 
@@ -179,11 +179,6 @@ Warm regards,
 ${senderName}
 Lead Solutions Architect · GoOnline Media
 https://goonlinemedia.com · ${senderEmail}
-
----
-${physicalAddress}
-You received this note regarding your public request for web developers.
-To opt out of future proposals, visit: ${ctx.unsubscribeUrl}
   `.trim();
 
   return {
@@ -218,7 +213,7 @@ export function generateLocalBusinessProposal(ctx: LocalBusinessProposalContext)
     ? ctx.decisionMaker.split(" ")[0] 
     : (ctx.businessName || "Owner");
   
-  const senderName = ctx.senderName || "Adegboyega";
+  const senderName = ctx.senderName || "Emmanuel";
   const senderEmail = ctx.senderEmail || "goonlinemedia0@gmail.com";
   const physicalAddress = ctx.physicalAddress || "GoOnline Media, Victoria Island, Lagos / London HQ";
 
@@ -287,11 +282,6 @@ Best regards,
 ${senderName}
 GoOnline · Website Development & Digital Solutions
 https://goonlinemedia.com · ${senderEmail}
-
----
-${physicalAddress}
-You received this note regarding publicly available business information for ${ctx.businessName}.
-To opt out, visit: ${ctx.unsubscribeUrl}
   `.trim();
 
   return {

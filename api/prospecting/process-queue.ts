@@ -45,9 +45,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const bodyHtml = (req.body?.bodyHtml || "<p>Hello from GoOnline Media.</p>")
     .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
     .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com");
-  const bodyText = (req.body?.bodyText || "Hello from GoOnline Media.")
+  const rawBodyText = req.body?.bodyText || "Hello from GoOnline Media.";
+  const bodyText = rawBodyText
     .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
-    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com");
+    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com")
+    .replace(/\r?\n*---\s*\r?\n[\s\S]*?(?:You received this note|To opt out|opt out)[\s\S]*$/gi, "")
+    .trimEnd();
   const unsubscribeUrl = req.body?.unsubscribeUrl || `https://goonlinemedia.com/unsubscribe?email=${encodeURIComponent(targetEmail || "")}`;
 
   if (targetEmail) {
@@ -61,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
       const sendInfo = await transporter.sendMail({
-        from: `"Adegboyega | GoOnline" <${gmailUser}>`,
+        from: `"Emmanuel | GoOnline" <${gmailUser}>`,
         to: targetEmail,
         replyTo: gmailUser,
         subject: subject,

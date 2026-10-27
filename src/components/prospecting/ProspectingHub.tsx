@@ -20,6 +20,7 @@ import {
   resetProspectsToDefault,
   incrementDailyQuotaSent,
   sanitizeSenderEmail,
+  sanitizeProposalText,
   sanitizeProspect
 } from "@/lib/prospecting/prospecting-service";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
@@ -164,7 +165,7 @@ export const ProspectingHub = () => {
   };
 
   const handleOpenPitchModal = (p: Prospect) => {
-    const cleanBody = sanitizeSenderEmail(p.proposal.bodyText);
+    const cleanBody = sanitizeProposalText(p.proposal.bodyText);
     const cleanSubject = p.proposal.subjectLine;
     setPreviewProspect({
       ...p,
@@ -271,7 +272,7 @@ export const ProspectingHub = () => {
                       recipientEmail: lead.authorEmail,
                       subject: p.proposal.subjectLine || `Re: Website development for your project`,
                       bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
-                      bodyText: sanitizeSenderEmail(p.proposal.bodyText),
+                      bodyText: sanitizeProposalText(p.proposal.bodyText),
                     }),
                   });
                   if (sendRes.ok && ingestRes.prospectId) {
@@ -346,7 +347,7 @@ export const ProspectingHub = () => {
             recipientEmail: p.contact.email,
             subject: p.proposal.subjectLine,
             bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
-            bodyText: sanitizeSenderEmail(p.proposal.bodyText),
+            bodyText: sanitizeProposalText(p.proposal.bodyText),
           }),
         });
 
@@ -552,7 +553,7 @@ export const ProspectingHub = () => {
       return;
     }
 
-    const cleanBody = sanitizeSenderEmail(bodyText);
+    const cleanBody = sanitizeProposalText(bodyText);
 
     if (mode === "gmail_web") {
       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.contact.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(cleanBody)}`;
@@ -1399,7 +1400,7 @@ export const ProspectingHub = () => {
                               target="_blank" 
                               rel="noreferrer"
                               onClick={() => {
-                                navigator.clipboard.writeText(sanitizeSenderEmail(p.proposal.bodyText));
+                                navigator.clipboard.writeText(sanitizeProposalText(p.proposal.bodyText));
                                 toast.success("Proposal pitch copied! Opening client post to message them...");
                               }}
                               className="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600 hover:text-orange-700 bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-md border border-orange-200 dark:border-orange-800"

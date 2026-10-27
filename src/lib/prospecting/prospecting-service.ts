@@ -38,7 +38,7 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
     web_application_booking: true,
   },
   senderProfile: {
-    senderName: "Adegboyega",
+    senderName: "Emmanuel",
     senderEmail: "goonlinemedia0@gmail.com",
     replyToEmail: "goonlinemedia0@gmail.com",
     physicalAddress: "GoOnline Media, Victoria Island, Lagos / London HQ",
@@ -46,17 +46,36 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
   },
 };
 
-const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v5";
-const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v5";
+const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v7";
+const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v7";
 
 /**
- * Sanitizes any occurrence of outdated emails in proposal text
+ * Strips the plain text opt-out and address disclaimer footer starting with ---
+ */
+export function stripDisclaimerFooter(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/\r?\n*---\s*\r?\n[\s\S]*?(?:You received this note|To opt out|opt out)[\s\S]*$/gi, "")
+    .trimEnd();
+}
+
+/**
+ * Sanitizes any occurrence of outdated emails or sender names in proposal text
  */
 export function sanitizeSenderEmail(text: string): string {
   if (!text) return "";
   return text
     .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
-    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com");
+    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com")
+    .replace(/Adegboyega/gi, "Emmanuel");
+}
+
+/**
+ * Cleans proposal body text: updates sender to Emmanuel, email address, and removes opt-out / address disclaimer footer
+ */
+export function sanitizeProposalText(text: string): string {
+  if (!text) return "";
+  return stripDisclaimerFooter(sanitizeSenderEmail(text));
 }
 
 export function sanitizeProspect(p: Prospect): Prospect {
@@ -64,7 +83,7 @@ export function sanitizeProspect(p: Prospect): Prospect {
   const proposal = p.proposal
     ? {
         ...p.proposal,
-        bodyText: sanitizeSenderEmail(p.proposal.bodyText),
+        bodyText: sanitizeProposalText(p.proposal.bodyText),
         bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
       }
     : p.proposal;
@@ -83,8 +102,8 @@ export function getCachedProspects(): Prospect[] {
     return buildSeedProspects();
   }
   try {
-    // Purge outdated caches from v1..v4
-    ["goonline_prospects_cache_v1", "goonline_prospects_cache_v2", "goonline_prospects_cache_v3", "goonline_prospects_cache_v4"].forEach((k) => {
+    // Purge outdated caches from v1..v6
+    ["goonline_prospects_cache_v1", "goonline_prospects_cache_v2", "goonline_prospects_cache_v3", "goonline_prospects_cache_v4", "goonline_prospects_cache_v5", "goonline_prospects_cache_v6"].forEach((k) => {
       try { localStorage.removeItem(k); } catch (_) {}
     });
 

@@ -3,7 +3,7 @@ import { classifyRequest, qualifyProspect, scoreLocalBusinessLead } from "@/lib/
 import { generatePersonalizedProposal, generateLocalBusinessProposal } from "@/lib/prospecting/proposal-gen";
 import { normalizeEmail, extractDomain, buildUnsubscribeUrl, verifyUnsubscribeToken } from "@/lib/prospecting/dedup";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
-import { sanitizeSenderEmail } from "@/lib/prospecting/prospecting-service";
+import { sanitizeSenderEmail, sanitizeProposalText, stripDisclaimerFooter } from "@/lib/prospecting/prospecting-service";
 
 describe("Prospecting Qualification Engine", () => {
   it("correctly classifies an e-commerce request", () => {
@@ -175,10 +175,13 @@ describe("Local Business Cold Outreach Proposal Generator", () => {
     expect(proposal.bodyText).toContain("Apex Renovation Co.");
     expect(proposal.bodyText).toContain("Toronto");
     expect(proposal.bodyText).toContain("GoOnline");
+    expect(proposal.bodyText).toContain("Emmanuel");
+    expect(proposal.bodyText).not.toContain("Adegboyega");
     expect(proposal.bodyText).toContain("goonlinemedia0@gmail.com");
     expect(proposal.bodyText).not.toContain("info@goonlinemedia.com");
     expect(proposal.bodyText).not.toContain("info@goonline");
-    expect(proposal.bodyText).toContain("opt out");
+    expect(proposal.bodyText).not.toContain("opt out");
+    expect(proposal.bodyText).not.toContain("---");
     expect(proposal.bodyHtml).toContain("https://goonlinemedia.com/unsubscribe");
   });
 
@@ -228,6 +231,31 @@ https://goonlinemedia.com · info@goonlinemedia.com
 
     const partialText = "Contact us at info@goonline for inquiries";
     expect(sanitizeSenderEmail(partialText)).toContain("goonlinemedia0@gmail.com");
+  });
+
+  it("strips CAN-SPAM and opt-out disclaimer footer from proposal body text", () => {
+    const rawWithFooter = `
+Best regards,
+
+Adegboyega
+GoOnline · Website Development & Digital Solutions
+https://goonlinemedia.com · info@goonlinemedia.com
+
+---
+GoOnline Media, Victoria Island, Lagos / London HQ
+You received this note regarding publicly available business information for Apex Auto Spa & Detailing Toronto.
+To opt out, visit: https://goonlinemedia.com/unsubscribe?email=bookings%40apexautospatoronto.ca
+    `.trim();
+
+    const cleaned = sanitizeProposalText(rawWithFooter);
+    expect(cleaned).toContain("goonlinemedia0@gmail.com");
+    expect(cleaned).toContain("Emmanuel");
+    expect(cleaned).not.toContain("Adegboyega");
+    expect(cleaned).not.toContain("---");
+    expect(cleaned).not.toContain("Victoria Island");
+    expect(cleaned).not.toContain("You received this note regarding");
+    expect(cleaned).not.toContain("To opt out");
+    expect(cleaned.endsWith("https://goonlinemedia.com · goonlinemedia0@gmail.com")).toBe(true);
   });
 });
 
