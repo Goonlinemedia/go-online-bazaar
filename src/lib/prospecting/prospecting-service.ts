@@ -113,7 +113,7 @@ export async function ingestManualProspect(params: {
   fullName?: string;
   companyName?: string;
   forceService?: ServiceType;
-}): Promise<{ success: boolean; prospectId?: string; error?: string; qualification?: unknown }> {
+}): Promise<{ success: boolean; prospectId?: string; prospect?: Prospect; error?: string; qualification?: unknown }> {
   try {
     const uniqueSuffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const effectiveEmail = params.email && params.email.includes("@") 
