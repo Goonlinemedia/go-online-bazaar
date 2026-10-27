@@ -124,7 +124,7 @@ const Unsubscribe = () => {
 
         <p className="text-center text-xs text-muted-foreground mt-8">
           GoOnline Media · Victoria Island, Lagos / London HQ<br />
-          For manual inquiries: <a href="mailto:info@goonlinemedia.com" className="text-primary hover:underline">info@goonlinemedia.com</a>
+          For manual inquiries: <a href="mailto:goonlinemedia0@gmail.com" className="text-primary hover:underline">goonlinemedia0@gmail.com</a>
         </p>
       </div>
     </div>

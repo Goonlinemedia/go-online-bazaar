@@ -21,12 +21,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const DAILY_LIMIT = 10;
   const isDryRun = process.env.PROSPECTING_DRY_RUN === "true";
 
-  const gmailUser = process.env.GMAIL_USER_EMAIL;
+  const gmailUser = process.env.GMAIL_USER_EMAIL || "goonlinemedia0@gmail.com";
   const gmailPass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
 
-  if (!gmailUser || !gmailPass) {
+  if (!gmailPass) {
     return res.status(500).json({
-      error: "Missing email credentials. Please configure GMAIL_USER_EMAIL and GMAIL_APP_PASSWORD in Vercel."
+      error: "Missing Google App Password. Please configure GMAIL_APP_PASSWORD in Vercel or environment."
     });
   }
 

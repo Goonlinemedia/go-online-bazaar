@@ -39,15 +39,15 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
   },
   senderProfile: {
     senderName: "Adegboyega | GoOnline",
-    senderEmail: "info@goonlinemedia.com",
-    replyToEmail: "info@goonlinemedia.com",
+    senderEmail: "goonlinemedia0@gmail.com",
+    replyToEmail: "goonlinemedia0@gmail.com",
     physicalAddress: "GoOnline Media, Victoria Island, Lagos / London HQ",
     calendlyOrBookingUrl: "https://goonlinemedia.com/#contact",
   },
 };
 
-const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v2";
-const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v2";
+const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v3";
+const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v3";
 
 /**
  * Returns stored prospects from localStorage or initializes from the verified seed data
