@@ -3,6 +3,7 @@ import { classifyRequest, qualifyProspect, scoreLocalBusinessLead } from "@/lib/
 import { generatePersonalizedProposal, generateLocalBusinessProposal } from "@/lib/prospecting/proposal-gen";
 import { normalizeEmail, extractDomain, buildUnsubscribeUrl, verifyUnsubscribeToken } from "@/lib/prospecting/dedup";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
+import { sanitizeSenderEmail } from "@/lib/prospecting/prospecting-service";
 
 describe("Prospecting Qualification Engine", () => {
   it("correctly classifies an e-commerce request", () => {
@@ -174,6 +175,9 @@ describe("Local Business Cold Outreach Proposal Generator", () => {
     expect(proposal.bodyText).toContain("Apex Renovation Co.");
     expect(proposal.bodyText).toContain("Toronto");
     expect(proposal.bodyText).toContain("GoOnline");
+    expect(proposal.bodyText).toContain("goonlinemedia0@gmail.com");
+    expect(proposal.bodyText).not.toContain("info@goonlinemedia.com");
+    expect(proposal.bodyText).not.toContain("info@goonline");
     expect(proposal.bodyText).toContain("opt out");
     expect(proposal.bodyHtml).toContain("https://goonlinemedia.com/unsubscribe");
   });
@@ -207,6 +211,23 @@ describe("Target Market Presets (Canada, UK, US, Europe)", () => {
     expect(uk?.priority).toBe("Priority 1");
     expect(uk?.popularCities).toContain("Leeds");
     expect(uk?.buildMapsSearchUrl("Cleaning Companies", "Leeds")).toContain("Leeds");
+  });
+});
+
+describe("Sender Signature & Email Sanitization", () => {
+  it("sanitizes info@goonlinemedia.com and info@goonline to goonlinemedia0@gmail.com", () => {
+    const legacyText = `
+Adegboyega
+GoOnline · Website Development & Digital Solutions
+https://goonlinemedia.com · info@goonlinemedia.com
+    `.trim();
+
+    const sanitized = sanitizeSenderEmail(legacyText);
+    expect(sanitized).toContain("goonlinemedia0@gmail.com");
+    expect(sanitized).not.toContain("info@goonlinemedia.com");
+
+    const partialText = "Contact us at info@goonline for inquiries";
+    expect(sanitizeSenderEmail(partialText)).toContain("goonlinemedia0@gmail.com");
   });
 });
 

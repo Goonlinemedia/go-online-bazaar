@@ -221,6 +221,8 @@ export function buildSeedProspects(): Prospect[] {
       websiteStatus: def.websiteStatus,
       opportunity: def.opportunity,
       unsubscribeUrl: unsubUrl,
+      senderName: "Adegboyega",
+      senderEmail: "goonlinemedia0@gmail.com",
     });
 
     return {

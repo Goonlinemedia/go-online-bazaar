@@ -38,7 +38,7 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
     web_application_booking: true,
   },
   senderProfile: {
-    senderName: "Adegboyega | GoOnline",
+    senderName: "Adegboyega",
     senderEmail: "goonlinemedia0@gmail.com",
     replyToEmail: "goonlinemedia0@gmail.com",
     physicalAddress: "GoOnline Media, Victoria Island, Lagos / London HQ",
@@ -46,8 +46,34 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
   },
 };
 
-const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v3";
-const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v3";
+const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v5";
+const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v5";
+
+/**
+ * Sanitizes any occurrence of outdated emails in proposal text
+ */
+export function sanitizeSenderEmail(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
+    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com");
+}
+
+export function sanitizeProspect(p: Prospect): Prospect {
+  if (!p) return p;
+  const proposal = p.proposal
+    ? {
+        ...p.proposal,
+        bodyText: sanitizeSenderEmail(p.proposal.bodyText),
+        bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
+      }
+    : p.proposal;
+
+  return {
+    ...p,
+    proposal,
+  };
+}
 
 /**
  * Returns stored prospects from localStorage or initializes from the verified seed data
@@ -57,17 +83,23 @@ export function getCachedProspects(): Prospect[] {
     return buildSeedProspects();
   }
   try {
+    // Purge outdated caches from v1..v4
+    ["goonline_prospects_cache_v1", "goonline_prospects_cache_v2", "goonline_prospects_cache_v3", "goonline_prospects_cache_v4"].forEach((k) => {
+      try { localStorage.removeItem(k); } catch (_) {}
+    });
+
     const cached = localStorage.getItem(LOCAL_STORAGE_PROSPECTS_KEY);
     if (cached) {
-      const parsed = JSON.parse(cached);
+      const sanitizedJsonStr = sanitizeSenderEmail(cached);
+      const parsed = JSON.parse(sanitizedJsonStr);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.map(sanitizeProspect);
       }
     }
   } catch (e) {
     console.warn("Failed to parse cached prospects:", e);
   }
-  const seed = buildSeedProspects();
+  const seed = buildSeedProspects().map(sanitizeProspect);
   try {
     localStorage.setItem(LOCAL_STORAGE_PROSPECTS_KEY, JSON.stringify(seed));
   } catch (e) {}
@@ -77,7 +109,8 @@ export function getCachedProspects(): Prospect[] {
 export function setCachedProspects(prospects: Prospect[]) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(LOCAL_STORAGE_PROSPECTS_KEY, JSON.stringify(prospects));
+    const sanitized = prospects.map(sanitizeProspect);
+    localStorage.setItem(LOCAL_STORAGE_PROSPECTS_KEY, JSON.stringify(sanitized));
   } catch (e) {
     console.warn("Failed to store prospects cache:", e);
   }
@@ -151,7 +184,8 @@ export function subscribeToProspects(callback: (prospects: Prospect[]) => void) 
         if (!snapshot.empty) {
           const prospects: Prospect[] = [];
           snapshot.forEach((doc) => {
-            prospects.push({ id: doc.id, ...doc.data() } as Prospect);
+            const data = { id: doc.id, ...doc.data() } as Prospect;
+            prospects.push(sanitizeProspect(data));
           });
           setCachedProspects(prospects);
           callback(prospects);

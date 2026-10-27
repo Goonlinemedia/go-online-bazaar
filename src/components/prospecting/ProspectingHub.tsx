@@ -18,7 +18,9 @@ import {
   ingestLocalBusinessProspect,
   addToSuppressionList,
   resetProspectsToDefault,
-  incrementDailyQuotaSent
+  incrementDailyQuotaSent,
+  sanitizeSenderEmail,
+  sanitizeProspect
 } from "@/lib/prospecting/prospecting-service";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
 import { 
@@ -162,9 +164,18 @@ export const ProspectingHub = () => {
   };
 
   const handleOpenPitchModal = (p: Prospect) => {
-    setPreviewProspect(p);
-    setEditableSubject(p.proposal.subjectLine);
-    setEditableBody(p.proposal.bodyText);
+    const cleanBody = sanitizeSenderEmail(p.proposal.bodyText);
+    const cleanSubject = p.proposal.subjectLine;
+    setPreviewProspect({
+      ...p,
+      proposal: {
+        ...p.proposal,
+        bodyText: cleanBody,
+        bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
+      }
+    });
+    setEditableSubject(cleanSubject);
+    setEditableBody(cleanBody);
   };
 
   const handleFindLeadsWithEmails = async () => {
@@ -259,8 +270,8 @@ export const ProspectingHub = () => {
                     body: JSON.stringify({
                       recipientEmail: lead.authorEmail,
                       subject: p.proposal.subjectLine || `Re: Website development for your project`,
-                      bodyHtml: p.proposal.bodyHtml,
-                      bodyText: p.proposal.bodyText,
+                      bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
+                      bodyText: sanitizeSenderEmail(p.proposal.bodyText),
                     }),
                   });
                   if (sendRes.ok && ingestRes.prospectId) {
@@ -334,8 +345,8 @@ export const ProspectingHub = () => {
           body: JSON.stringify({
             recipientEmail: p.contact.email,
             subject: p.proposal.subjectLine,
-            bodyHtml: p.proposal.bodyHtml,
-            bodyText: p.proposal.bodyText,
+            bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
+            bodyText: sanitizeSenderEmail(p.proposal.bodyText),
           }),
         });
 
@@ -367,7 +378,9 @@ export const ProspectingHub = () => {
   };
 
   useEffect(() => {
-    const unsubProspects = subscribeToProspects(setProspects);
+    const unsubProspects = subscribeToProspects((fresh) => {
+      setProspects(fresh.map(sanitizeProspect));
+    });
     const unsubQuota = subscribeToTodayQuota(setQuota);
     const unsubSuppression = subscribeToSuppressionList(setSuppressionList);
 
@@ -539,8 +552,10 @@ export const ProspectingHub = () => {
       return;
     }
 
+    const cleanBody = sanitizeSenderEmail(bodyText);
+
     if (mode === "gmail_web") {
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.contact.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.contact.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(cleanBody)}`;
       window.open(gmailUrl, "_blank");
       await updateProspectStatus(p.id, "sent");
       const newQ = incrementDailyQuotaSent(p.id);
@@ -552,7 +567,7 @@ export const ProspectingHub = () => {
     }
 
     if (mode === "mailto") {
-      const mailtoUrl = `mailto:${p.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      const mailtoUrl = `mailto:${p.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(cleanBody)}`;
       window.location.href = mailtoUrl;
       await updateProspectStatus(p.id, "sent");
       const newQ = incrementDailyQuotaSent(p.id);
@@ -572,8 +587,8 @@ export const ProspectingHub = () => {
         body: JSON.stringify({
           recipientEmail: p.contact.email,
           subject: subject,
-          bodyHtml: p.proposal.bodyHtml,
-          bodyText: bodyText,
+          bodyHtml: sanitizeSenderEmail(p.proposal.bodyHtml),
+          bodyText: cleanBody,
         }),
       });
 
@@ -1063,7 +1078,7 @@ export const ProspectingHub = () => {
           {/* Quick Filters */}
           <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">Status:</span>
-            {["all", "qualified", "sent", "needs_review", "converted", "disqualified", "opted_out"].map((st) => (
+            {["all", "qualified", "sent", "replied", "needs_review", "converted", "disqualified", "opted_out"].map((st) => (
               <Button
                 key={st}
                 size="sm"
@@ -1071,7 +1086,7 @@ export const ProspectingHub = () => {
                 onClick={() => setSelectedStatus(st)}
                 className="text-[11px] h-7 px-2.5 rounded-full capitalize"
               >
-                {st.replace("_", " ")}
+                {st === "replied" ? "💬 Replied" : st.replace("_", " ")}
               </Button>
             ))}
 
@@ -1341,13 +1356,14 @@ export const ProspectingHub = () => {
                           variant="secondary"
                           className={`text-xs capitalize ${
                             p.status === "sent" ? "bg-blue-100 text-blue-700" :
+                            p.status === "replied" ? "bg-teal-100 text-teal-800 border-teal-300 font-semibold" :
                             p.status === "qualified" ? "bg-emerald-100 text-emerald-700" :
-                            p.status === "converted" ? "bg-purple-100 text-purple-700" :
+                            p.status === "converted" ? "bg-purple-100 text-purple-700 font-semibold" :
                             p.status === "opted_out" ? "bg-red-100 text-red-700" :
                             "bg-amber-100 text-amber-700"
                           }`}
                         >
-                          {p.status.replace("_", " ")}
+                          {p.status === "replied" ? "💬 Replied" : p.status.replace("_", " ")}
                         </Badge>
                       </TableCell>
 
@@ -1383,7 +1399,7 @@ export const ProspectingHub = () => {
                               target="_blank" 
                               rel="noreferrer"
                               onClick={() => {
-                                navigator.clipboard.writeText(p.proposal.bodyText);
+                                navigator.clipboard.writeText(sanitizeSenderEmail(p.proposal.bodyText));
                                 toast.success("Proposal pitch copied! Opening client post to message them...");
                               }}
                               className="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-600 hover:text-orange-700 bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-md border border-orange-200 dark:border-orange-800"
@@ -1402,8 +1418,11 @@ export const ProspectingHub = () => {
                               <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "sent")}>
                                 Mark Sent
                               </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "replied")}>
+                                💬 Mark Replied
+                              </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "converted")}>
-                                Mark Converted
+                                🎯 Mark Converted
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "disqualified")} className="text-destructive">
                                 Disqualify

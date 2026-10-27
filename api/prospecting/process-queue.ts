@@ -42,8 +42,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // If a specific prospect dispatch is requested in body (from Admin Dashboard or test):
   const targetEmail = req.body?.recipientEmail;
   const subject = req.body?.subject || "Re: Website development proposal";
-  const bodyHtml = req.body?.bodyHtml || "<p>Hello from GoOnline Media.</p>";
-  const bodyText = req.body?.bodyText || "Hello from GoOnline Media.";
+  const bodyHtml = (req.body?.bodyHtml || "<p>Hello from GoOnline Media.</p>")
+    .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
+    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com");
+  const bodyText = (req.body?.bodyText || "Hello from GoOnline Media.")
+    .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
+    .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com");
   const unsubscribeUrl = req.body?.unsubscribeUrl || `https://goonlinemedia.com/unsubscribe?email=${encodeURIComponent(targetEmail || "")}`;
 
   if (targetEmail) {

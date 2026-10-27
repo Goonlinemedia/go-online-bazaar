@@ -89,7 +89,7 @@ export function generatePersonalizedProposal(ctx: ProposalContext): ProposalOutp
     ? `your project for ${ctx.companyName}` 
     : (ctx.rawTitle.length > 50 ? `${ctx.rawTitle.slice(0, 48)}...` : ctx.rawTitle);
 
-  const senderName = ctx.senderName || "Adegboyega | GoOnline";
+  const senderName = ctx.senderName || "Adegboyega";
   const senderEmail = ctx.senderEmail || "goonlinemedia0@gmail.com";
   const physicalAddress = ctx.physicalAddress || "GoOnline Media, Victoria Island, Lagos / London HQ";
 
@@ -218,7 +218,7 @@ export function generateLocalBusinessProposal(ctx: LocalBusinessProposalContext)
     ? ctx.decisionMaker.split(" ")[0] 
     : (ctx.businessName || "Owner");
   
-  const senderName = ctx.senderName || "Adegboyega | GoOnline";
+  const senderName = ctx.senderName || "Adegboyega";
   const senderEmail = ctx.senderEmail || "goonlinemedia0@gmail.com";
   const physicalAddress = ctx.physicalAddress || "GoOnline Media, Victoria Island, Lagos / London HQ";
 
