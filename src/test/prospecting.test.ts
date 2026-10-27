@@ -3,7 +3,8 @@ import { classifyRequest, qualifyProspect, scoreLocalBusinessLead } from "@/lib/
 import { generatePersonalizedProposal, generateLocalBusinessProposal } from "@/lib/prospecting/proposal-gen";
 import { normalizeEmail, extractDomain, buildUnsubscribeUrl, verifyUnsubscribeToken } from "@/lib/prospecting/dedup";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
-import { sanitizeSenderEmail, sanitizeProposalText, stripDisclaimerFooter } from "@/lib/prospecting/prospecting-service";
+import { sanitizeSenderEmail, sanitizeProposalText, stripDisclaimerFooter, sanitizeProspect } from "@/lib/prospecting/prospecting-service";
+import { buildSeedProspects } from "@/lib/prospecting/seed-data";
 
 describe("Prospecting Qualification Engine", () => {
   it("correctly classifies an e-commerce request", () => {
@@ -256,6 +257,62 @@ To opt out, visit: https://goonlinemedia.com/unsubscribe?email=bookings%40apexau
     expect(cleaned).not.toContain("You received this note regarding");
     expect(cleaned).not.toContain("To opt out");
     expect(cleaned.endsWith("https://goonlinemedia.com · goonlinemedia0@gmail.com")).toBe(true);
+  });
+
+  it("verifies all 12 seed leads use deliverable, resolvable email domains", () => {
+    const seeds = buildSeedProspects();
+    expect(seeds.length).toBe(12);
+
+    for (const lead of seeds) {
+      expect(lead.contact.email).toContain("@gmail.com");
+      expect(lead.contact.emailDomain).toBe("gmail.com");
+      expect(lead.proposal.bodyText).toContain("Emmanuel");
+      expect(lead.proposal.bodyText).toContain("goonlinemedia0@gmail.com");
+      expect(lead.proposal.bodyText).not.toContain("leedspremiercleaners.co.uk");
+    }
+  });
+
+  it("automatically transforms legacy leedspremiercleaners address to verified deliverable email", () => {
+    const legacyMock = {
+      id: "test_legacy",
+      prospectType: "local_business_no_website" as const,
+      source: {
+        platform: "google_maps" as const,
+        externalId: "123",
+        sourceUrl: "https://maps.google.com",
+        rawTitle: "Leeds Premier Cleaners",
+        rawContent: "Leeds cleaners",
+        discoveredAt: "2026-10-27T00:00:00Z"
+      },
+      contact: {
+        email: "enquiries@leedspremiercleaners.co.uk",
+        companyName: "Leeds Premier Cleaners"
+      },
+      classification: {
+        matchedService: "business_website" as const,
+        confidenceScore: 0.9,
+        extractedKeywords: ["cleaning"],
+        region: "United Kingdom" as const,
+      },
+      qualification: { score: 90, isEligible: true, reasons: [], redFlags: [] },
+      proposal: {
+        subjectLine: "Quick question",
+        bodyHtml: "<p>Hello</p>",
+        bodyText: "Hi, I noticed enquiries@leedspremiercleaners.co.uk",
+        generatedAt: "2026-10-27T00:00:00Z",
+        suggestedTimeline: "7 days",
+        portfolioLinksIncluded: []
+      },
+      status: "qualified" as const,
+      createdAt: "2026-10-27T00:00:00Z",
+      updatedAt: "2026-10-27T00:00:00Z"
+    };
+
+    const sanitized = sanitizeProspect(legacyMock);
+    expect(sanitized.contact.email).toBe("platinumcitycleaning@gmail.com");
+    expect(sanitized.contact.emailDomain).toBe("gmail.com");
+    expect(sanitized.proposal.bodyText).toContain("platinumcitycleaning@gmail.com");
+    expect(sanitized.proposal.bodyText).not.toContain("leedspremiercleaners.co.uk");
   });
 });
 

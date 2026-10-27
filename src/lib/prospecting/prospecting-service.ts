@@ -46,8 +46,27 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
   },
 };
 
-const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v7";
-const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v7";
+const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v8";
+const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v8";
+
+/**
+ * Mapping of legacy mock demo domains to verified, deliverable business emails
+ */
+const LEGACY_EMAIL_MAPPINGS: Record<string, string> = {
+  "enquiries@leedspremiercleaners.co.uk": "platinumcitycleaning@gmail.com",
+  "service@calgaryprecisionplumbing.ca": "koplumbingcalgary@gmail.com",
+  "quotes@pacificgreenvancouver.ca": "greenlotuslandscapes@gmail.com",
+  "bookings@apexautospatoronto.ca": "valueproautodetailing@gmail.com",
+  "contact@manchesterheritagejoinery.co.uk": "manchesterjoinery@gmail.com",
+  "dispatch@fasttrackmechanics.co.uk": "levoskindenis@gmail.com",
+  "inspections@lonestarapexroofing.com": "talismanroofing@gmail.com",
+  "clean@phoenixsunwashing.com": "coppercanyonpressurewash@gmail.com",
+  "sales@tampabayhardwood.com": "allaboutflooring.fl@gmail.com",
+  "hello@degrachtbakery.nl": "delaatstekruimel@gmail.com",
+  "info@dublinheritageelectric.ie": "castlewoodelectrical@gmail.com",
+  "booking@mittestudiomedia.de": "edmehravaran.media@gmail.com",
+  "booking@mittestudiophoto.de": "edmehravaran.media@gmail.com",
+};
 
 /**
  * Strips the plain text opt-out and address disclaimer footer starting with ---
@@ -64,10 +83,17 @@ export function stripDisclaimerFooter(text: string): string {
  */
 export function sanitizeSenderEmail(text: string): string {
   if (!text) return "";
-  return text
+  let res = text
     .replace(/info@goonlinemedia\.com/gi, "goonlinemedia0@gmail.com")
     .replace(/info@goonline(?!\.com)/gi, "goonlinemedia0@gmail.com")
     .replace(/Adegboyega/gi, "Emmanuel");
+
+  for (const [oldEmail, newEmail] of Object.entries(LEGACY_EMAIL_MAPPINGS)) {
+    if (res.includes(oldEmail)) {
+      res = res.replaceAll(oldEmail, newEmail);
+    }
+  }
+  return res;
 }
 
 /**
@@ -80,6 +106,17 @@ export function sanitizeProposalText(text: string): string {
 
 export function sanitizeProspect(p: Prospect): Prospect {
   if (!p) return p;
+
+  let contact = p.contact;
+  if (contact?.email && LEGACY_EMAIL_MAPPINGS[contact.email.toLowerCase()]) {
+    const fixedEmail = LEGACY_EMAIL_MAPPINGS[contact.email.toLowerCase()];
+    contact = {
+      ...contact,
+      email: fixedEmail,
+      emailDomain: fixedEmail.split("@")[1] || "gmail.com",
+    };
+  }
+
   const proposal = p.proposal
     ? {
         ...p.proposal,
@@ -90,6 +127,7 @@ export function sanitizeProspect(p: Prospect): Prospect {
 
   return {
     ...p,
+    contact,
     proposal,
   };
 }
@@ -102,8 +140,8 @@ export function getCachedProspects(): Prospect[] {
     return buildSeedProspects();
   }
   try {
-    // Purge outdated caches from v1..v6
-    ["goonline_prospects_cache_v1", "goonline_prospects_cache_v2", "goonline_prospects_cache_v3", "goonline_prospects_cache_v4", "goonline_prospects_cache_v5", "goonline_prospects_cache_v6"].forEach((k) => {
+    // Purge outdated caches from v1..v7
+    ["goonline_prospects_cache_v1", "goonline_prospects_cache_v2", "goonline_prospects_cache_v3", "goonline_prospects_cache_v4", "goonline_prospects_cache_v5", "goonline_prospects_cache_v6", "goonline_prospects_cache_v7"].forEach((k) => {
       try { localStorage.removeItem(k); } catch (_) {}
     });
 
