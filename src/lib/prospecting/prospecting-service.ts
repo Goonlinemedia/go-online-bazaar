@@ -24,6 +24,7 @@ import {
 import { classifyRequest, qualifyProspect, scoreLocalBusinessLead, detectTargetRegion } from "./qualification";
 import { generatePersonalizedProposal, generateLocalBusinessProposal } from "./proposal-gen";
 import { normalizeEmail, extractDomain, computeHash, buildUnsubscribeUrl } from "./dedup";
+import { buildSeedProspects } from "./seed-data";
 
 export const DEFAULT_SETTINGS: ProspectingSettings = {
   autoPilotEnabled: true,
@@ -45,6 +46,52 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
   },
 };
 
+const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v2";
+const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v2";
+
+/**
+ * Returns stored prospects from localStorage or initializes from the verified seed data
+ */
+export function getCachedProspects(): Prospect[] {
+  if (typeof window === "undefined") {
+    return buildSeedProspects();
+  }
+  try {
+    const cached = localStorage.getItem(LOCAL_STORAGE_PROSPECTS_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to parse cached prospects:", e);
+  }
+  const seed = buildSeedProspects();
+  try {
+    localStorage.setItem(LOCAL_STORAGE_PROSPECTS_KEY, JSON.stringify(seed));
+  } catch (e) {}
+  return seed;
+}
+
+export function setCachedProspects(prospects: Prospect[]) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(LOCAL_STORAGE_PROSPECTS_KEY, JSON.stringify(prospects));
+  } catch (e) {
+    console.warn("Failed to store prospects cache:", e);
+  }
+}
+
+/**
+ * Resets the pipeline to the default curated list of verified commercial leads
+ */
+export function resetProspectsToDefault(): Prospect[] {
+  const seed = buildSeedProspects();
+  setCachedProspects(seed);
+  return seed;
+}
+
 /**
  * Returns formatted YYYY-MM-DD string for today's quota doc
  */
@@ -53,53 +100,139 @@ export function getTodayQuotaDocId(): string {
   return now.toISOString().split("T")[0];
 }
 
-/**
- * Subscribes to real-time prospects list
- */
-export function subscribeToProspects(callback: (prospects: Prospect[]) => void) {
-  const q = query(collection(db, "prospects"), orderBy("createdAt", "desc"), limit(200));
-  return onSnapshot(q, (snapshot) => {
-    const prospects: Prospect[] = [];
-    snapshot.forEach((doc) => {
-      prospects.push({ id: doc.id, ...doc.data() } as Prospect);
-    });
-    callback(prospects);
-  });
+export function getCachedQuota(): DailyQuota {
+  const docId = getTodayQuotaDocId();
+  if (typeof window !== "undefined") {
+    try {
+      const cached = localStorage.getItem(`${LOCAL_STORAGE_QUOTA_KEY}_${docId}`);
+      if (cached) return JSON.parse(cached);
+    } catch (e) {}
+  }
+  return {
+    date: docId,
+    sentCount: 0,
+    dailyLimit: 10,
+    isExhausted: false,
+    sentProspectIds: [],
+  };
+}
+
+export function incrementDailyQuotaSent(prospectId: string): DailyQuota {
+  const docId = getTodayQuotaDocId();
+  const quota = getCachedQuota();
+  quota.sentCount = Math.min(quota.dailyLimit, quota.sentCount + 1);
+  quota.isExhausted = quota.sentCount >= quota.dailyLimit;
+  if (!quota.sentProspectIds.includes(prospectId)) {
+    quota.sentProspectIds.push(prospectId);
+  }
+  quota.lastSentAt = new Date().toISOString();
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(`${LOCAL_STORAGE_QUOTA_KEY}_${docId}`, JSON.stringify(quota));
+    } catch (e) {}
+  }
+  return quota;
 }
 
 /**
- * Subscribes to today's daily quota doc
+ * Subscribes to real-time prospects list with instant local seed fallback
+ */
+export function subscribeToProspects(callback: (prospects: Prospect[]) => void) {
+  // 1. Immediately emit cached/seeded prospects so UI is never blank
+  const initial = getCachedProspects();
+  callback(initial);
+
+  // 2. Set up Firestore listener with fallback
+  try {
+    const q = query(collection(db, "prospects"), orderBy("createdAt", "desc"), limit(200));
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const prospects: Prospect[] = [];
+          snapshot.forEach((doc) => {
+            prospects.push({ id: doc.id, ...doc.data() } as Prospect);
+          });
+          setCachedProspects(prospects);
+          callback(prospects);
+        } else {
+          // Empty remote collection - maintain verified seed leads
+          callback(initial);
+          // Attempt to sync seed into remote Firestore in background
+          initial.forEach((p) => {
+            setDoc(doc(db, "prospects", p.id), p).catch(() => {});
+          });
+        }
+      },
+      (error) => {
+        console.warn("Firestore prospects listener fallback to local persistence:", error.message);
+        callback(getCachedProspects());
+      }
+    );
+  } catch (err) {
+    console.warn("Error establishing prospects listener:", err);
+    return () => {};
+  }
+}
+
+/**
+ * Subscribes to today's daily quota doc with local fallback
  */
 export function subscribeToTodayQuota(callback: (quota: DailyQuota) => void) {
   const docId = getTodayQuotaDocId();
-  const quotaRef = doc(db, "daily_quotas", docId);
-  return onSnapshot(quotaRef, (snapshot) => {
-    if (snapshot.exists()) {
-      callback(snapshot.data() as DailyQuota);
-    } else {
-      callback({
-        date: docId,
-        sentCount: 0,
-        dailyLimit: 10,
-        isExhausted: false,
-        sentProspectIds: [],
-      });
-    }
-  });
+  const initialQuota = getCachedQuota();
+  callback(initialQuota);
+
+  try {
+    const quotaRef = doc(db, "daily_quotas", docId);
+    return onSnapshot(
+      quotaRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data() as DailyQuota;
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem(`${LOCAL_STORAGE_QUOTA_KEY}_${docId}`, JSON.stringify(data));
+            } catch (e) {}
+          }
+          callback(data);
+        } else {
+          callback(initialQuota);
+        }
+      },
+      (error) => {
+        console.warn("Firestore quota listener fallback:", error.message);
+        callback(getCachedQuota());
+      }
+    );
+  } catch (err) {
+    return () => {};
+  }
 }
 
 /**
  * Subscribes to suppression list
  */
 export function subscribeToSuppressionList(callback: (records: SuppressionRecord[]) => void) {
-  const q = query(collection(db, "suppression_list"), orderBy("optedOutAt", "desc"), limit(100));
-  return onSnapshot(q, (snapshot) => {
-    const records: SuppressionRecord[] = [];
-    snapshot.forEach((doc) => {
-      records.push({ id: doc.id, ...doc.data() } as SuppressionRecord);
-    });
-    callback(records);
-  });
+  try {
+    const q = query(collection(db, "suppression_list"), orderBy("optedOutAt", "desc"), limit(100));
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const records: SuppressionRecord[] = [];
+        snapshot.forEach((doc) => {
+          records.push({ id: doc.id, ...doc.data() } as SuppressionRecord);
+        });
+        callback(records);
+      },
+      (error) => {
+        console.warn("Firestore suppression listener fallback:", error.message);
+        callback([]);
+      }
+    );
+  } catch (err) {
+    return () => {};
+  }
 }
 
 /**
@@ -189,7 +322,15 @@ export async function ingestManualProspect(params: {
       updatedAt: nowTimestamp,
     };
 
-    await setDoc(doc(db, "prospects", prospectId), prospectDoc);
+    // Save locally
+    const currentCached = getCachedProspects();
+    setCachedProspects([prospectDoc, ...currentCached.filter(p => p.id !== prospectId)]);
+
+    try {
+      await setDoc(doc(db, "prospects", prospectId), prospectDoc);
+    } catch (fsErr) {
+      console.warn("Firestore prospect save skipped (cached locally):", fsErr);
+    }
 
     return { 
       success: true, 
@@ -306,7 +447,15 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
       updatedAt: nowTimestamp,
     };
 
-    await setDoc(doc(db, "prospects", prospectId), prospectDoc);
+    // Save locally
+    const currentCached = getCachedProspects();
+    setCachedProspects([prospectDoc, ...currentCached.filter(p => p.id !== prospectId)]);
+
+    try {
+      await setDoc(doc(db, "prospects", prospectId), prospectDoc);
+    } catch (fsErr) {
+      console.warn("Firestore prospect save skipped (cached locally):", fsErr);
+    }
 
     return {
       success: true,
@@ -324,11 +473,20 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
  * Updates status of a prospect (e.g. mark sent, qualified, converted, disqualified)
  */
 export async function updateProspectStatus(id: string, status: Prospect["status"]) {
-  const ref = doc(db, "prospects", id);
-  await updateDoc(ref, { 
-    status,
-    updatedAt: Timestamp.now(),
-  });
+  // Update local cache immediately
+  const current = getCachedProspects();
+  const updated = current.map((p) => (p.id === id ? { ...p, status, updatedAt: new Date().toISOString() } : p));
+  setCachedProspects(updated);
+
+  try {
+    const ref = doc(db, "prospects", id);
+    await updateDoc(ref, { 
+      status,
+      updatedAt: Timestamp.now(),
+    });
+  } catch (err) {
+    console.warn("Firestore status update error (saved locally):", err);
+  }
 }
 
 /**

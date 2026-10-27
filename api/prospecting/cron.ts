@@ -64,6 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const cronSecret = process.env.CRON_SECRET;
   const authHeader = req.headers.authorization;
   const isManualTrigger = req.query.trigger === "manual" || req.body?.trigger === "manual";
+  const emailOnly = req.query.emailOnly === "true" || req.body?.emailOnly === true;
 
   if (!isManualTrigger && cronSecret && authHeader !== `Bearer ${cronSecret}` && req.headers["x-vercel-cron"] !== "1") {
     return res.status(401).json({ error: "Unauthorized discovery trigger" });
@@ -107,6 +108,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             if (isHiring && isWebRelated) {
               const emailMatch = combined.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+              
+              // If narrowing to leads with email only, skip entries without email
+              if (emailOnly && !emailMatch) {
+                continue;
+              }
+
               const region = detectRegion(combined, emailMatch ? emailMatch[0].split("@")[1] : "");
 
               discoveredLeads.push({
@@ -135,10 +142,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (googleApiKey && googleCx) {
     const regionalQueries = [
-      '"looking for a web developer" (US OR UK OR Canada OR Europe OR London OR "New York") budget',
-      '"request for proposal" "website redesign" (USA OR UK OR Canada OR Europe) 2026',
-      '"need an e-commerce website" (USD OR GBP OR CAD OR EUR)',
-      '"need a booking system" (London OR "New York" OR Toronto OR Berlin)',
+      '"looking for a web developer" ("email" OR "@") (US OR UK OR Canada OR Europe OR London OR "New York")',
+      '"request for proposal" "website redesign" ("email" OR "@gmail") 2026',
+      '"need an e-commerce website" ("contact" OR "email") (USD OR GBP OR CAD OR EUR)',
+      '"need a booking system" ("email" OR "@") (London OR "New York" OR Toronto OR Berlin)',
     ];
 
     for (const q of regionalQueries) {
@@ -151,6 +158,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           for (const item of items) {
             const combined = `${item.title} ${item.snippet}`;
             const emailMatch = combined.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            
+            if (emailOnly && !emailMatch) {
+              continue;
+            }
+
             const region = detectRegion(combined);
 
             discoveredLeads.push({

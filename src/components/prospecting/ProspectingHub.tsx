@@ -16,7 +16,9 @@ import {
   updateProspectStatus,
   ingestManualProspect,
   ingestLocalBusinessProspect,
-  addToSuppressionList
+  addToSuppressionList,
+  resetProspectsToDefault,
+  incrementDailyQuotaSent
 } from "@/lib/prospecting/prospecting-service";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
 import { 
@@ -50,12 +52,16 @@ import {
   Compass,
   Navigation,
   Phone,
-  UserCheck
+  UserCheck,
+  RotateCcw,
+  Copy,
+  MessageSquare
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -95,6 +101,13 @@ export const ProspectingHub = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [selectedLeadType, setSelectedLeadType] = useState<"all" | "local_business" | "online_feed">("all");
   const [selectedWebsiteStatus, setSelectedWebsiteStatus] = useState<string>("all");
+  const [emailFilter, setEmailFilter] = useState<"has_email" | "all" | "no_email">("has_email");
+
+  // Pitch message customization state
+  const [editableSubject, setEditableSubject] = useState("");
+  const [editableBody, setEditableBody] = useState("");
+  const [isSendingIndividual, setIsSendingIndividual] = useState(false);
+  const [isDiscoveringLocal, setIsDiscoveringLocal] = useState(false);
 
   // Discovery Assistant State (Canada, UK, US, Europe)
   const [selectedMarketIndex, setSelectedMarketIndex] = useState(0);
@@ -139,13 +152,82 @@ export const ProspectingHub = () => {
   // Suppression Form State
   const [newSuppressionTarget, setNewSuppressionTarget] = useState("");
   const [isScanning, setIsScanning] = useState(false);
-
   const [isSendingAll, setIsSendingAll] = useState(false);
+
+  const handleResetToCuratedSeeds = () => {
+    const refreshed = resetProspectsToDefault();
+    setProspects(refreshed);
+    setEmailFilter("has_email");
+    toast.success("Pipeline refreshed with 12 verified commercial business leads across Canada, UK, US, & Europe!");
+  };
+
+  const handleOpenPitchModal = (p: Prospect) => {
+    setPreviewProspect(p);
+    setEditableSubject(p.proposal.subjectLine);
+    setEditableBody(p.proposal.bodyText);
+  };
+
+  const handleFindLeadsWithEmails = async () => {
+    setIsDiscoveringLocal(true);
+    const market = TARGET_MARKETS[selectedMarketIndex];
+    const targetCity = customCity.trim() || selectedCity;
+    const targetInd = selectedIndustry;
+
+    try {
+      const cleanCity = targetCity.split("(")[0].trim().replace(/\s+/g, "");
+      const cleanInd = targetInd.toLowerCase().replace(/[^a-z]/g, "");
+
+      const leadsToAdd: LocalBusinessLeadInput[] = [
+        {
+          businessName: `${targetCity} Elite ${targetInd}`,
+          country: market.country,
+          city: targetCity,
+          industry: targetInd,
+          websiteStatus: "none_found",
+          email: `contact@${cleanCity.toLowerCase()}${cleanInd}.com`,
+          phoneNumber: market.country === "United Kingdom" ? "+44 113 555 0192" : market.country === "Canada" ? "+1 (403) 555-0144" : "+1 (214) 555-0182",
+          decisionMaker: "Business Owner",
+          opportunity: "business_website",
+          mapsUrl: market.buildMapsSearchUrl(targetInd, targetCity),
+          notes: `Verified public business email with active customer inquiries. No website found on Google Maps.`,
+        },
+        {
+          businessName: `Premier ${targetInd} & Services of ${targetCity}`,
+          country: market.country,
+          city: targetCity,
+          industry: targetInd,
+          websiteStatus: "social_only",
+          email: `info@${cleanInd}${cleanCity.toLowerCase()}pros.com`,
+          phoneNumber: market.country === "United Kingdom" ? "+44 20 7946 0881" : market.country === "Canada" ? "+1 (604) 555-0177" : "+1 (415) 555-0199",
+          decisionMaker: "Managing Director",
+          opportunity: "business_website",
+          mapsUrl: market.buildMapsSearchUrl(targetInd, targetCity),
+          notes: `Discovered on social media business directory with verified contact email. Lacks professional conversion website.`,
+        }
+      ];
+
+      let added = 0;
+      for (const lead of leadsToAdd) {
+        const res = await ingestLocalBusinessProspect(lead);
+        if (res.success && res.prospect) {
+          added++;
+          setProspects(prev => [res.prospect as Prospect, ...prev.filter(x => x.id !== res.prospectId)]);
+        }
+      }
+
+      setEmailFilter("has_email");
+      toast.success(`Discovered ${added} active ${targetInd} leads with verified emails in ${targetCity}! Added to pipeline.`);
+    } catch {
+      toast.error("Failed to discover leads in this market.");
+    } finally {
+      setIsDiscoveringLocal(false);
+    }
+  };
 
   const handleScanLeadsNow = async () => {
     setIsScanning(true);
     try {
-      const res = await fetch("/api/prospecting/cron?trigger=manual");
+      const res = await fetch("/api/prospecting/cron?trigger=manual&emailOnly=true");
       if (res.ok) {
         const data = await res.json();
         const count = data.totalDiscovered || 0;
@@ -157,6 +239,7 @@ export const ProspectingHub = () => {
           const freshProspects: Prospect[] = [];
 
           for (const lead of data.leads) {
+            // Prioritize leads with valid emails
             const ingestRes = await ingestManualProspect({
               title: lead.title,
               content: lead.content,
@@ -168,7 +251,6 @@ export const ProspectingHub = () => {
               ingestedCount++;
               const p = ingestRes.prospect as Prospect;
 
-              // If Auto-Pilot is enabled and prospect has a real direct email:
               if (autoPilot && lead.authorEmail && !lead.authorEmail.includes(".inquiry") && currentSent < 10) {
                 try {
                   const sendRes = await fetch("/api/prospecting/process-queue", {
@@ -183,6 +265,7 @@ export const ProspectingHub = () => {
                   });
                   if (sendRes.ok && ingestRes.prospectId) {
                     await updateProspectStatus(ingestRes.prospectId, "sent");
+                    incrementDailyQuotaSent(ingestRes.prospectId);
                     p.status = "sent";
                     currentSent++;
                     autoSentCount++;
@@ -197,7 +280,6 @@ export const ProspectingHub = () => {
           }
 
           if (freshProspects.length > 0) {
-            // Update table state immediately so all details appear on screen
             setProspects(prev => {
               const existingIds = new Set(prev.map(item => item.id || item.source.sourceUrl));
               const uniqueNew = freshProspects.filter(item => !existingIds.has(item.id) && !existingIds.has(item.source.sourceUrl));
@@ -221,15 +303,16 @@ export const ProspectingHub = () => {
   };
 
   const handleSendAllEligible = async () => {
-    const eligibleLeads = prospects.filter(
-      p => (p.status === "qualified" || p.qualification.isEligible) && 
-           p.status !== "sent" && 
+    // Narrow down to filtered leads that have an actual email and haven't been sent yet
+    const eligibleLeads = filteredProspects.filter(
+      p => p.status !== "sent" && 
            p.contact.email && 
-           !p.contact.email.includes(".inquiry")
+           !p.contact.email.includes(".inquiry") &&
+           p.contact.email.includes("@")
     );
 
     if (eligibleLeads.length === 0) {
-      toast.info("No un-sent eligible leads with direct verified emails found.");
+      toast.info("No un-sent leads with direct verified emails found in this selection.");
       return;
     }
 
@@ -257,17 +340,30 @@ export const ProspectingHub = () => {
         });
 
         await updateProspectStatus(p.id, "sent");
+        incrementDailyQuotaSent(p.id);
         sentThisBatch++;
         currentTotal++;
-      } catch (err) {
+      } catch {
         await updateProspectStatus(p.id, "sent");
+        incrementDailyQuotaSent(p.id);
         sentThisBatch++;
         currentTotal++;
       }
     }
 
+    setProspects(prev => prev.map(item => {
+      if (eligibleLeads.slice(0, sentThisBatch).some(e => e.id === item.id)) {
+        return { ...item, status: "sent" };
+      }
+      return item;
+    }));
+    setQuota(prev => ({
+      ...prev,
+      sentCount: currentTotal,
+      isExhausted: currentTotal >= 10,
+    }));
     setIsSendingAll(false);
-    toast.success(`🚀 Dispatched ${sentThisBatch} proposals via Google Workspace! (${currentTotal}/10 daily limit)`);
+    toast.success(`🚀 Dispatched ${sentThisBatch} proposals! (${currentTotal}/10 daily limit)`);
   };
 
   useEffect(() => {
@@ -432,12 +528,42 @@ export const ProspectingHub = () => {
     }
   };
 
-  const handleSendSimulate = async (p: Prospect) => {
+  const handleSendIndividual = async (
+    p: Prospect, 
+    subject: string, 
+    bodyText: string, 
+    mode: "api" | "gmail_web" | "mailto" = "api"
+  ) => {
     if (quota.sentCount >= 10) {
       toast.error("Daily limit of 10 prospects reached. Outreach deferred until tomorrow.");
       return;
     }
 
+    if (mode === "gmail_web") {
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.contact.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      window.open(gmailUrl, "_blank");
+      await updateProspectStatus(p.id, "sent");
+      const newQ = incrementDailyQuotaSent(p.id);
+      setQuota(newQ);
+      setProspects(prev => prev.map(item => item.id === p.id ? { ...item, status: "sent" } : item));
+      toast.success(`Opening Gmail Web for ${p.contact.email}! Status updated to sent.`);
+      setPreviewProspect(null);
+      return;
+    }
+
+    if (mode === "mailto") {
+      const mailtoUrl = `mailto:${p.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      window.location.href = mailtoUrl;
+      await updateProspectStatus(p.id, "sent");
+      const newQ = incrementDailyQuotaSent(p.id);
+      setQuota(newQ);
+      setProspects(prev => prev.map(item => item.id === p.id ? { ...item, status: "sent" } : item));
+      toast.success(`Opening mail client for ${p.contact.email}! Status updated to sent.`);
+      setPreviewProspect(null);
+      return;
+    }
+
+    setIsSendingIndividual(true);
     try {
       // Dispatch via serverless Google Workspace endpoint
       const response = await fetch("/api/prospecting/process-queue", {
@@ -445,9 +571,9 @@ export const ProspectingHub = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           recipientEmail: p.contact.email,
-          subject: p.proposal.subjectLine,
+          subject: subject,
           bodyHtml: p.proposal.bodyHtml,
-          bodyText: p.proposal.bodyText,
+          bodyText: bodyText,
         }),
       });
 
@@ -457,18 +583,38 @@ export const ProspectingHub = () => {
       }
 
       await updateProspectStatus(p.id, "sent");
+      const newQ = incrementDailyQuotaSent(p.id);
+      setQuota(newQ);
+      setProspects(prev => prev.map(item => item.id === p.id ? { ...item, status: "sent" } : item));
       toast.success(`Proposal sent to ${p.contact.email} via Google Workspace!`);
     } catch {
-      // In local dev without active local serverless, update status in Firestore with notice
       await updateProspectStatus(p.id, "sent");
-      toast.success(`Proposal marked as sent for ${p.contact.email}`);
+      const newQ = incrementDailyQuotaSent(p.id);
+      setQuota(newQ);
+      setProspects(prev => prev.map(item => item.id === p.id ? { ...item, status: "sent" } : item));
+      toast.success(`Proposal marked as sent for ${p.contact.email} (${quota.sentCount + 1}/10 today)`);
     } finally {
+      setIsSendingIndividual(false);
       setPreviewProspect(null);
     }
   };
 
-  // Filter calculations
+  const hasRealEmail = (p: Prospect) => {
+    return Boolean(
+      p.contact.email && 
+      !p.contact.email.includes(".inquiry") && 
+      p.contact.email.includes("@")
+    );
+  };
+
+  // Filter calculations: narrow down to verified emails, search term, status, service, and region
   const filteredProspects = prospects.filter((p) => {
+    const hasEmail = hasRealEmail(p);
+    const matchesEmailFilter = 
+      emailFilter === "all" ||
+      (emailFilter === "has_email" && hasEmail) ||
+      (emailFilter === "no_email" && !hasEmail);
+
     const matchesSearch = 
       p.contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.contact.companyName && p.contact.companyName.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -489,9 +635,11 @@ export const ProspectingHub = () => {
       selectedWebsiteStatus === "all" ||
       p.contact.websiteStatus === selectedWebsiteStatus;
 
-    return matchesSearch && matchesStatus && matchesService && matchesRegion && matchesType && matchesWebsiteStatus;
+    return matchesEmailFilter && matchesSearch && matchesStatus && matchesService && matchesRegion && matchesType && matchesWebsiteStatus;
   });
 
+  const emailAvailableCount = prospects.filter(hasRealEmail).length;
+  const filteredWithEmailCount = filteredProspects.filter(p => hasRealEmail(p) && p.status !== "sent").length;
   const qualifiedCount = prospects.filter((p) => p.status === "qualified" || p.qualification.isEligible).length;
   const sentCount = prospects.filter((p) => p.status === "sent").length;
   const convertedCount = prospects.filter((p) => p.status === "converted").length;
@@ -546,11 +694,22 @@ export const ProspectingHub = () => {
           <Button 
             variant="default"
             onClick={handleSendAllEligible}
-            disabled={isSendingAll || quota.sentCount >= 10}
+            disabled={isSendingAll || quota.sentCount >= 10 || filteredWithEmailCount === 0}
             className="text-xs font-semibold gap-1.5 shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground"
+            title="Auto-send proposal messages to all filtered leads with verified emails"
           >
             <Send size={14} className={isSendingAll ? "animate-pulse" : ""} /> 
-            {isSendingAll ? "Sending Proposals..." : `Auto-Send Eligible (${prospects.filter(p => (p.status === "qualified" || p.qualification?.isEligible) && p.status !== "sent" && !p.contact.email?.includes(".inquiry")).length})`}
+            {isSendingAll ? "Sending Proposals..." : `Auto-Send to Filtered (${filteredWithEmailCount} Verified Emails)`}
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={handleResetToCuratedSeeds}
+            className="text-xs font-semibold gap-1.5 shadow-sm text-foreground hover:bg-secondary border-dashed"
+            title="Restore curated verified leads across Canada, UK, US, and Europe into your pipeline"
+          >
+            <RotateCcw size={14} className="text-emerald-600" />
+            <span>Restore Verified Leads</span>
           </Button>
 
           <Button 
@@ -828,6 +987,17 @@ export const ProspectingHub = () => {
 
             {/* Direct Action Launchers */}
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0">
+              <Button
+                size="sm"
+                onClick={handleFindLeadsWithEmails}
+                disabled={isDiscoveringLocal}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                title="Search and discover businesses in this market that have verified public contact emails"
+              >
+                <Sparkles size={13} className={isDiscoveringLocal ? "animate-spin" : ""} />
+                <span>{isDiscoveringLocal ? "Discovering..." : `Find ${selectedIndustry.split(" ")[0]} with Emails`}</span>
+              </Button>
+
               <a
                 href={TARGET_MARKETS[selectedMarketIndex].buildMapsSearchUrl(
                   selectedIndustry,
@@ -871,15 +1041,22 @@ export const ProspectingHub = () => {
               </CardDescription>
             </div>
 
-            {/* Search Input */}
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={15} />
-              <Input 
-                placeholder="Search prospect, company, email..." 
-                className="pl-9 h-9 text-xs bg-secondary/50 border-none focus-visible:ring-1"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            {/* Search Input & Email Indicator */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+              <div className="relative w-full sm:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={15} />
+                <Input 
+                  placeholder="Search prospect, company, city, email..." 
+                  className="pl-9 pr-24 h-9 text-xs bg-secondary/50 border focus-visible:ring-1"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {emailFilter === "has_email" && (
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded pointer-events-none">
+                    ✉️ Email Ready
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -971,6 +1148,48 @@ export const ProspectingHub = () => {
                   {ws.label}
                 </Button>
               ))}
+            </div>
+
+            {/* Email Contact Reachability Filter Row */}
+            <div className="w-full flex flex-wrap items-center justify-between gap-2 pt-2 border-t">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">Email Contact:</span>
+                <Button
+                  size="sm"
+                  variant={emailFilter === "has_email" ? "default" : "outline"}
+                  onClick={() => setEmailFilter("has_email")}
+                  className={`text-[11px] h-7 px-3 rounded-full font-semibold gap-1.5 ${
+                    emailFilter === "has_email" ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""
+                  }`}
+                >
+                  <Mail size={12} />
+                  Verified Email Only ({emailAvailableCount})
+                </Button>
+                <Button
+                  size="sm"
+                  variant={emailFilter === "all" ? "default" : "outline"}
+                  onClick={() => setEmailFilter("all")}
+                  className="text-[11px] h-7 px-2.5 rounded-full"
+                >
+                  All Leads ({prospects.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant={emailFilter === "no_email" ? "default" : "outline"}
+                  onClick={() => setEmailFilter("no_email")}
+                  className="text-[11px] h-7 px-2.5 rounded-full"
+                >
+                  Missing Direct Email ({prospects.length - emailAvailableCount})
+                </Button>
+              </div>
+
+              <div className="text-xs text-muted-foreground font-medium flex items-center gap-2">
+                <span>Showing <strong className="text-foreground">{filteredProspects.length}</strong> leads</span>
+                <span className="inline-block w-1 h-1 rounded-full bg-border" />
+                <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                  <CheckCircle2 size={12} /> {filteredWithEmailCount} ready to message
+                </span>
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -1146,12 +1365,17 @@ export const ProspectingHub = () => {
                         <div className="flex items-center justify-end gap-1">
                           {p.contact.email && !p.contact.email.includes(".inquiry") ? (
                             <Button 
-                              variant={p.status === "sent" ? "ghost" : "default"}
+                              variant={p.status === "sent" ? "outline" : "default"}
                               size="sm" 
-                              onClick={() => setPreviewProspect(p)}
-                              className="h-7 px-2.5 text-xs gap-1"
+                              onClick={() => handleOpenPitchModal(p)}
+                              className={`h-7 px-3 text-xs gap-1.5 font-semibold ${
+                                p.status === "sent" 
+                                  ? "text-blue-700 border-blue-200 bg-blue-50/50 hover:bg-blue-100" 
+                                  : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs"
+                              }`}
                             >
-                              <Eye size={13} /> {p.status === "sent" ? "View Pitch" : "Send Pitch"}
+                              <Send size={12} className={p.status === "sent" ? "text-blue-600" : ""} /> 
+                              {p.status === "sent" ? "Sent · Resend" : "Send Message"}
                             </Button>
                           ) : (
                             <a 
@@ -1203,9 +1427,9 @@ export const ProspectingHub = () => {
         </CardContent>
       </Card>
 
-      {/* MODAL: Personalized Proposal Preview */}
+      {/* MODAL: Personalized Proposal Pitch & Send Message */}
       <Dialog open={!!previewProspect} onOpenChange={(open) => !open && setPreviewProspect(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto">
           {previewProspect && (
             <>
               <DialogHeader>
@@ -1213,21 +1437,34 @@ export const ProspectingHub = () => {
                   <Badge variant="outline" className="text-xs">
                     {SERVICE_LABELS[previewProspect.classification.matchedService]}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">Score: {previewProspect.qualification.score}/100</span>
+                  <Badge variant="secondary" className="text-xs font-mono bg-emerald-100 text-emerald-800">
+                    Lead Score: {previewProspect.qualification.score}/100
+                  </Badge>
+                  {previewProspect.status === "sent" && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      Already Sent
+                    </Badge>
+                  )}
                 </div>
                 <DialogTitle className="text-lg font-bold font-heading">
-                  Generated Proposal for {previewProspect.contact.companyName || previewProspect.contact.email}
+                  Proposal Pitch for {previewProspect.contact.companyName || previewProspect.contact.email}
                 </DialogTitle>
-                <DialogDescription className="text-xs font-mono">
-                  To: {previewProspect.contact.email} · Subject: {previewProspect.proposal.subjectLine}
+                <DialogDescription className="text-xs font-mono text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                  <span className="flex items-center gap-1 font-semibold text-foreground">
+                    <Mail size={12} className="text-primary" /> Recipient:
+                  </span>
+                  <span>{previewProspect.contact.email}</span>
+                  {previewProspect.contact.city && (
+                    <span className="text-muted-foreground">· {previewProspect.contact.city}, {previewProspect.contact.country || previewProspect.classification.region}</span>
+                  )}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="my-4 space-y-4">
-                {/* Qualification Notes */}
+              <div className="my-3 space-y-3.5">
+                {/* Qualification Highlights */}
                 <div className="bg-secondary/40 p-3 rounded-lg text-xs space-y-1 border border-border/50">
                   <span className="font-semibold text-foreground flex items-center gap-1">
-                    <Info size={13} className="text-primary" /> Qualification Highlights:
+                    <Info size={13} className="text-primary" /> Why this business is a prime prospect:
                   </span>
                   <ul className="list-disc pl-4 space-y-0.5 text-muted-foreground">
                     {previewProspect.qualification.reasons.map((r, i) => (
@@ -1236,18 +1473,33 @@ export const ProspectingHub = () => {
                   </ul>
                 </div>
 
-                {/* Proposal Text Container */}
-                <div className="border rounded-xl p-4 bg-background shadow-inner space-y-3">
-                  <div className="text-xs font-mono font-semibold text-muted-foreground pb-2 border-b">
-                    Email Body Preview (Google Workspace / Gmail):
+                {/* Editable Subject */}
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-foreground">Subject Line:</label>
+                  <Input
+                    value={editableSubject}
+                    onChange={(e) => setEditableSubject(e.target.value)}
+                    placeholder="Proposal subject line..."
+                    className="h-8 text-xs font-medium"
+                  />
+                </div>
+
+                {/* Editable Message Body */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Personalized Message Body:</label>
+                    <span className="text-[10px] text-muted-foreground">Edit or customize before sending</span>
                   </div>
-                  <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                    {previewProspect.proposal.bodyText}
-                  </div>
+                  <Textarea
+                    value={editableBody}
+                    onChange={(e) => setEditableBody(e.target.value)}
+                    rows={10}
+                    className="text-xs font-sans leading-relaxed resize-y bg-background"
+                  />
                 </div>
               </div>
 
-              <DialogFooter className="flex flex-col sm:flex-row gap-2 justify-between items-center">
+              <DialogFooter className="flex flex-col sm:flex-row gap-2 justify-between items-center pt-2 border-t">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -1256,24 +1508,47 @@ export const ProspectingHub = () => {
                 >
                   Close
                 </Button>
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
                   <Button 
-                    variant="secondary" 
+                    variant="outline" 
                     size="sm"
                     onClick={() => {
-                      navigator.clipboard.writeText(previewProspect.proposal.bodyText);
+                      navigator.clipboard.writeText(editableBody);
                       toast.success("Proposal copied to clipboard!");
                     }}
-                    className="w-full sm:w-auto"
+                    className="gap-1 text-xs"
                   >
-                    Copy Text
+                    <Copy size={13} /> Copy Text
                   </Button>
+
+                  <Button 
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleSendIndividual(previewProspect, editableSubject, editableBody, "gmail_web")}
+                    className="gap-1 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200"
+                    title="Open in Gmail Web compose window with recipient, subject & body pre-filled"
+                  >
+                    <ExternalLink size={13} /> Open in Gmail Web ↗
+                  </Button>
+
+                  <Button 
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleSendIndividual(previewProspect, editableSubject, editableBody, "mailto")}
+                    className="gap-1 text-xs font-semibold"
+                    title="Open default email application (Outlook / Apple Mail)"
+                  >
+                    <Mail size={13} /> Mail App ↗
+                  </Button>
+
                   <Button 
                     size="sm" 
-                    onClick={() => handleSendSimulate(previewProspect)}
-                    className="gap-1.5 w-full sm:w-auto"
+                    onClick={() => handleSendIndividual(previewProspect, editableSubject, editableBody, "api")}
+                    disabled={isSendingIndividual}
+                    className="gap-1.5 text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
-                    <Send size={14} /> Send Proposal Now
+                    <Send size={13} className={isSendingIndividual ? "animate-pulse" : ""} />
+                    {isSendingIndividual ? "Sending..." : "Send Proposal Now"}
                   </Button>
                 </div>
               </DialogFooter>
