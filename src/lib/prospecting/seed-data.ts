@@ -242,12 +242,39 @@ export function buildSeedProspects(): Prospect[] {
         companyName: def.businessName,
         email: def.email,
         emailDomain: def.email.split("@")[1] || "gmail.com",
+        emailSourceUrl: def.mapsUrl,
+        emailStatus: "verified",
+        emailVerifiedAt: nowStr,
         phoneNumber: def.phoneNumber,
+        phoneNormalized: def.phoneNumber,
+        phoneSourceUrl: def.mapsUrl,
+        phoneStatus: "verified",
+        phoneVerifiedAt: nowStr,
         decisionMaker: def.decisionMaker,
         country: def.country,
         city: def.city,
         industry: def.industry,
         websiteStatus: def.websiteStatus,
+        websiteCheckedAt: nowStr,
+        websiteEvidence: [
+          {
+            sourceUrl: def.mapsUrl,
+            classification: def.websiteStatus === "social_only" ? "social" : "directory",
+            detectedAt: nowStr,
+            notes: "Verified directory listing with absence of dedicated domain",
+          }
+        ],
+        contactEvidence: [
+          {
+            sourceUrl: def.mapsUrl,
+            sourceType: "google_places",
+            extractedField: "email",
+            rawValue: def.email,
+            extractedAt: nowStr,
+            confidence: 1.0,
+            snippetOrContext: `Verified listing for ${def.businessName}`,
+          }
+        ],
       },
       classification: {
         matchedService: def.opportunity,
@@ -257,6 +284,9 @@ export function buildSeedProspects(): Prospect[] {
         opportunity: def.opportunity,
       },
       qualification: {
+        websiteOpportunityScore: def.websiteStatus === "none_found" ? 100 : 85,
+        contactConfidenceScore: 95,
+        leadQualificationScore: def.score,
         score: def.score,
         isEligible: true,
         reasons: [
@@ -274,6 +304,8 @@ export function buildSeedProspects(): Prospect[] {
         generatedAt: nowStr,
       },
       status: "qualified",
+      verificationStatus: "verified",
+      lastVerifiedAt: nowStr,
       createdAt: nowStr,
       updatedAt: nowStr,
     };

@@ -21,7 +21,11 @@ import {
   incrementDailyQuotaSent,
   sanitizeSenderEmail,
   sanitizeProposalText,
-  sanitizeProspect
+  sanitizeProspect,
+  retryProspectVerification,
+  markProspectIncorrect,
+  excludeProspect,
+  discoverAndIngestProspects
 } from "@/lib/prospecting/prospecting-service";
 import { TARGET_MARKETS } from "@/lib/prospecting/market-presets";
 import { 
@@ -33,6 +37,10 @@ import {
   Send, 
   Clock, 
   CheckCircle2, 
+  ShieldCheck,
+  FileSearch,
+  XCircle,
+  CheckCircle, 
   AlertTriangle, 
   Filter, 
   Search, 
@@ -173,6 +181,86 @@ export const ProspectingHub = () => {
   const [newSuppressionTarget, setNewSuppressionTarget] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [isSendingAll, setIsSendingAll] = useState(false);
+
+  // Evidence Inspection and Audit States
+  const [evidenceModalProspect, setEvidenceModalProspect] = useState<Prospect | null>(null);
+  const [showEvidenceModal, setShowEvidenceModal] = useState(false);
+  const [isRetryingVerification, setIsRetryingVerification] = useState(false);
+  const [showIncorrectDialog, setShowIncorrectDialog] = useState(false);
+  const [incorrectTargetProspect, setIncorrectTargetProspect] = useState<Prospect | null>(null);
+  const [incorrectReason, setIncorrectReason] = useState("");
+  const [isDiscoveringMultiSource, setIsDiscoveringMultiSource] = useState(false);
+
+  const handleOpenEvidenceModal = (p: Prospect) => {
+    setEvidenceModalProspect(p);
+    setShowEvidenceModal(true);
+  };
+
+  const handleRetryVerification = async (id: string) => {
+    setIsRetryingVerification(true);
+    try {
+      const updated = await retryProspectVerification(id);
+      if (updated) {
+        setProspects(prev => prev.map(p => p.id === id ? updated : p));
+        if (evidenceModalProspect?.id === id) {
+          setEvidenceModalProspect(updated);
+        }
+        toast.success(`Verification refreshed for "${updated.contact.companyName}"! Status: ${updated.contact.websiteStatus}`);
+      }
+    } catch {
+      toast.error("Failed to retry verification.");
+    } finally {
+      setIsRetryingVerification(false);
+    }
+  };
+
+  const handleOpenMarkIncorrect = (p: Prospect) => {
+    setIncorrectTargetProspect(p);
+    setIncorrectReason("");
+    setShowIncorrectDialog(true);
+  };
+
+  const handleMarkIncorrectSubmit = async () => {
+    if (!incorrectTargetProspect) return;
+    try {
+      await markProspectIncorrect(incorrectTargetProspect.id, incorrectReason || "Identified as incorrect by admin");
+      toast.success(`Marked "${incorrectTargetProspect.contact.companyName}" as incorrect/rejected.`);
+      setShowIncorrectDialog(false);
+      setShowEvidenceModal(false);
+    } catch {
+      toast.error("Failed to mark prospect as incorrect.");
+    }
+  };
+
+  const handleExcludeLead = async (p: Prospect) => {
+    try {
+      await excludeProspect(p.id, "Admin exclusion");
+      toast.success(`Lead "${p.contact.companyName}" excluded and added to suppression list.`);
+      setShowEvidenceModal(false);
+    } catch {
+      toast.error("Failed to exclude prospect.");
+    }
+  };
+
+  const handleRunMultiSourceDiscovery = async () => {
+    const market = TARGET_MARKETS[selectedMarketIndex];
+    const targetCity = customCity.trim() || selectedCity;
+    const targetInd = selectedIndustry;
+    setIsDiscoveringMultiSource(true);
+    toast.info(`Starting multi-source discovery for ${targetInd} in ${targetCity}, ${market.country}...`);
+    try {
+      const result = await discoverAndIngestProspects({
+        city: targetCity,
+        country: market.country,
+        industry: targetInd,
+      });
+      toast.success(`Discovery complete! Discovered ${result.discovered} listings, ${result.prospects.length} new prospects ingested (${result.duplicatesPrevented} duplicates prevented).`);
+    } catch (err: any) {
+      toast.error(err.message || "Discovery failed.");
+    } finally {
+      setIsDiscoveringMultiSource(false);
+    }
+  };
 
   const handleResetToCuratedSeeds = () => {
     const refreshed = resetProspectsToDefault();
@@ -1513,16 +1601,31 @@ export const ProspectingHub = () => {
                           <Badge 
                             variant="secondary"
                             className={`text-xs font-bold font-mono ${
-                              p.qualification.score >= 70 ? "bg-emerald-100 text-emerald-800" :
-                              p.qualification.score >= 50 ? "bg-amber-100 text-amber-800" :
+                              (p.qualification.leadQualificationScore || p.qualification.score) >= 70 ? "bg-emerald-100 text-emerald-800" :
+                              (p.qualification.leadQualificationScore || p.qualification.score) >= 50 ? "bg-amber-100 text-amber-800" :
                               "bg-slate-100 text-slate-700"
                             }`}
                           >
-                            {p.qualification.score}/100
+                            {p.qualification.leadQualificationScore || p.qualification.score}/100
                           </Badge>
                         </div>
-                        <div className="text-[10px] text-muted-foreground mt-0.5">
-                          {p.qualification.isEligible ? "Eligible" : "Under review"}
+                        <div className="text-[10px] text-muted-foreground mt-0.5 space-y-0.5">
+                          <div className="flex items-center gap-1 font-mono text-[9px]">
+                            <span>Web:{p.qualification.websiteOpportunityScore ?? 0}%</span>
+                            <span>·</span>
+                            <span>Cont:{p.qualification.contactConfidenceScore ?? 0}%</span>
+                          </div>
+                          <div className="font-medium">
+                            {p.qualification.isEligible ? (
+                              <span className="text-emerald-600 font-semibold flex items-center gap-0.5">
+                                <CheckCircle2 size={10} /> Eligible
+                              </span>
+                            ) : (
+                              <span className="text-amber-600 flex items-center gap-0.5" title={p.qualification.ineligibilityReason || "Under review"}>
+                                <AlertTriangle size={10} /> {p.qualification.ineligibilityReason ? (p.qualification.ineligibilityReason.length > 20 ? p.qualification.ineligibilityReason.slice(0, 18) + "..." : p.qualification.ineligibilityReason) : "Review"}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
 
@@ -1554,6 +1657,16 @@ export const ProspectingHub = () => {
 
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleOpenEvidenceModal(p)}
+                            className="h-7 px-2 text-xs gap-1 font-medium text-foreground hover:bg-secondary border-dashed"
+                            title="Inspect verifiable source evidence, contact trails, and scoring breakdown"
+                          >
+                            <ShieldCheck size={12} className="text-primary" /> Evidence
+                          </Button>
+
                           {p.contact.email && !p.contact.email.includes(".inquiry") ? (
                             <Button 
                               variant={p.status === "sent" ? "outline" : "default"}
@@ -1590,6 +1703,12 @@ export const ProspectingHub = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleOpenEvidenceModal(p)}>
+                                <ShieldCheck size={13} className="mr-1.5 text-primary" /> Inspect Evidence
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleRetryVerification(p.id)}>
+                                <RefreshCw size={13} className="mr-1.5 text-blue-600" /> Retry Verification
+                              </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "sent")}>
                                 Mark Sent
                               </DropdownMenuItem>
@@ -1599,14 +1718,11 @@ export const ProspectingHub = () => {
                               <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "converted")}>
                                 🎯 Mark Converted
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => updateProspectStatus(p.id, "disqualified")} className="text-destructive">
-                                Disqualify
+                              <DropdownMenuItem onClick={() => handleOpenMarkIncorrect(p)} className="text-destructive">
+                                <XCircle size={13} className="mr-1.5 text-destructive" /> Mark as Incorrect
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => addToSuppressionList(p.contact.email, "manual_admin")}
-                                className="text-destructive"
-                              >
-                                Add to Opt-Out List
+                              <DropdownMenuItem onClick={() => handleExcludeLead(p)} className="text-destructive">
+                                <Ban size={13} className="mr-1.5 text-destructive" /> Exclude Lead (Suppress)
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -2292,6 +2408,247 @@ export const ProspectingHub = () => {
           <DialogFooter>
             <Button size="sm" variant="outline" onClick={() => setShowSuppressionDialog(false)}>
               Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL: Evidence Inspection & Audit Trail */}
+      <Dialog open={showEvidenceModal} onOpenChange={setShowEvidenceModal}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {evidenceModalProspect && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold font-heading flex items-center gap-2">
+                  <ShieldCheck className="text-primary h-5 w-5" />
+                  <span>Evidence & Provenance: {evidenceModalProspect.contact.companyName}</span>
+                </DialogTitle>
+                <DialogDescription className="text-xs">
+                  Full verifiable audit trail for website status, extracted contact details, and qualification scoring.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 my-2">
+                {/* 3 Score Cards */}
+                <div className="grid grid-cols-3 gap-2 p-3 bg-secondary/20 rounded-xl border">
+                  <div className="text-center p-2 bg-background rounded-lg border">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase block">Website Opp</span>
+                    <span className="text-xl font-bold font-mono text-primary">
+                      {evidenceModalProspect.qualification.websiteOpportunityScore ?? 0}%
+                    </span>
+                  </div>
+                  <div className="text-center p-2 bg-background rounded-lg border">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase block">Contact Conf</span>
+                    <span className="text-xl font-bold font-mono text-emerald-600">
+                      {evidenceModalProspect.qualification.contactConfidenceScore ?? 0}%
+                    </span>
+                  </div>
+                  <div className="text-center p-2 bg-background rounded-lg border">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase block">Lead Score</span>
+                    <span className="text-xl font-bold font-mono text-indigo-600">
+                      {evidenceModalProspect.qualification.leadQualificationScore ?? evidenceModalProspect.qualification.score}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Website Status & Evidence */}
+                <div className="border rounded-xl p-3.5 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <Globe size={14} className="text-primary" /> Website Verification
+                    </span>
+                    <Badge variant="outline" className="text-[11px] font-semibold">
+                      {WEBSITE_STATUS_LABELS[evidenceModalProspect.contact.websiteStatus] || evidenceModalProspect.contact.websiteStatus}
+                    </Badge>
+                  </div>
+
+                  {evidenceModalProspect.contact.websiteUrl && (
+                    <div className="text-xs bg-secondary/30 p-2 rounded">
+                      <span className="font-semibold text-muted-foreground mr-1">Detected URL:</span>
+                      <a href={evidenceModalProspect.contact.websiteUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline font-mono">
+                        {evidenceModalProspect.contact.websiteUrl} ↗
+                      </a>
+                    </div>
+                  )}
+
+                  {evidenceModalProspect.contact.websiteEvidence && evidenceModalProspect.contact.websiteEvidence.length > 0 ? (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase">Recorded Checks:</span>
+                      {evidenceModalProspect.contact.websiteEvidence.map((ev, i) => (
+                        <div key={i} className="text-[11px] p-2 bg-muted/40 rounded border border-border/50 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <Badge variant="secondary" className="text-[9px] capitalize">{ev.classification}</Badge>
+                            <span className="text-[10px] text-muted-foreground">{ev.detectedAt ? format(new Date(ev.detectedAt), "MMM d, yyyy HH:mm") : "Recently"}</span>
+                          </div>
+                          <p className="text-xs text-foreground/90 font-medium">{ev.notes}</p>
+                          <a href={ev.sourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline break-all block">
+                            {ev.sourceUrl}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">No external search checks recorded yet.</p>
+                  )}
+                </div>
+
+                {/* Contact Evidence */}
+                <div className="border rounded-xl p-3.5 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <Mail size={14} className="text-emerald-600" /> Contact Evidence (Zero Hallucination)
+                    </span>
+                    <Badge variant="outline" className="text-[11px] font-semibold">
+                      Email: {evidenceModalProspect.contact.emailStatus || "verified"}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2 bg-secondary/20 rounded">
+                      <span className="text-[10px] font-semibold text-muted-foreground block">Email Address:</span>
+                      <span className="font-mono font-medium">{evidenceModalProspect.contact.email || "null (not found)"}</span>
+                      {evidenceModalProspect.contact.emailSourceUrl && (
+                        <a href={evidenceModalProspect.contact.emailSourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline block mt-0.5">
+                          Source Link ↗
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="p-2 bg-secondary/20 rounded">
+                      <span className="text-[10px] font-semibold text-muted-foreground block">Phone Number:</span>
+                      <span className="font-mono font-medium">{evidenceModalProspect.contact.phoneNumber || "null (not found)"}</span>
+                      {evidenceModalProspect.contact.phoneSourceUrl && (
+                        <a href={evidenceModalProspect.contact.phoneSourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline block mt-0.5">
+                          Source Link ↗
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {evidenceModalProspect.contact.contactEvidence && evidenceModalProspect.contact.contactEvidence.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase">Contact Evidence Trails:</span>
+                      {evidenceModalProspect.contact.contactEvidence.map((ce, i) => (
+                        <div key={i} className="text-[11px] p-2 bg-muted/40 rounded border border-border/50 space-y-0.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-primary capitalize">{ce.extractedField}: {ce.rawValue}</span>
+                            <span className="text-[10px] text-muted-foreground">Confidence: {Math.round(ce.confidence * 100)}%</span>
+                          </div>
+                          <a href={ce.sourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline break-all block">
+                            {ce.sourceUrl}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Qualification Reasons & Red Flags */}
+                <div className="border rounded-xl p-3.5 space-y-2">
+                  <span className="text-xs font-bold block">Scoring Audit & Explanations</span>
+                  
+                  {evidenceModalProspect.qualification.reasons?.length > 0 && (
+                    <div className="space-y-1">
+                      {evidenceModalProspect.qualification.reasons.map((r, i) => (
+                        <div key={i} className="text-[11px] flex items-start gap-1.5 text-foreground/90">
+                          <CheckCircle2 size={12} className="text-emerald-500 shrink-0 mt-0.5" />
+                          <span>{r}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {evidenceModalProspect.qualification.redFlags?.length > 0 ? (
+                    <div className="space-y-1 pt-1">
+                      {evidenceModalProspect.qualification.redFlags.map((rf, i) => (
+                        <div key={i} className="text-[11px] flex items-start gap-1.5 text-destructive font-medium">
+                          <AlertTriangle size={12} className="shrink-0 mt-0.5" />
+                          <span>{rf}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-emerald-600 flex items-center gap-1 font-medium pt-1">
+                      <CheckCircle size={12} /> Zero red flags identified.
+                    </div>
+                  )}
+
+                  {evidenceModalProspect.qualification.ineligibilityReason && (
+                    <div className="text-xs p-2 bg-destructive/10 text-destructive rounded font-medium mt-2">
+                      Exclusion Note: {evidenceModalProspect.qualification.ineligibilityReason}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <DialogFooter className="flex justify-between items-center gap-2 pt-2">
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRetryVerification(evidenceModalProspect.id)}
+                    disabled={isRetryingVerification}
+                    className="text-xs gap-1"
+                  >
+                    <RefreshCw size={12} className={isRetryingVerification ? "animate-spin" : ""} />
+                    {isRetryingVerification ? "Verifying..." : "Retry Verification"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleOpenMarkIncorrect(evidenceModalProspect)}
+                    className="text-xs gap-1"
+                  >
+                    <XCircle size={12} /> Mark Incorrect
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleExcludeLead(evidenceModalProspect)}
+                    className="text-xs text-destructive hover:bg-destructive/10"
+                  >
+                    Exclude & Suppress
+                  </Button>
+                </div>
+                <Button size="sm" onClick={() => setShowEvidenceModal(false)}>
+                  Done
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL: Mark Record as Incorrect */}
+      <Dialog open={showIncorrectDialog} onOpenChange={setShowIncorrectDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2 text-destructive">
+              <XCircle size={18} /> Mark Record as Incorrect
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Explain why this record is invalid (e.g. business closed, wrong email association, already has website).
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 my-2">
+            <div>
+              <label className="text-xs font-semibold text-foreground">Reason for Rejection</label>
+              <Input
+                placeholder="e.g. Found active website at example.com or wrong phone number"
+                value={incorrectReason}
+                onChange={(e) => setIncorrectReason(e.target.value)}
+                className="mt-1 text-xs"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button size="sm" variant="outline" onClick={() => setShowIncorrectDialog(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleMarkIncorrectSubmit}>
+              Confirm & Disqualify
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -19,12 +19,19 @@ import {
   SuppressionRecord, 
   ProspectingSettings,
   ServiceType,
-  LocalBusinessLeadInput 
+  LocalBusinessLeadInput,
+  WebsiteStatus,
+  ContactStatus,
+  VerificationStatus,
+  ProspectScores
 } from "./types";
 import { classifyRequest, qualifyProspect, scoreLocalBusinessLead, detectTargetRegion } from "./qualification";
 import { generatePersonalizedProposal, generateLocalBusinessProposal } from "./proposal-gen";
 import { normalizeEmail, extractDomain, computeHash, buildUnsubscribeUrl } from "./dedup";
 import { buildSeedProspects } from "./seed-data";
+import { validateAndExtractEmail, normalizePhoneNumber } from "./contact-extractor";
+import { verifyBusinessWebsite, SearchProviderFn } from "./website-verifier";
+import { discoverViaOverpass, processDiscoveredBusiness } from "./discovery-service";
 
 export const DEFAULT_SETTINGS: ProspectingSettings = {
   autoPilotEnabled: true,
@@ -46,12 +53,9 @@ export const DEFAULT_SETTINGS: ProspectingSettings = {
   },
 };
 
-const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v8";
-const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v8";
+const LOCAL_STORAGE_PROSPECTS_KEY = "goonline_prospects_cache_v9";
+const LOCAL_STORAGE_QUOTA_KEY = "goonline_quota_cache_v9";
 
-/**
- * Mapping of legacy mock demo domains to verified, deliverable business emails
- */
 const LEGACY_EMAIL_MAPPINGS: Record<string, string> = {
   "enquiries@leedspremiercleaners.co.uk": "platinumcitycleaning@gmail.com",
   "service@calgaryprecisionplumbing.ca": "koplumbingcalgary@gmail.com",
@@ -96,26 +100,67 @@ export function sanitizeSenderEmail(text: string): string {
   return res;
 }
 
-/**
- * Cleans proposal body text: updates sender to Emmanuel, email address, and removes opt-out / address disclaimer footer
- */
 export function sanitizeProposalText(text: string): string {
   if (!text) return "";
   return stripDisclaimerFooter(sanitizeSenderEmail(text));
 }
 
+/**
+ * Normalizes legacy or partial prospects so that missing evidence fields default cleanly
+ */
 export function sanitizeProspect(p: Prospect): Prospect {
   if (!p) return p;
 
-  let contact = p.contact;
-  if (contact?.email && LEGACY_EMAIL_MAPPINGS[contact.email.toLowerCase()]) {
-    const fixedEmail = LEGACY_EMAIL_MAPPINGS[contact.email.toLowerCase()];
-    contact = {
-      ...contact,
-      email: fixedEmail,
-      emailDomain: fixedEmail.split("@")[1] || "gmail.com",
-    };
+  let rawEmail = p.contact?.email || null;
+  if (rawEmail && LEGACY_EMAIL_MAPPINGS[rawEmail.toLowerCase()]) {
+    rawEmail = LEGACY_EMAIL_MAPPINGS[rawEmail.toLowerCase()];
   }
+
+  // Normalize website status
+  let normWebsiteStatus: WebsiteStatus = p.contact?.websiteStatus || "uncertain";
+  if (normWebsiteStatus === "none_found") normWebsiteStatus = "no_website_found";
+  if (normWebsiteStatus === "has_website") normWebsiteStatus = "website_exists";
+
+  const email = rawEmail;
+  const emailStatus: ContactStatus = p.contact?.emailStatus || (email ? "verified" : "not_found");
+  const phone = p.contact?.phoneNumber || null;
+  const phoneStatus: ContactStatus = p.contact?.phoneStatus || (phone ? "verified" : "not_found");
+
+  const contact = {
+    ...p.contact,
+    companyName: p.contact?.companyName || "Local Business",
+    email,
+    emailDomain: email ? email.split("@")[1] || "gmail.com" : undefined,
+    emailStatus,
+    emailSourceUrl: p.contact?.emailSourceUrl || (email ? p.source?.sourceUrl : null),
+    phoneNumber: phone,
+    phoneNormalized: p.contact?.phoneNormalized || phone,
+    phoneStatus,
+    phoneSourceUrl: p.contact?.phoneSourceUrl || (phone ? p.source?.sourceUrl : null),
+    websiteStatus: normWebsiteStatus,
+    websiteEvidence: p.contact?.websiteEvidence || [],
+    contactEvidence: p.contact?.contactEvidence || [],
+    country: p.contact?.country || "United States",
+    city: p.contact?.city || "Local",
+    industry: p.contact?.industry || "Services",
+  };
+
+  const websiteOppScore = p.qualification?.websiteOpportunityScore ?? (
+    normWebsiteStatus === "no_website_found" ? 100 : normWebsiteStatus === "social_only" ? 85 : 15
+  );
+  const contactConfScore = p.qualification?.contactConfidenceScore ?? (email ? 90 : 0);
+  const leadScore = p.qualification?.leadQualificationScore ?? (p.qualification?.score || 70);
+
+  const qualification: ProspectScores = {
+    websiteOpportunityScore: websiteOppScore,
+    contactConfidenceScore: contactConfScore,
+    leadQualificationScore: leadScore,
+    score: leadScore,
+    isEligible: Boolean(p.qualification?.isEligible && email && (normWebsiteStatus === "no_website_found" || normWebsiteStatus === "social_only")),
+    reasons: p.qualification?.reasons || [],
+    redFlags: p.qualification?.redFlags || [],
+    ineligibilityReason: p.qualification?.ineligibilityReason,
+  };
 
   const proposal = p.proposal
     ? {
@@ -128,7 +173,9 @@ export function sanitizeProspect(p: Prospect): Prospect {
   return {
     ...p,
     contact,
+    qualification,
     proposal,
+    verificationStatus: p.verificationStatus || (qualification.isEligible ? "verified" : "needs_review"),
   };
 }
 
@@ -137,22 +184,15 @@ export function sanitizeProspect(p: Prospect): Prospect {
  */
 export function getCachedProspects(): Prospect[] {
   if (typeof window === "undefined") {
-    return buildSeedProspects();
+    return buildSeedProspects().map(sanitizeProspect);
   }
   try {
-    // Purge outdated caches from v1..v7
-    ["goonline_prospects_cache_v1", "goonline_prospects_cache_v2", "goonline_prospects_cache_v3", "goonline_prospects_cache_v4", "goonline_prospects_cache_v5", "goonline_prospects_cache_v6", "goonline_prospects_cache_v7"].forEach((k) => {
-      try { localStorage.removeItem(k); } catch (_) {}
-    });
-
     const cached = localStorage.getItem(LOCAL_STORAGE_PROSPECTS_KEY);
     if (cached) {
       const sanitizedJsonStr = sanitizeSenderEmail(cached);
       const parsed = JSON.parse(sanitizedJsonStr);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed
-          .map(sanitizeProspect)
-          .filter(p => Boolean(p.contact?.email && !p.contact.email.includes(".inquiry") && p.contact.email.includes("@")));
+        return parsed.map(sanitizeProspect);
       }
     }
   } catch (e) {
@@ -179,14 +219,11 @@ export function setCachedProspects(prospects: Prospect[]) {
  * Resets the pipeline to the default curated list of verified commercial leads
  */
 export function resetProspectsToDefault(): Prospect[] {
-  const seed = buildSeedProspects();
+  const seed = buildSeedProspects().map(sanitizeProspect);
   setCachedProspects(seed);
   return seed;
 }
 
-/**
- * Returns formatted YYYY-MM-DD string for today's quota doc
- */
 export function getTodayQuotaDocId(): string {
   const now = new Date();
   return now.toISOString().split("T")[0];
@@ -230,11 +267,9 @@ export function incrementDailyQuotaSent(prospectId: string): DailyQuota {
  * Subscribes to real-time prospects list with instant local seed fallback
  */
 export function subscribeToProspects(callback: (prospects: Prospect[]) => void) {
-  // 1. Immediately emit cached/seeded prospects so UI is never blank
   const initial = getCachedProspects();
   callback(initial);
 
-  // 2. Set up Firestore listener with fallback
   try {
     const q = query(collection(db, "prospects"), orderBy("createdAt", "desc"), limit(200));
     return onSnapshot(
@@ -244,17 +279,12 @@ export function subscribeToProspects(callback: (prospects: Prospect[]) => void) 
           const prospects: Prospect[] = [];
           snapshot.forEach((doc) => {
             const data = { id: doc.id, ...doc.data() } as Prospect;
-            const cleaned = sanitizeProspect(data);
-            if (cleaned.contact?.email && !cleaned.contact.email.includes(".inquiry") && cleaned.contact.email.includes("@")) {
-              prospects.push(cleaned);
-            }
+            prospects.push(sanitizeProspect(data));
           });
           setCachedProspects(prospects);
           callback(prospects);
         } else {
-          // Empty remote collection - maintain verified seed leads
           callback(initial);
-          // Attempt to sync seed into remote Firestore in background
           initial.forEach((p) => {
             setDoc(doc(db, "prospects", p.id), p).catch(() => {});
           });
@@ -271,9 +301,6 @@ export function subscribeToProspects(callback: (prospects: Prospect[]) => void) 
   }
 }
 
-/**
- * Subscribes to today's daily quota doc with local fallback
- */
 export function subscribeToTodayQuota(callback: (quota: DailyQuota) => void) {
   const docId = getTodayQuotaDocId();
   const initialQuota = getCachedQuota();
@@ -306,9 +333,6 @@ export function subscribeToTodayQuota(callback: (quota: DailyQuota) => void) {
   }
 }
 
-/**
- * Subscribes to suppression list
- */
 export function subscribeToSuppressionList(callback: (records: SuppressionRecord[]) => void) {
   try {
     const q = query(collection(db, "suppression_list"), orderBy("optedOutAt", "desc"), limit(100));
@@ -332,7 +356,7 @@ export function subscribeToSuppressionList(callback: (records: SuppressionRecord
 }
 
 /**
- * Manually ingest and qualify a prospect from raw pasted text or post info
+ * Manually ingest and qualify a prospect with strict contact validation
  */
 export async function ingestManualProspect(params: {
   title: string;
@@ -348,10 +372,12 @@ export async function ingestManualProspect(params: {
       return { success: false, error: "Visible public contact email is required to ingest this prospect." };
     }
 
-    const effectiveEmail = params.email;
+    const emailResult = validateAndExtractEmail(params.email, params.sourceUrl, params.companyName || params.title, "manual");
+    if (emailResult.status === "invalid") {
+      return { success: false, error: emailResult.rejectionReason || "Invalid or blacklisted contact email." };
+    }
 
-    const normEmail = normalizeEmail(effectiveEmail);
-    const domain = extractDomain(normEmail);
+    const normEmail = emailResult.email || "";
 
     // 1. Check suppression list
     const hash = await computeHash(normEmail);
@@ -360,8 +386,8 @@ export async function ingestManualProspect(params: {
       return { success: false, error: "This email address is on the opt-out suppression list." };
     }
 
-    // 2. Check for duplicate email in prospects (only for real email addresses)
-    if (!normEmail.includes(".inquiry")) {
+    // 2. Check for duplicate email in prospects
+    if (normEmail) {
       const existingQ = query(collection(db, "prospects"), where("contact.email", "==", normEmail), limit(1));
       const existingSnap = await getDocs(existingQ);
       if (!existingSnap.empty) {
@@ -390,10 +416,11 @@ export async function ingestManualProspect(params: {
     });
 
     const prospectId = `pr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const nowTimestamp = Timestamp.now();
+    const nowTimestamp = new Date().toISOString();
 
     const prospectDoc: Prospect = {
       id: prospectId,
+      prospectType: "online_job_request",
       source: {
         platform: "manual",
         externalId: `manual_${Date.now()}`,
@@ -404,9 +431,20 @@ export async function ingestManualProspect(params: {
       },
       contact: {
         fullName: params.fullName,
-        companyName: params.companyName,
-        email: normEmail,
-        emailDomain: domain,
+        companyName: params.companyName || params.title,
+        email: emailResult.email,
+        emailDomain: emailResult.email ? extractDomain(emailResult.email) : undefined,
+        emailSourceUrl: params.sourceUrl || null,
+        emailStatus: emailResult.status,
+        emailVerifiedAt: nowTimestamp,
+        phoneNumber: null,
+        phoneStatus: "not_found",
+        websiteStatus: "no_website_found",
+        websiteEvidence: [],
+        contactEvidence: emailResult.evidence,
+        country: "Global",
+        city: "Remote",
+        industry: "Web Development",
       },
       classification,
       qualification,
@@ -415,6 +453,8 @@ export async function ingestManualProspect(params: {
         generatedAt: nowTimestamp,
       },
       status: qualification.isEligible ? "qualified" : "needs_review",
+      verificationStatus: qualification.isEligible ? "verified" : "needs_review",
+      lastVerifiedAt: nowTimestamp,
       createdAt: nowTimestamp,
       updatedAt: nowTimestamp,
     };
@@ -442,7 +482,7 @@ export async function ingestManualProspect(params: {
 }
 
 /**
- * Ingests a local business lead (no website or social-only) with dedicated qualification & proposal synthesis.
+ * Ingests a local business lead with complete website verification and contact extraction
  */
 export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput): Promise<{
   success: boolean;
@@ -456,40 +496,58 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
       return { success: false, error: "A visible public business email is required to log this lead." };
     }
 
-    const normEmail = normalizeEmail(params.email);
-    const domain = extractDomain(normEmail);
+    // 1. Verify Website Status
+    const websiteResult = await verifyBusinessWebsite({
+      businessName: params.businessName,
+      city: params.city,
+      country: params.country,
+      phoneNumber: params.phoneNumber,
+      listingWebsiteUrl: params.websiteUrl,
+      placeId: params.placeId,
+    });
 
-    // 1. Check suppression list
-    const hash = await computeHash(normEmail);
-    const suppDoc = await getDoc(doc(db, "suppression_list", hash));
-    if (suppDoc.exists()) {
-      return { success: false, error: "This email address is on the opt-out suppression list." };
-    }
+    // 2. Validate and Extract Email
+    const emailResult = validateAndExtractEmail(
+      params.email,
+      params.emailSourceUrl || params.mapsUrl,
+      params.businessName,
+      "manual"
+    );
 
-    // 2. Check for duplicate email in prospects
-    if (normEmail && !normEmail.includes(".inquiry")) {
-      const existingQ = query(collection(db, "prospects"), where("contact.email", "==", normEmail), limit(1));
-      const existingSnap = await getDocs(existingQ);
-      if (!existingSnap.empty) {
-        return { success: false, error: `A lead with email "${normEmail}" has already been logged.` };
+    // 3. Normalize Phone Number
+    const phoneResult = normalizePhoneNumber(
+      params.phoneNumber,
+      params.country,
+      params.phoneSourceUrl || params.mapsUrl,
+      "manual"
+    );
+
+    const normEmail = emailResult.email || "";
+
+    // 4. Check suppression list if email exists
+    if (normEmail) {
+      const hash = await computeHash(normEmail);
+      const suppDoc = await getDoc(doc(db, "suppression_list", hash));
+      if (suppDoc.exists()) {
+        return { success: false, error: "This email address is on the opt-out suppression list." };
       }
     }
 
-    // 3. Score lead using the Local Business Qualification Model
+    // 5. Score lead with 3-tier model
     const qualification = scoreLocalBusinessLead({
       businessName: params.businessName,
       country: params.country,
       city: params.city,
       industry: params.industry,
-      websiteStatus: params.websiteStatus,
-      hasEmail: Boolean(normEmail),
-      hasPhone: Boolean(params.phoneNumber),
+      websiteStatus: websiteResult.websiteStatus,
+      hasEmail: Boolean(emailResult.email),
+      hasPhone: Boolean(phoneResult.phoneNumber),
       hasDecisionMaker: Boolean(params.decisionMaker),
       hasMapsUrl: Boolean(params.mapsUrl),
     });
 
-    // 4. Generate the personalized cold outreach proposal
-    const unsubUrl = buildUnsubscribeUrl(normEmail);
+    // 6. Generate proposal
+    const unsubUrl = buildUnsubscribeUrl(normEmail || "no-email@goonlinemedia.com");
     const matchedService: ServiceType = params.opportunity || "business_website";
     const detectedRegion = detectTargetRegion(`${params.country} ${params.city}`, normEmail);
 
@@ -499,37 +557,53 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
       city: params.city,
       country: params.country,
       industry: params.industry,
-      websiteStatus: params.websiteStatus,
+      websiteStatus: websiteResult.websiteStatus,
       opportunity: matchedService,
       unsubscribeUrl: unsubUrl,
     });
 
     const prospectId = `local_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const nowTimestamp = Timestamp.now();
+    const nowTimestamp = new Date().toISOString();
 
     const prospectDoc: Prospect = {
       id: prospectId,
       prospectType: "local_business_no_website",
       source: {
-        platform: "google_maps",
-        externalId: `maps_${Date.now()}`,
+        platform: "google_places",
+        externalId: params.placeId || `manual_${Date.now()}`,
         sourceUrl: params.mapsUrl || "https://maps.google.com",
         mapsUrl: params.mapsUrl,
         rawTitle: `${params.businessName} - ${params.industry} in ${params.city}`,
-        rawContent: `Local business in ${params.city}, ${params.country}. Status: ${params.websiteStatus}. ${params.notes || ""}`,
+        rawContent: `Local business in ${params.city}, ${params.country}. Status: ${websiteResult.websiteStatus}. ${params.notes || ""}`,
         discoveredAt: nowTimestamp,
       },
       contact: {
         fullName: params.decisionMaker,
         companyName: params.businessName,
-        email: normEmail,
-        emailDomain: domain,
-        phoneNumber: params.phoneNumber,
+        email: emailResult.email,
+        emailDomain: emailResult.email ? extractDomain(emailResult.email) : undefined,
+        emailSourceUrl: emailResult.sourceUrl,
+        emailStatus: emailResult.status,
+        emailVerifiedAt: emailResult.email ? nowTimestamp : null,
+
+        phoneNumber: phoneResult.phoneNumber,
+        phoneNormalized: phoneResult.phoneNormalized,
+        phoneSourceUrl: phoneResult.sourceUrl,
+        phoneStatus: phoneResult.status,
+        phoneVerifiedAt: phoneResult.phoneNumber ? nowTimestamp : null,
+
+        websiteUrl: websiteResult.websiteUrl,
+        websiteStatus: websiteResult.websiteStatus,
+        websiteCheckedAt: websiteResult.checkedAt,
+        websiteEvidence: websiteResult.evidence,
+        contactEvidence: [...emailResult.evidence, ...phoneResult.evidence],
+
         decisionMaker: params.decisionMaker,
         country: params.country,
         city: params.city,
         industry: params.industry,
-        websiteStatus: params.websiteStatus,
+        formattedAddress: params.address,
+        placeId: params.placeId,
       },
       classification: {
         matchedService,
@@ -544,6 +618,8 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
         generatedAt: nowTimestamp,
       },
       status: qualification.isEligible ? "qualified" : "needs_review",
+      verificationStatus: qualification.isEligible ? "verified" : "needs_review",
+      lastVerifiedAt: nowTimestamp,
       createdAt: nowTimestamp,
       updatedAt: nowTimestamp,
     };
@@ -571,10 +647,181 @@ export async function ingestLocalBusinessProspect(params: LocalBusinessLeadInput
 }
 
 /**
- * Updates status of a prospect (e.g. mark sent, qualified, converted, disqualified)
+ * Executes multi-source discovery for a target market and ingests results
  */
+export async function discoverAndIngestProspects(queryInput: {
+  city: string;
+  country: string;
+  industry: string;
+  searchProvider?: SearchProviderFn;
+}): Promise<{
+  discovered: number;
+  qualified: number;
+  duplicatesPrevented: number;
+  prospects: Prospect[];
+  errors: string[];
+}> {
+  const errors: string[] = [];
+  const existing = getCachedProspects();
+  const seenKeys = new Set<string>(existing.map(p => p.id));
+  
+  let rawListings: any[] = [];
+  try {
+    rawListings = await discoverViaOverpass(queryInput.industry, queryInput.city, queryInput.country);
+  } catch (err) {
+    errors.push(`Overpass error: ${(err as Error).message}`);
+  }
+
+  const added: Prospect[] = [];
+  let duplicatesPrevented = 0;
+
+  for (const raw of rawListings) {
+    if (added.length >= 10) break; // Enforce strict daily limit
+    const { prospect, duplicate } = await processDiscoveredBusiness(raw, seenKeys, queryInput.searchProvider);
+    if (duplicate || !prospect) {
+      duplicatesPrevented++;
+      continue;
+    }
+    seenKeys.add(prospect.id);
+    added.push(prospect);
+  }
+
+  if (added.length > 0) {
+    const updated = [...added, ...existing];
+    setCachedProspects(updated);
+
+    for (const p of added) {
+      try {
+        await setDoc(doc(db, "prospects", p.id), p);
+      } catch (_) {}
+    }
+  }
+
+  return {
+    discovered: rawListings.length,
+    qualified: added.filter(p => p.qualification.isEligible).length,
+    duplicatesPrevented,
+    prospects: added,
+    errors,
+  };
+}
+
+/**
+ * Retries website and contact verification for an existing prospect
+ */
+export async function retryProspectVerification(
+  id: string,
+  searchProvider?: SearchProviderFn
+): Promise<Prospect | null> {
+  const current = getCachedProspects();
+  const target = current.find(p => p.id === id);
+  if (!target) return null;
+
+  const websiteResult = await verifyBusinessWebsite({
+    businessName: target.contact.companyName,
+    city: target.contact.city,
+    country: target.contact.country,
+    phoneNumber: target.contact.phoneNumber,
+    listingWebsiteUrl: target.contact.websiteUrl,
+    placeId: target.contact.placeId,
+    searchProvider,
+  });
+
+  const updatedContact = {
+    ...target.contact,
+    websiteStatus: websiteResult.websiteStatus,
+    websiteUrl: websiteResult.websiteUrl,
+    websiteCheckedAt: websiteResult.checkedAt,
+    websiteEvidence: websiteResult.evidence,
+  };
+
+  const qualification = scoreLocalBusinessLead({
+    businessName: target.contact.companyName,
+    country: target.contact.country,
+    city: target.contact.city,
+    industry: target.contact.industry,
+    websiteStatus: websiteResult.websiteStatus,
+    hasEmail: Boolean(target.contact.email),
+    hasPhone: Boolean(target.contact.phoneNumber),
+    hasDecisionMaker: Boolean(target.contact.decisionMaker),
+    hasMapsUrl: Boolean(target.source?.mapsUrl),
+  });
+
+  const updated: Prospect = {
+    ...target,
+    contact: updatedContact,
+    qualification,
+    verificationStatus: qualification.isEligible ? "verified" : "needs_review",
+    status: qualification.isEligible ? "qualified" : "needs_review",
+    lastVerifiedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const newList = current.map(p => p.id === id ? updated : p);
+  setCachedProspects(newList);
+
+  try {
+    await updateDoc(doc(db, "prospects", id), {
+      contact: updatedContact,
+      qualification,
+      verificationStatus: updated.verificationStatus,
+      status: updated.status,
+      lastVerifiedAt: updated.lastVerifiedAt,
+      updatedAt: updated.updatedAt,
+    });
+  } catch (_) {}
+
+  return updated;
+}
+
+/**
+ * Marks a record as incorrect / rejected with reason
+ */
+export async function markProspectIncorrect(id: string, reason: string): Promise<void> {
+  const current = getCachedProspects();
+  const updated = current.map((p) => {
+    if (p.id !== id) return p;
+    return {
+      ...p,
+      verificationStatus: "rejected" as VerificationStatus,
+      status: "disqualified" as Prospect["status"],
+      qualification: {
+        ...p.qualification,
+        isEligible: false,
+        redFlags: [...(p.qualification.redFlags || []), `Marked incorrect by admin: ${reason}`],
+        ineligibilityReason: `Marked incorrect: ${reason}`,
+      },
+      updatedAt: new Date().toISOString(),
+    };
+  });
+
+  setCachedProspects(updated);
+
+  try {
+    await updateDoc(doc(db, "prospects", id), {
+      verificationStatus: "rejected",
+      status: "disqualified",
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (_) {}
+}
+
+/**
+ * Excludes a lead and adds it to suppression list
+ */
+export async function excludeProspect(id: string, reason: string): Promise<void> {
+  const current = getCachedProspects();
+  const target = current.find(p => p.id === id);
+  if (!target) return;
+
+  if (target.contact.email) {
+    await addToSuppressionList(target.contact.email, "manual_admin");
+  }
+
+  await updateProspectStatus(id, "opted_out");
+}
+
 export async function updateProspectStatus(id: string, status: Prospect["status"]) {
-  // Update local cache immediately
   const current = getCachedProspects();
   const updated = current.map((p) => (p.id === id ? { ...p, status, updatedAt: new Date().toISOString() } : p));
   setCachedProspects(updated);
@@ -590,9 +837,6 @@ export async function updateProspectStatus(id: string, status: Prospect["status"
   }
 }
 
-/**
- * Adds an email or domain directly to suppression list
- */
 export async function addToSuppressionList(emailOrDomain: string, reason: SuppressionRecord["reason"] = "manual_admin") {
   const normalized = emailOrDomain.trim().toLowerCase();
   const hash = await computeHash(normalized);

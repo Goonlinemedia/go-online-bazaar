@@ -1,4 +1,4 @@
-import { ServiceType, TargetRegion } from "./types";
+import { ServiceType, TargetRegion, WebsiteStatus, ProspectScores } from "./types";
 
 interface ClassificationResult {
   matchedService: ServiceType;
@@ -8,12 +8,7 @@ interface ClassificationResult {
   region: TargetRegion;
 }
 
-interface QualificationResult {
-  score: number;
-  isEligible: boolean;
-  reasons: string[];
-  redFlags: string[];
-}
+export type QualificationResult = ProspectScores;
 
 /**
  * Detects whether inquiry targets the US, UK, Canada, or Europe
@@ -230,10 +225,14 @@ export function qualifyProspect(
   const isEligible = finalScore >= 70 && redFlags.length === 0;
 
   return {
+    websiteOpportunityScore: 80,
+    contactConfidenceScore: isCorporateDomain ? 95 : 85,
+    leadQualificationScore: finalScore,
     score: finalScore,
     isEligible,
     reasons,
     redFlags,
+    ineligibilityReason: !isEligible ? (redFlags[0] || "Score below 70 threshold") : undefined,
   };
 }
 
@@ -242,90 +241,145 @@ export interface LocalBusinessScoreInput {
   country: string;
   city: string;
   industry: string;
-  websiteStatus: "none_found" | "social_only" | "has_website";
+  websiteStatus: WebsiteStatus;
   hasEmail: boolean;
   hasPhone: boolean;
-  hasDecisionMaker: boolean;
-  hasMapsUrl: boolean;
+  hasDecisionMaker?: boolean;
+  hasMapsUrl?: boolean;
+  isSuppressed?: boolean;
+  hasContactConflict?: boolean;
 }
 
 /**
  * Scores a local business lead based on website status, industry, contactability, and market priority.
+ * Computes 3 distinct scores:
+ * 1. websiteOpportunityScore (0-100)
+ * 2. contactConfidenceScore (0-100)
+ * 3. leadQualificationScore (0-100)
  */
 export function scoreLocalBusinessLead(input: LocalBusinessScoreInput): QualificationResult {
-  let score = 0;
   const reasons: string[] = [];
   const redFlags: string[] = [];
 
-  // 1. Website Status (Max 35 points)
-  if (input.websiteStatus === "none_found") {
-    score += 35;
+  // ==========================================
+  // 1. Website Opportunity Score (0 - 100)
+  // ==========================================
+  let websiteOpportunityScore = 0;
+  const status = input.websiteStatus;
+
+  if (status === "no_website_found" || status === "none_found") {
+    websiteOpportunityScore = 100;
     reasons.push("High Opportunity: No website found on Google Maps or search");
-  } else if (input.websiteStatus === "social_only") {
-    score += 30;
+  } else if (status === "social_only") {
+    websiteOpportunityScore = 85;
     reasons.push("High Opportunity: Relies exclusively on Facebook/Instagram");
+  } else if (status === "uncertain") {
+    websiteOpportunityScore = 40;
+    redFlags.push("Uncertain website status: Search verification is incomplete or inconclusive (manual review required)");
+    reasons.push("Moderate Opportunity: Missing website field on listing, but secondary search has not verified absence");
   } else {
-    score += 5;
-    reasons.push("Existing website detected (requires redesign or modernization angle)");
+    websiteOpportunityScore = 15;
+    redFlags.push("Existing official website identified (low probability for initial website build)");
+    reasons.push("Low Opportunity: Official website already exists (requires redesign or performance angle)");
   }
 
-  // 2. High-converting service industry (Max 25 points)
-  const normIndustry = input.industry.toLowerCase();
+  // ==========================================
+  // 2. Contact Confidence Score (0 - 100)
+  // ==========================================
+  let contactConfidenceScore = 0;
+  if (input.hasContactConflict) {
+    contactConfidenceScore = 20;
+    redFlags.push("Conflicting contact records detected across different sources");
+  } else if (input.hasEmail) {
+    contactConfidenceScore = 85;
+    if (input.hasDecisionMaker) {
+      contactConfidenceScore = 95;
+      reasons.push("High Contact Confidence: Verified direct business email with identified decision-maker");
+    } else {
+      reasons.push("High Contact Confidence: Verified source-backed business email address");
+    }
+  } else if (input.hasPhone) {
+    contactConfidenceScore = 35;
+    redFlags.push("Missing email contact (phone number available for phone/WhatsApp outreach only)");
+    reasons.push("Partial Contact: Verified business phone number available, but no email discovered");
+  } else {
+    contactConfidenceScore = 0;
+    redFlags.push("No contact details discovered from verified sources");
+  }
+
+  // ==========================================
+  // 3. Industry & Market Opportunity (0 - 100)
+  // ==========================================
+  let industryScore = 50;
+  const normIndustry = (input.industry || "").toLowerCase();
   const highIntentKeywords = [
     "plumb", "clean", "roof", "landscap", "renovat", "auto", "detail", 
     "mechanic", "builder", "garden", "decorat", "paint", "beauty", "salon", 
-    "barber", "pressure wash", "contractor", "electric", "hvac", "handyman"
+    "barber", "pressure wash", "contractor", "electric", "hvac", "handyman",
+    "flooring", "restaurant", "cafe", "joiner", "joinery"
   ];
-  const isHighIntent = highIntentKeywords.some(kw => normIndustry.includes(kw));
 
-  if (isHighIntent) {
-    score += 25;
-    reasons.push(`High-demand local service sector (${input.industry}) with high booking/quote value`);
+  if (highIntentKeywords.some(kw => normIndustry.includes(kw))) {
+    industryScore = 90;
+    reasons.push(`High-converting commercial service sector (${input.industry}) with high quote/lead value`);
   } else {
-    score += 15;
-    reasons.push(`Standard local service business (${input.industry})`);
+    reasons.push(`Standard local commercial service category (${input.industry})`);
   }
 
-  // 3. Contactability & Decision-Maker (Max 25 points)
-  if (input.hasEmail) {
-    score += 15;
-    reasons.push("Verified direct business email available");
-  } else {
-    redFlags.push("Missing email contact (requires phone or social outreach)");
+  // Market priority bonus
+  const normCountry = (input.country || "").toLowerCase();
+  if (normCountry.includes("canada") || normCountry.includes("united kingdom") || normCountry === "uk" || normCountry === "ca") {
+    reasons.push("Priority 1 target market (Canada / United Kingdom)");
+  } else if (normCountry.includes("united states") || normCountry === "usa" || normCountry === "us") {
+    reasons.push("Priority 2 target market (United States)");
   }
 
-  if (input.hasDecisionMaker) {
-    score += 10;
-    reasons.push("Owner / decision-maker identified for personalized outreach");
-  } else if (input.hasPhone) {
-    score += 5;
-    reasons.push("Business phone number available as secondary contact");
+  // Suppression check
+  if (input.isSuppressed) {
+    redFlags.push("Recipient or domain is on the opt-out suppression list");
   }
 
-  // 4. Source & Verification (Max 15 points)
-  if (input.hasMapsUrl) {
-    score += 10;
-    reasons.push("Verified Google Maps business listing");
-  }
+  // ==========================================
+  // 4. Overall Composite Lead Qualification Score
+  // ==========================================
+  // 40% Website Opportunity + 40% Contact Confidence + 20% Industry Intent
+  const rawComposite = Math.round(
+    (0.40 * websiteOpportunityScore) + 
+    (0.40 * contactConfidenceScore) + 
+    (0.20 * industryScore)
+  );
+  const leadQualificationScore = Math.max(0, Math.min(100, rawComposite));
 
-  // 5. Target Region Priority Match
-  const normCountry = input.country.toLowerCase();
-  if (normCountry.includes("canada") || normCountry.includes("united kingdom") || normCountry.includes("uk")) {
-    score += 5;
-    reasons.push("Priority 1 market target (Canada / United Kingdom)");
-  } else if (normCountry.includes("united states") || normCountry.includes("usa") || normCountry.includes("us")) {
-    score += 3;
-    reasons.push("Priority 2 market target (United States)");
-  }
+  // Automated Outreach Eligibility Rules:
+  // 1. Must score >= 70
+  // 2. Must have verified source-backed email
+  // 3. Website status must be confirmed no_website_found or social_only
+  // 4. Zero red flags
+  const isEligible = 
+    leadQualificationScore >= 70 &&
+    input.hasEmail &&
+    (status === "no_website_found" || status === "social_only" || status === "none_found") &&
+    redFlags.length === 0;
 
-  const finalScore = Math.max(0, Math.min(100, score));
-  const isEligible = finalScore >= 65 && input.hasEmail;
+  let ineligibilityReason: string | undefined;
+  if (!isEligible) {
+    if (!input.hasEmail) ineligibilityReason = "Missing verified source-backed email";
+    else if (status === "uncertain") ineligibilityReason = "Uncertain website status requires manual review";
+    else if (status === "website_exists" || status === "has_website") ineligibilityReason = "Official website already exists";
+    else if (input.isSuppressed) ineligibilityReason = "Recipient is on the opt-out suppression list";
+    else if (input.hasContactConflict) ineligibilityReason = "Conflicting contact records";
+    else if (leadQualificationScore < 70) ineligibilityReason = `Score ${leadQualificationScore} is below the 70 eligibility threshold`;
+  }
 
   return {
-    score: finalScore,
+    websiteOpportunityScore,
+    contactConfidenceScore,
+    leadQualificationScore,
+    score: leadQualificationScore,
     isEligible,
     reasons,
     redFlags,
+    ineligibilityReason,
   };
 }
 

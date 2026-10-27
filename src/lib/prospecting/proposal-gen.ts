@@ -1,4 +1,4 @@
-import { ServiceType, Prospect } from "./types";
+import { ServiceType, Prospect, WebsiteStatus } from "./types";
 
 interface ProposalOutput {
   subjectLine: string;
@@ -196,7 +196,7 @@ export interface LocalBusinessProposalContext {
   city: string;
   country?: string;
   industry: string;
-  websiteStatus: "none_found" | "social_only" | "has_website";
+  websiteStatus: WebsiteStatus;
   opportunity?: ServiceType;
   senderName?: string;
   senderEmail?: string;
